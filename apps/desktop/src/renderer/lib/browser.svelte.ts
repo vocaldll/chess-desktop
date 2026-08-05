@@ -1,4 +1,5 @@
 import type { WebviewLoadError } from '$shared/ipc-channels'
+import { SITES, type SiteId } from '$shared/sites'
 import type { SiteWebviewElement } from './webview-element'
 
 class Browser {
@@ -9,26 +10,40 @@ class Browser {
   isLoading = $state(false)
   error = $state<WebviewLoadError | null>(null)
 
-  attach(element: SiteWebviewElement): void {
-    this.element = element
+  #lastUrls = new Map<SiteId, string>()
+
+  rememberedUrl(siteId: SiteId): string {
+    return this.#lastUrls.get(siteId) ?? SITES[siteId].startUrl
   }
 
-  detach(): void {
-    this.element = null
-    this.url = ''
+  enterSite(siteId: SiteId): void {
+    this.url = this.rememberedUrl(siteId)
     this.canGoBack = false
     this.canGoForward = false
     this.isLoading = false
     this.error = null
   }
 
-  syncHistory(): void {
+  attach(element: SiteWebviewElement): void {
+    this.element = element
+  }
+
+  detach(): void {
+    this.element = null
+  }
+
+  syncHistory(siteId: SiteId): void {
     const element = this.element
     if (!element) {
       return
     }
 
-    this.url = element.getURL()
+    const current = element.getURL()
+    if (current) {
+      this.url = current
+      this.#lastUrls.set(siteId, current)
+    }
+
     this.canGoBack = element.canGoBack()
     this.canGoForward = element.canGoForward()
   }

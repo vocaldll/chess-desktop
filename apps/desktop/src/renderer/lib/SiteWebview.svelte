@@ -9,14 +9,19 @@
   const site = $derived(SITES[settings.current.activeSite])
 
   $effect(() => {
+    browser.enterSite(site.id)
+  })
+
+  $effect(() => {
     if (!element) {
       return
     }
 
+    const siteId = site.id
     const webview = element as unknown as SiteWebviewElement
     browser.attach(webview)
 
-    const sync = () => browser.syncHistory()
+    const sync = () => browser.syncHistory(siteId)
     const events = ['dom-ready', 'did-navigate', 'did-navigate-in-page']
     for (const event of events) {
       webview.addEventListener(event, sync)
@@ -37,7 +42,7 @@
       }),
       window.api.webview.onLoadStop(() => {
         browser.isLoading = false
-        browser.syncHistory()
+        browser.syncHistory(settings.current.activeSite)
       }),
       window.api.webview.onLoadError((error) => {
         browser.isLoading = false
@@ -55,10 +60,11 @@
 
 <div class="content">
   {#key site.id}
+    {@const resumeUrl = browser.rememberedUrl(site.id)}
     <webview
       bind:this={element}
       class="frame"
-      src={site.startUrl}
+      src={resumeUrl}
       partition={site.partition}
       allowpopups
     ></webview>
