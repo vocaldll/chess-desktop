@@ -116,15 +116,17 @@
 
   <button
     class="copy"
+    class:copied
     title={copied ? 'Copied' : 'Copy address'}
     aria-label={copied ? 'Copied' : 'Copy address'}
     onclick={copyUrl}
   >
-    {#if copied}
-      <Check size={13} strokeWidth={2} />
-    {:else}
+    <span class="icon idle" aria-hidden="true">
       <Copy size={13} strokeWidth={1.8} />
-    {/if}
+    </span>
+    <span class="icon done" aria-hidden="true">
+      <Check size={13} strokeWidth={2} />
+    </span>
   </button>
 </div>
 
@@ -220,5 +222,38 @@
   .copy:focus-visible {
     outline: 2px solid var(--cd-accent);
     outline-offset: -2px;
+  }
+
+  .icon {
+    display: grid;
+    place-items: center;
+    grid-area: 1 / 1;
+    transition:
+      opacity 160ms ease,
+      transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .copy .done,
+  .copy.copied .idle {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  .copy .idle,
+  .copy.copied .done {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .icon {
+      transition: opacity 100ms ease;
+      transform: none;
+    }
+
+    .copy .done,
+    .copy.copied .idle {
+      transform: none;
+    }
   }
 </style>
