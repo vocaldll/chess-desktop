@@ -25,6 +25,9 @@
 
   let isMaximized = $state(false)
   let addressFocused = $state(false)
+  let spinning = $state(false)
+
+  let stopAtRevolution = false
 
   $effect(() => {
     window.api.window.isMaximized().then((value) => {
@@ -35,6 +38,22 @@
       isMaximized = value
     })
   })
+
+  $effect(() => {
+    stopAtRevolution = !browser.isLoading
+  })
+
+  function reload(): void {
+    spinning = true
+    stopAtRevolution = true
+    browser.reload()
+  }
+
+  function onRevolution(): void {
+    if (stopAtRevolution) {
+      spinning = false
+    }
+  }
 </script>
 
 <header class="titlebar" class:interactive={addressFocused}>
@@ -57,8 +76,10 @@
     >
       <ArrowRight size={ICON} strokeWidth={STROKE} />
     </button>
-    <button class="btn" title="Reload" aria-label="Reload" onclick={() => browser.reload()}>
-      <RotateCw size={ICON} strokeWidth={STROKE} />
+    <button class="btn" title="Reload" aria-label="Reload" onclick={reload}>
+      <span class="spin" class:spinning onanimationiteration={onRevolution}>
+        <RotateCw size={ICON} strokeWidth={STROKE} />
+      </span>
     </button>
   </div>
 
@@ -187,6 +208,21 @@
     outline-offset: -2px;
   }
 
+  .spin {
+    display: grid;
+    place-items: center;
+  }
+
+  .spin.spinning {
+    animation: spin 700ms linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   .divider {
     width: 1px;
     height: 18px;
@@ -204,6 +240,12 @@
   .close:hover:not(:disabled) {
     background: var(--cd-danger);
     color: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spin.spinning {
+      animation: none;
+    }
   }
 
 </style>
