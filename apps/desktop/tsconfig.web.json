@@ -1,0 +1,23 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "include": [
+    "src/renderer/**/*.ts",
+    "src/renderer/**/*.svelte",
+    "src/renderer/**/*.d.ts",
+    "src/preload/**/*.d.ts",
+    "src/shared/**/*.ts"
+  ],
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@chess-desktop/tokens": ["../../packages/tokens/src/index.ts"],
+      "@chess-desktop/tokens/tokens.css": ["../../packages/tokens/src/tokens.css"],
+      "$lib/*": ["./src/renderer/lib/*"],
+      "$shared/*": ["./src/shared/*"]
+    }
+  }
+}

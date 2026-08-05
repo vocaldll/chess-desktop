@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": [
+    "electron.vite.config.ts",
+    "src/main/**/*.ts",
+    "src/preload/**/*.ts",
+    "src/shared/**/*.ts"
+  ],
+  "compilerOptions": {
+    "types": ["node"],
+    "lib": ["ES2022", "DOM"],
+    "moduleResolution": "bundler",
+    "paths": {
+      "@chess-desktop/tokens": ["../../packages/tokens/src/index.ts"],
+      "$shared/*": ["./src/shared/*"]
+    }
+  }
+}

@@ -1,0 +1,221 @@
+<script lang="ts">
+  import X from '@lucide/svelte/icons/x'
+  import Toggle from './Toggle.svelte'
+  import { settings } from './settings.svelte'
+
+  interface Props {
+    open: boolean
+    onClose: () => void
+  }
+
+  let { open, onClose }: Props = $props()
+
+  function onKeydown(event: KeyboardEvent): void {
+    if (open && event.key === 'Escape') {
+      onClose()
+    }
+  }
+</script>
+
+<svelte:window onkeydown={onKeydown} />
+
+{#if open}
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Settings">
+    <button class="backdrop" aria-label="Close settings" onclick={onClose}></button>
+
+    <div class="panel">
+      <header>
+        <h2>Settings</h2>
+        <button class="icon" title="Close" aria-label="Close" onclick={onClose}>
+          <X size={16} strokeWidth={1.8} />
+        </button>
+      </header>
+
+      <div class="body">
+        <section>
+          <h3>General</h3>
+
+          <div class="row">
+            <div class="info">
+              <div class="label">Mute all sounds</div>
+              <div class="description">Silence audio coming from Chess.com</div>
+            </div>
+            <Toggle
+              label="Mute all sounds"
+              checked={settings.current.soundMuted}
+              onchange={(value) => settings.set('soundMuted', value)}
+            />
+          </div>
+
+          <div class="row">
+            <div class="info">
+              <div class="label">Always on top</div>
+              <div class="description">Keep the window above other windows</div>
+            </div>
+            <Toggle
+              label="Always on top"
+              checked={settings.current.alwaysOnTop}
+              onchange={(value) => settings.set('alwaysOnTop', value)}
+            />
+          </div>
+        </section>
+
+        <section>
+          <h3>Integrations</h3>
+
+          <div class="row">
+            <div class="info">
+              <div class="label">
+                Discord Rich Presence
+                <span class="badge">Coming soon</span>
+              </div>
+              <div class="description">Show what you're playing on your Discord profile</div>
+            </div>
+            <Toggle
+              label="Discord Rich Presence"
+              disabled
+              checked={settings.current.discordRpcEnabled}
+              onchange={(value) => settings.set('discordRpcEnabled', value)}
+            />
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+{/if}
+
+<style>
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: grid;
+    place-items: center;
+    padding: var(--cd-space-5);
+  }
+
+  .backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.55);
+    cursor: default;
+    animation: fade 140ms ease;
+  }
+
+  .panel {
+    position: relative;
+    width: min(520px, 100%);
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--cd-surface);
+    border: 1px solid var(--cd-border);
+    border-radius: var(--cd-radius-lg);
+    box-shadow: var(--cd-shadow-modal);
+    overflow: hidden;
+    animation: rise 160ms ease;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--cd-space-4) var(--cd-space-5);
+    border-bottom: 1px solid var(--cd-border);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: var(--cd-font-size-lg);
+    font-weight: 600;
+  }
+
+  .icon {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: var(--cd-radius-sm);
+    background: transparent;
+    color: var(--cd-text-muted);
+    cursor: pointer;
+    transition: background var(--cd-transition), color var(--cd-transition);
+  }
+
+  .icon:hover {
+    background: var(--cd-surface-hover);
+    color: var(--cd-text);
+  }
+
+  .body {
+    padding: var(--cd-space-2) var(--cd-space-5) var(--cd-space-5);
+    overflow-y: auto;
+  }
+
+  section {
+    margin-top: var(--cd-space-4);
+  }
+
+  h3 {
+    margin: 0 0 var(--cd-space-2);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cd-text-subtle);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cd-space-4);
+    padding: var(--cd-space-3) 0;
+    border-bottom: 1px solid var(--cd-border);
+  }
+
+  .row:last-child {
+    border-bottom: 0;
+  }
+
+  .label {
+    display: flex;
+    align-items: center;
+    gap: var(--cd-space-2);
+    font-weight: 500;
+  }
+
+  .description {
+    margin-top: 2px;
+    font-size: var(--cd-font-size-sm);
+    color: var(--cd-text-muted);
+    line-height: 1.4;
+  }
+
+  .badge {
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: var(--cd-surface-raised);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--cd-text-subtle);
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.98);
+    }
+  }
+</style>

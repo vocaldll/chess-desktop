@@ -1,0 +1,33 @@
+@import "@chess-desktop/tokens/tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--cd-background);
+  color: var(--cd-text);
+  font-family: var(--cd-font-sans);
+  font-size: var(--cd-font-size);
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+button {
+  font-family: inherit;
+}

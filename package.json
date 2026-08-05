@@ -1,0 +1,24 @@
+{
+  "name": "chess-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Desktop client for online chess",
+  "packageManager": "pnpm@11.18.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev:desktop": "pnpm --filter @chess-desktop/desktop dev",
+    "dev:web": "pnpm --filter @chess-desktop/web dev",
+    "build:desktop": "pnpm --filter @chess-desktop/desktop build",
+    "build:web": "pnpm --filter @chess-desktop/web build",
+    "package:desktop": "pnpm --filter @chess-desktop/desktop package",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "biome check .",
+    "format": "biome check --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.7",
+    "typescript": "5.9.3"
+  }
+}

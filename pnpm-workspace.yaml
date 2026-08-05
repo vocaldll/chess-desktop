@@ -1,0 +1,23 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+nodeLinker: hoisted
+
+allowBuilds:
+  electron: true
+  esbuild: true
+  '@biomejs/biome': true
+  electron-winstaller: false
+
+minimumReleaseAgeExclude:
+  - '@biomejs/biome@2.5.7'
+  - '@biomejs/cli-darwin-arm64@2.5.7'
+  - '@biomejs/cli-darwin-x64@2.5.7'
+  - '@biomejs/cli-linux-arm64-musl@2.5.7'
+  - '@biomejs/cli-linux-arm64@2.5.7'
+  - '@biomejs/cli-linux-x64-musl@2.5.7'
+  - '@biomejs/cli-linux-x64@2.5.7'
+  - '@biomejs/cli-win32-arm64@2.5.7'
+  - '@biomejs/cli-win32-x64@2.5.7'
+  - electron@43.3.0

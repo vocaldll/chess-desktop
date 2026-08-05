@@ -1,0 +1,37 @@
+appId: app.chessdesktop.client
+productName: Chess Desktop
+
+directories:
+  buildResources: resources
+  output: dist
+
+files:
+  - out/**/*
+  - package.json
+
+win:
+  artifactName: Chess-Desktop-Setup-${version}.${ext}
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  uninstallDisplayName: Chess Desktop
+
+linux:
+  category: Game
+  synopsis: Desktop client for Chess.com
+  artifactName: Chess-Desktop-${version}-${arch}.${ext}
+  target:
+    - target: AppImage
+      arch:
+        - x64
+    - target: deb
+      arch:
+        - x64

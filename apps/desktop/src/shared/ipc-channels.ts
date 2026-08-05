@@ -1,0 +1,24 @@
+export const IPC = {
+  window: {
+    minimize: 'window:minimize',
+    toggleMaximize: 'window:toggle-maximize',
+    close: 'window:close',
+    isMaximized: 'window:is-maximized',
+    maximizeChanged: 'window:maximize-changed'
+  },
+  settings: {
+    getAll: 'settings:get-all',
+    set: 'settings:set'
+  },
+  webview: {
+    loadStart: 'webview:load-start',
+    loadStop: 'webview:load-stop',
+    loadError: 'webview:load-error'
+  }
+} as const
+
+export interface WebviewLoadError {
+  errorCode: number
+  errorDescription: string
+  validatedURL: string
+}
