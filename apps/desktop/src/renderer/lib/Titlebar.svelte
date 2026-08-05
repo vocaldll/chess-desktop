@@ -8,6 +8,7 @@
   import Settings from '@lucide/svelte/icons/settings'
   import Square from '@lucide/svelte/icons/square'
   import X from '@lucide/svelte/icons/x'
+  import SiteSwitcher from './SiteSwitcher.svelte'
   import UrlBar from './UrlBar.svelte'
   import { browser } from './browser.svelte'
 
@@ -36,6 +37,10 @@
 </script>
 
 <header class="titlebar">
+  <SiteSwitcher />
+
+  <div class="divider"></div>
+
   <div class="group">
     <button
       class="btn"
@@ -178,6 +183,7 @@
     margin: 0 var(--cd-space-2);
     background: var(--cd-border);
   }
+
 
   .control {
     width: 44px;
