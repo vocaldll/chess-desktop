@@ -8,9 +8,15 @@
 
   const COPIED_FEEDBACK = 1400
 
+  interface Props {
+    editing?: boolean
+  }
+
+  let { editing = $bindable(false) }: Props = $props()
+
+  let root = $state<HTMLElement | null>(null)
   let field = $state<HTMLInputElement | null>(null)
   let draft = $state('')
-  let editing = $state(false)
   let rejected = $state(false)
   let copied = $state(false)
 
@@ -22,6 +28,21 @@
     if (!editing) {
       draft = browser.url
     }
+  })
+
+  $effect(() => {
+    if (!editing) {
+      return
+    }
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (root && !root.contains(event.target as Node)) {
+        field?.blur()
+      }
+    }
+
+    document.addEventListener('pointerdown', onPointerDown, true)
+    return () => document.removeEventListener('pointerdown', onPointerDown, true)
   })
 
   $effect(() => {
@@ -70,7 +91,7 @@
   }
 </script>
 
-<div class="urlbar" class:editing class:rejected>
+<div class="urlbar" class:editing class:rejected bind:this={root}>
   <SiteSwitcher />
 
   <div class="divider"></div>

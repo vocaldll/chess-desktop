@@ -23,6 +23,7 @@
   const CONTROL_STROKE = 1.6
 
   let isMaximized = $state(false)
+  let addressFocused = $state(false)
 
   $effect(() => {
     window.api.window.isMaximized().then((value) => {
@@ -35,7 +36,7 @@
   })
 </script>
 
-<header class="titlebar">
+<header class="titlebar" class:interactive={addressFocused}>
   <div class="group">
     <button
       class="btn"
@@ -61,7 +62,7 @@
   </div>
 
   <div class="omnibox">
-    <UrlBar />
+    <UrlBar bind:editing={addressFocused} />
   </div>
 
   <div class="group">
@@ -115,6 +116,10 @@
     background: var(--cd-surface);
     border-bottom: 1px solid var(--cd-border);
     -webkit-app-region: drag;
+  }
+
+  .titlebar.interactive {
+    -webkit-app-region: no-drag;
   }
 
   .titlebar::before {
