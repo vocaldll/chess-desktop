@@ -1,20 +1,24 @@
 import { join } from 'node:path'
 import { app, type BrowserWindow, shell, type WebContents } from 'electron'
-import { CHESS_START_URL, isChessURL, isOpenableExternally } from '../shared/chess'
 import { IPC, type WebviewLoadError } from '../shared/ipc-channels'
+import { isOpenableExternally, isSiteURL, SITES } from '../shared/sites'
 import { getSettings } from './store'
 
 const ABORTED_BY_USER = -3
 
-let chessContents: WebContents | null = null
+let siteContents: WebContents | null = null
 
-export function getChessWebContents(): WebContents | null {
-  return chessContents && !chessContents.isDestroyed() ? chessContents : null
+export function getSiteWebContents(): WebContents | null {
+  return siteContents && !siteContents.isDestroyed() ? siteContents : null
+}
+
+function isActiveSiteURL(url: string): boolean {
+  return isSiteURL(getSettings().activeSite, url)
 }
 
 export function registerAppCommands(window: BrowserWindow): void {
   window.on('app-command', (_event, command) => {
-    const history = getChessWebContents()?.navigationHistory
+    const history = getSiteWebContents()?.navigationHistory
 
     if (!history) {
       return
@@ -56,19 +60,19 @@ export function hardenWebviewAttachment(host: WebContents): void {
     webPreferences.nodeIntegration = false
     webPreferences.contextIsolation = true
 
-    if (typeof params.src !== 'string' || !isChessURL(params.src)) {
-      params.src = CHESS_START_URL
+    if (typeof params.src !== 'string' || !isActiveSiteURL(params.src)) {
+      params.src = SITES[getSettings().activeSite].startUrl
     }
   })
 }
 
 function configure(contents: WebContents, getWindow: () => BrowserWindow | null): void {
-  chessContents = contents
+  siteContents = contents
   contents.setUserAgent(browserUserAgent())
   contents.setAudioMuted(getSettings().soundMuted)
 
   contents.setWindowOpenHandler(({ url }) => {
-    if (isChessURL(url)) {
+    if (isActiveSiteURL(url)) {
       contents.loadURL(url)
     } else {
       openExternally(url)
@@ -77,7 +81,7 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
   })
 
   contents.on('will-navigate', (event, url) => {
-    if (!isChessURL(url)) {
+    if (!isActiveSiteURL(url)) {
       event.preventDefault()
       openExternally(url)
     }
@@ -101,8 +105,8 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
   })
 
   contents.on('destroyed', () => {
-    if (chessContents === contents) {
-      chessContents = null
+    if (siteContents === contents) {
+      siteContents = null
     }
   })
 }

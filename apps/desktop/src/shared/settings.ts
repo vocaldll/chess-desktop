@@ -1,10 +1,14 @@
+import { DEFAULT_SITE, isSiteId, type SiteId } from './sites'
+
 export interface Settings {
+  activeSite: SiteId
   soundMuted: boolean
   alwaysOnTop: boolean
   discordRpcEnabled: boolean
 }
 
 export const defaultSettings: Settings = {
+  activeSite: DEFAULT_SITE,
   soundMuted: false,
   alwaysOnTop: false,
   discordRpcEnabled: false
@@ -16,10 +20,14 @@ export function isSettingKey(key: unknown): key is SettingKey {
   return typeof key === 'string' && Object.hasOwn(defaultSettings, key)
 }
 
-export function isValidSettingValue(
-  key: SettingKey,
+export function isValidSettingValue<K extends SettingKey>(
+  key: K,
   value: unknown
-): value is Settings[SettingKey] {
+): value is Settings[K] {
+  if (key === 'activeSite') {
+    return isSiteId(value)
+  }
+
   return typeof value === typeof defaultSettings[key]
 }
 

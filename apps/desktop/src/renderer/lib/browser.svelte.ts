@@ -1,20 +1,25 @@
 import type { WebviewLoadError } from '$shared/ipc-channels'
-import type { ChessWebviewElement } from './webview-element'
+import type { SiteWebviewElement } from './webview-element'
 
 class Browser {
-  element = $state<ChessWebviewElement | null>(null)
+  element = $state<SiteWebviewElement | null>(null)
   url = $state('')
   canGoBack = $state(false)
   canGoForward = $state(false)
   isLoading = $state(false)
   error = $state<WebviewLoadError | null>(null)
 
-  attach(element: ChessWebviewElement): void {
+  attach(element: SiteWebviewElement): void {
     this.element = element
   }
 
   detach(): void {
     this.element = null
+    this.url = ''
+    this.canGoBack = false
+    this.canGoForward = false
+    this.isLoading = false
+    this.error = null
   }
 
   syncHistory(): void {
@@ -28,11 +33,6 @@ class Browser {
     this.canGoForward = element.canGoForward()
   }
 
-  navigate(url: string): void {
-    this.error = null
-    this.element?.loadURL(url)
-  }
-
   back(): void {
     this.element?.goBack()
   }
@@ -44,6 +44,11 @@ class Browser {
   reload(): void {
     this.error = null
     this.element?.reload()
+  }
+
+  navigate(url: string): void {
+    this.error = null
+    this.element?.loadURL(url)
   }
 }
 

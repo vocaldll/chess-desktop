@@ -1,8 +1,9 @@
 <script lang="ts">
   import Check from '@lucide/svelte/icons/check'
   import Copy from '@lucide/svelte/icons/copy'
-  import { normalizeChessInput } from '$shared/chess'
+  import { SITES, normalizeSiteInput } from '$shared/sites'
   import { browser } from './browser.svelte'
+  import { settings } from './settings.svelte'
 
   const COPIED_FEEDBACK = 1400
 
@@ -13,6 +14,8 @@
   let copied = $state(false)
 
   let copiedTimer: ReturnType<typeof setTimeout> | undefined
+
+  const site = $derived(SITES[settings.current.activeSite])
 
   $effect(() => {
     if (!editing) {
@@ -36,7 +39,7 @@
 
   function onKeydown(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
-      const target = normalizeChessInput(draft)
+      const target = normalizeSiteInput(site.id, draft)
 
       if (!target) {
         rejected = true
@@ -76,7 +79,7 @@
     spellcheck="false"
     autocomplete="off"
     autocorrect="off"
-    placeholder="Search or enter a Chess.com address"
+    placeholder={`Enter a ${site.name} address`}
     onfocus={onFocus}
     onblur={onBlur}
     oninput={() => (rejected = false)}

@@ -1,16 +1,19 @@
 <script lang="ts">
-  import { CHESS_PARTITION, CHESS_START_URL } from '$shared/chess'
+  import { SITES } from '$shared/sites'
   import { browser } from './browser.svelte'
-  import type { ChessWebviewElement } from './webview-element'
+  import { settings } from './settings.svelte'
+  import type { SiteWebviewElement } from './webview-element'
 
   let element = $state<HTMLElement | null>(null)
+
+  const site = $derived(SITES[settings.current.activeSite])
 
   $effect(() => {
     if (!element) {
       return
     }
 
-    const webview = element as unknown as ChessWebviewElement
+    const webview = element as unknown as SiteWebviewElement
     browser.attach(webview)
 
     const sync = () => browser.syncHistory()
@@ -51,18 +54,20 @@
 </script>
 
 <div class="content">
-  <webview
-    bind:this={element}
-    class="frame"
-    src={CHESS_START_URL}
-    partition={CHESS_PARTITION}
-    allowpopups
-  ></webview>
+  {#key site.id}
+    <webview
+      bind:this={element}
+      class="frame"
+      src={site.startUrl}
+      partition={site.partition}
+      allowpopups
+    ></webview>
+  {/key}
 
   {#if browser.error}
     <div class="error">
       <div class="card">
-        <h2>Can't reach Chess.com</h2>
+        <h2>Can't reach {site.name}</h2>
         <p>{browser.error.errorDescription}</p>
         <button onclick={() => browser.reload()}>Try again</button>
       </div>

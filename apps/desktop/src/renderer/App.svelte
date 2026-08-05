@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import ChessWebview from './lib/ChessWebview.svelte'
   import SettingsModal from './lib/SettingsModal.svelte'
+  import SiteWebview from './lib/SiteWebview.svelte'
   import Titlebar from './lib/Titlebar.svelte'
   import { settings } from './lib/settings.svelte'
 
@@ -13,5 +13,5 @@
 </script>
 
 <Titlebar onOpenSettings={() => (settingsOpen = true)} />
-<ChessWebview />
+<SiteWebview />
 <SettingsModal open={settingsOpen} onClose={() => (settingsOpen = false)} />

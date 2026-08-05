@@ -1,4 +1,4 @@
-export interface ChessWebviewElement extends HTMLElement {
+export interface SiteWebviewElement extends HTMLElement {
   src: string
   goBack(): void
   goForward(): void
