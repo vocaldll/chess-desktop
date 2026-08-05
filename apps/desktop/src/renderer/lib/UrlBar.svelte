@@ -4,6 +4,7 @@
   import { SITES, normalizeSiteInput } from '$shared/sites'
   import SiteSwitcher from './SiteSwitcher.svelte'
   import { browser } from './browser.svelte'
+  import { anchor } from './onboarding.svelte'
   import { settings } from './settings.svelte'
 
   const COPIED_FEEDBACK = 1400
@@ -99,6 +100,7 @@
   <input
     bind:this={field}
     bind:value={draft}
+    use:anchor={'address'}
     type="text"
     aria-label="Address"
     aria-invalid={rejected}

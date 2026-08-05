@@ -5,13 +5,15 @@ export interface Settings {
   soundMuted: boolean
   alwaysOnTop: boolean
   discordRpcEnabled: boolean
+  onboardingCompleted: boolean
 }
 
 export const defaultSettings: Settings = {
   activeSite: DEFAULT_SITE,
   soundMuted: false,
   alwaysOnTop: false,
-  discordRpcEnabled: false
+  discordRpcEnabled: false,
+  onboardingCompleted: false
 }
 
 export type SettingKey = keyof Settings

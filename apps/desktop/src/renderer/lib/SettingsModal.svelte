@@ -1,6 +1,7 @@
 <script lang="ts">
   import X from '@lucide/svelte/icons/x'
   import Toggle from './Toggle.svelte'
+  import { onboarding } from './onboarding.svelte'
   import { settings } from './settings.svelte'
 
   interface Props {
@@ -57,6 +58,22 @@
               checked={settings.current.alwaysOnTop}
               onchange={(value) => settings.set('alwaysOnTop', value)}
             />
+          </div>
+
+          <div class="row">
+            <div class="info">
+              <div class="label">Show introduction again</div>
+              <div class="description">Replay the first-run walkthrough</div>
+            </div>
+            <button
+              class="action"
+              onclick={() => {
+                onClose()
+                onboarding.start()
+              }}
+            >
+              Replay
+            </button>
           </div>
         </section>
 
@@ -193,6 +210,32 @@
     font-size: var(--cd-font-size-sm);
     color: var(--cd-text-muted);
     line-height: 1.4;
+  }
+
+  .action {
+    flex: none;
+    padding: 6px 14px;
+    border: 1px solid var(--cd-border);
+    border-radius: var(--cd-radius-sm);
+    background: var(--cd-surface-raised);
+    color: var(--cd-text);
+    font-family: inherit;
+    font-size: var(--cd-font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background var(--cd-transition),
+      border-color var(--cd-transition);
+  }
+
+  .action:hover {
+    background: var(--cd-surface-hover);
+    border-color: var(--cd-text-subtle);
+  }
+
+  .action:focus-visible {
+    outline: 2px solid var(--cd-accent);
+    outline-offset: 2px;
   }
 
   .badge {

@@ -10,6 +10,7 @@
   import X from '@lucide/svelte/icons/x'
   import UrlBar from './UrlBar.svelte'
   import { browser } from './browser.svelte'
+  import { anchor } from './onboarding.svelte'
 
   interface Props {
     onOpenSettings: () => void
@@ -66,7 +67,13 @@
   </div>
 
   <div class="group">
-    <button class="btn" title="Settings" aria-label="Settings" onclick={onOpenSettings}>
+    <button
+      class="btn"
+      title="Settings"
+      aria-label="Settings"
+      onclick={onOpenSettings}
+      use:anchor={'settings'}
+    >
       <Settings size={ICON} strokeWidth={STROKE} />
     </button>
 
@@ -77,6 +84,7 @@
       title="Minimize"
       aria-label="Minimize"
       onclick={() => window.api.window.minimize()}
+      use:anchor={'controlStrip'}
     >
       <Minus size={CONTROL_ICON} strokeWidth={CONTROL_STROKE} />
     </button>

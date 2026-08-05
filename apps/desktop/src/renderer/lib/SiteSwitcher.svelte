@@ -2,6 +2,7 @@
   import { SITE_ORDER, SITES, type SiteId } from '$shared/sites'
   import ChessComMark from './marks/ChessComMark.svelte'
   import LichessMark from './marks/LichessMark.svelte'
+  import { anchor } from './onboarding.svelte'
   import { settings } from './settings.svelte'
 
   const marks = {
@@ -16,7 +17,7 @@
   }
 </script>
 
-<div class="switcher" role="group" aria-label="Chess site">
+<div class="switcher" role="group" aria-label="Chess site" use:anchor={'switcher'}>
   {#each SITE_ORDER as id (id)}
     {@const Mark = marks[id]}
     {@const active = settings.current.activeSite === id}
