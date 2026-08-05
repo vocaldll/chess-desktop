@@ -61,7 +61,11 @@
   }
 
   input:checked + .track {
-    background: var(--cd-accent);
+    background: var(--cd-brand);
+  }
+
+  input:checked:hover:not(:disabled) + .track {
+    background: var(--cd-brand-hover);
   }
 
   input:checked + .track .thumb {
