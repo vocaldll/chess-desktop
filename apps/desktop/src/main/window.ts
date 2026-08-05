@@ -1,8 +1,12 @@
 import { join } from 'node:path'
 import { color } from '@chess-desktop/tokens'
-import { BrowserWindow, type Rectangle, screen } from 'electron'
+import { app, BrowserWindow, type Rectangle, screen } from 'electron'
 import { IPC } from '../shared/ipc-channels'
 import { getSettings, getWindowBounds, setWindowBounds } from './store'
+
+function developmentIcon(): string | undefined {
+  return app.isPackaged ? undefined : join(app.getAppPath(), 'resources', 'icon.ico')
+}
 
 function resolveBounds(): Rectangle {
   const saved = getWindowBounds()
@@ -45,6 +49,7 @@ export function createMainWindow(): BrowserWindow {
     frame: false,
     titleBarStyle: 'hidden',
     backgroundColor: color.background,
+    icon: developmentIcon(),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       webviewTag: true,
