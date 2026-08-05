@@ -2,6 +2,7 @@
   import Check from '@lucide/svelte/icons/check'
   import Copy from '@lucide/svelte/icons/copy'
   import { SITES, normalizeSiteInput } from '$shared/sites'
+  import SiteSwitcher from './SiteSwitcher.svelte'
   import { browser } from './browser.svelte'
   import { settings } from './settings.svelte'
 
@@ -70,6 +71,10 @@
 </script>
 
 <div class="urlbar" class:editing class:rejected>
+  <SiteSwitcher />
+
+  <div class="divider"></div>
+
   <input
     bind:this={field}
     bind:value={draft}
@@ -104,10 +109,11 @@
   .urlbar {
     display: flex;
     align-items: center;
-    width: 100%;
-    max-width: 560px;
-    height: 26px;
-    padding: 0 var(--cd-space-1) 0 var(--cd-space-3);
+    flex: 1;
+    min-width: 0;
+    max-width: 520px;
+    height: 28px;
+    padding: 0 var(--cd-space-1);
     background: var(--cd-background);
     border: 1px solid transparent;
     border-radius: 999px;
@@ -128,6 +134,14 @@
 
   .urlbar.rejected {
     border-color: var(--cd-danger);
+  }
+
+  .divider {
+    flex: none;
+    width: 1px;
+    height: 16px;
+    margin: 0 var(--cd-space-2) 0 var(--cd-space-1);
+    background: var(--cd-border);
   }
 
   input {

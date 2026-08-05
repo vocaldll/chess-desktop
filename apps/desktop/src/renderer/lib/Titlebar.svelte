@@ -8,7 +8,6 @@
   import Settings from '@lucide/svelte/icons/settings'
   import Square from '@lucide/svelte/icons/square'
   import X from '@lucide/svelte/icons/x'
-  import SiteSwitcher from './SiteSwitcher.svelte'
   import UrlBar from './UrlBar.svelte'
   import { browser } from './browser.svelte'
 
@@ -37,10 +36,6 @@
 </script>
 
 <header class="titlebar">
-  <SiteSwitcher />
-
-  <div class="divider"></div>
-
   <div class="group">
     <button
       class="btn"
@@ -139,6 +134,8 @@
 
   .omnibox {
     display: flex;
+    align-items: center;
+    gap: var(--cd-space-2);
     flex: 1;
     justify-content: center;
     min-width: 0;

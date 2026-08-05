@@ -28,7 +28,7 @@
       aria-pressed={active}
       onclick={() => select(id)}
     >
-      <Mark size={17} />
+      <Mark size={15} />
     </button>
   {/each}
 </div>
@@ -37,38 +37,33 @@
   .switcher {
     display: flex;
     align-items: center;
-    gap: 2px;
-    padding: 2px;
-    background: var(--cd-background);
-    border-radius: 999px;
+    flex: none;
+    gap: 1px;
     -webkit-app-region: no-drag;
   }
 
   .site {
     display: grid;
     place-items: center;
-    width: 28px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     padding: 0;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--cd-radius-sm);
     background: transparent;
-    color: var(--cd-text-subtle);
+    color: var(--cd-text-muted);
     cursor: pointer;
-    opacity: 0.4;
+    opacity: 0.35;
     transition:
-      background var(--cd-transition),
       opacity var(--cd-transition),
       color var(--cd-transition);
   }
 
   .site:hover {
-    opacity: 0.75;
-    color: var(--cd-text-muted);
+    opacity: 0.7;
   }
 
   .site.active {
-    background: var(--cd-surface-hover);
     color: var(--cd-text);
     opacity: 1;
   }
