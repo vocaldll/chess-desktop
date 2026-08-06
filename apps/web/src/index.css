@@ -1,0 +1,64 @@
+@import "tailwindcss";
+@import "@chess-desktop/tokens/tokens.css";
+
+@theme {
+  --color-canvas: var(--cd-background);
+  --color-surface: var(--cd-surface);
+  --color-surface-2: var(--cd-surface-raised);
+  --color-line: var(--cd-border);
+  --color-line-strong: #3d3d3d;
+  --color-ink: var(--cd-text);
+  --color-ink-muted: var(--cd-text-muted);
+  --color-ink-faint: var(--cd-text-subtle);
+  --color-accent: var(--cd-accent);
+  --color-accent-hover: var(--cd-accent-hover);
+  --color-accent-ink: var(--cd-accent-contrast);
+  --color-brand: var(--cd-brand);
+
+  --font-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --breakpoint-wide: 900px;
+}
+
+@layer base {
+  body {
+    min-height: 100dvh;
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  #root {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+
+  @media (min-width: 900px) and (min-height: 620px) {
+    body {
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    #root {
+      height: 100dvh;
+    }
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@utility shell {
+  margin-inline: auto;
+  width: min(1240px, 100%);
+  padding-inline: clamp(20px, 5vw, 48px);
+}

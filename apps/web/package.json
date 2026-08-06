@@ -4,19 +4,24 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
+    "dev": "vite",
+    "build": "vite build && vite build --ssr src/entry-server.tsx --outDir .prerender && node scripts/prerender.mjs",
     "preview": "vite preview",
-    "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@chess-desktop/tokens": "workspace:*",
-    "@sveltejs/adapter-static": "3.0.10",
-    "@sveltejs/kit": "2.70.2",
-    "@sveltejs/vite-plugin-svelte": "7.2.0",
-    "svelte": "5.56.8",
-    "svelte-check": "4.7.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
+    "tailwindcss": "^4.3.3",
     "typescript": "5.9.3",
     "vite": "8.2.0"
+  },
+  "dependencies": {
+    "lucide-react": "^1.28.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
   }
 }

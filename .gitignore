@@ -34,3 +34,5 @@ bun.lockb
 Thumbs.db
 ehthumbs.db
 desktop.ini
+
+.prerender/
