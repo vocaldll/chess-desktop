@@ -24,7 +24,13 @@ export default function Footer() {
 
         <nav className="flex flex-wrap gap-x-6 gap-y-2 text-[14px]">
           {links.map(({ label, href }) => (
-            <a key={label} className="text-ink-muted transition-colors hover:text-ink" href={href}>
+            <a
+              key={label}
+              className="text-ink-muted transition-colors hover:text-ink"
+              href={href}
+              target={href.startsWith('mailto:') ? undefined : '_blank'}
+              rel={href.startsWith('mailto:') ? undefined : 'noreferrer'}
+            >
               {label}
             </a>
           ))}

@@ -39,6 +39,8 @@ export default function Hero() {
         <a
           className="inline-flex items-center justify-center gap-2.5 rounded-full border border-accent bg-accent px-6 py-3 font-semibold text-[15px] text-accent-ink transition-colors hover:border-accent-hover hover:bg-accent-hover"
           href={latestRelease}
+          target="_blank"
+          rel="noreferrer"
         >
           <GitHubMark />
           <span>Download on GitHub</span>
@@ -53,6 +55,8 @@ export default function Hero() {
         <a
           className="inline-flex items-center justify-center gap-2 rounded-full border border-line bg-surface px-6 py-3 font-medium text-[15px] text-ink transition-colors hover:border-line-strong hover:bg-surface-hover"
           href={repository}
+          target="_blank"
+          rel="noreferrer"
         >
           View the source
         </a>
