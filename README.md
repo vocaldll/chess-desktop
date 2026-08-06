@@ -11,8 +11,7 @@ Free, open source, for Windows and Linux.
 <br />
 
 [![Download for Windows](https://img.shields.io/badge/Download-Windows_%C2%B7_Installer-0078d4?style=for-the-badge&labelColor=151515&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTAgMy40NSA5Ljc1IDIuMXY5LjQ1SDB6bTEwLjk1LTEuNUwyNCAwdjExLjU1SDEwLjk1ek0wIDEyLjZoOS43NXY5LjQ1TDAgMjAuN3ptMTAuOTUgMEgyNFYyNGwtMTMuMDUtMS44eiIvPjwvc3ZnPg==)](https://github.com/vocaldll/chess-desktop/releases/latest/download/Chess-Desktop-Setup.exe)
-[![Download for Linux, AppImage](https://img.shields.io/badge/Download-Linux_%C2%B7_AppImage-FCC624?style=for-the-badge&labelColor=151515&logo=linux&logoColor=white)](https://github.com/vocaldll/chess-desktop/releases/latest/download/Chess-Desktop.AppImage)
-[![Download for Debian and Ubuntu, deb package](https://img.shields.io/badge/Download-Linux_%C2%B7_deb-A81D33?style=for-the-badge&labelColor=151515&logo=debian&logoColor=white)](https://github.com/vocaldll/chess-desktop/releases/latest/download/Chess-Desktop.deb)
+[![Download for Linux](https://img.shields.io/badge/Download-Linux_%C2%B7_AppImage-FCC624?style=for-the-badge&labelColor=151515&logo=linux&logoColor=white)](https://github.com/vocaldll/chess-desktop/releases/latest/download/Chess-Desktop.AppImage)
 
 [All releases](https://github.com/vocaldll/chess-desktop/releases) · [Website](https://chessdesktop.app)
 
@@ -31,12 +30,13 @@ Free, open source, for Windows and Linux.
 - One switch mutes both sites
 - Mouse back and forward buttons work like they do in a browser
 - Links that lead anywhere else open in your regular browser
+- Updates itself in the background, so you never reinstall by hand
 
 ## Installing
 
 **Windows**: download the installer, run it, and follow the steps. If Windows SmartScreen shows a warning, choose "More info" and then "Run anyway". The warning appears because the app is new and unsigned, not because anything is wrong with it.
 
-**Linux**: the AppImage runs anywhere. Make it executable (right click, Properties, allow executing, or `chmod +x Chess-Desktop.AppImage`) and start it. On Debian or Ubuntu you can use the .deb instead: `sudo apt install ./Chess-Desktop.deb`.
+**Linux**: the AppImage runs on any distribution. Make it executable (right click, Properties, allow executing, or `chmod +x Chess-Desktop.AppImage`) and start it.
 
 ## Questions or problems
 
