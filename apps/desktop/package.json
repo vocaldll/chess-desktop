@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
-  "author": "vocaldll",
+  "author": "vocal <contact@chessdesktop.app>",
+  "homepage": "https://chessdesktop.app",
   "description": "Desktop client for Chess.com and Lichess",
   "main": "./out/main/index.js",
   "scripts": {
