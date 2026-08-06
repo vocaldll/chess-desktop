@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron'
 import { registerIpc } from './ipc'
 import { applySettings } from './settings-effects'
 import { getSettings } from './store'
+import { startAutoUpdates } from './updates'
 import {
   browserUserAgent,
   hardenWebviewAttachment,
@@ -38,6 +39,7 @@ if (!app.requestSingleInstanceLock()) {
 
   app.whenReady().then(() => {
     createWindow()
+    startAutoUpdates(getWindow)
 
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) {

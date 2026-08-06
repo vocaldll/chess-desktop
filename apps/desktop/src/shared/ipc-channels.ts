@@ -14,6 +14,10 @@ export const IPC = {
     loadStart: 'webview:load-start',
     loadStop: 'webview:load-stop',
     loadError: 'webview:load-error'
+  },
+  updates: {
+    downloaded: 'updates:downloaded',
+    install: 'updates:install'
   }
 } as const
 

@@ -26,6 +26,7 @@
   let isMaximized = $state(false)
   let addressFocused = $state(false)
   let spinning = $state(false)
+  let updateVersion = $state<string | null>(null)
 
   let stopAtRevolution = false
 
@@ -42,6 +43,12 @@
   $effect(() => {
     stopAtRevolution = !browser.isLoading
   })
+
+  $effect(() =>
+    window.api.updates.onDownloaded((version) => {
+      updateVersion = version
+    })
+  )
 
   function reload(): void {
     spinning = true
@@ -88,6 +95,17 @@
   </div>
 
   <div class="group">
+    {#if updateVersion !== null}
+      <button
+        class="update"
+        title={`Restart to update to version ${updateVersion}`}
+        onclick={() => window.api.updates.install()}
+      >
+        <span class="update-dot"></span>
+        Restart to update
+      </button>
+    {/if}
+
     <button
       class="btn"
       title="Settings"
@@ -239,6 +257,51 @@
     background: var(--cd-border);
   }
 
+  .update {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    margin-right: var(--cd-space-2);
+    padding: 0 10px;
+    border: 1px solid var(--cd-border);
+    border-radius: 999px;
+    background: var(--cd-surface-raised);
+    color: var(--cd-text-muted);
+    font-size: var(--cd-font-size-sm);
+    font-family: inherit;
+    white-space: nowrap;
+    cursor: pointer;
+    animation: update-in 160ms ease;
+    transition:
+      background var(--cd-transition),
+      color var(--cd-transition);
+  }
+
+  .update:hover {
+    background: var(--cd-surface-hover);
+    color: var(--cd-text);
+  }
+
+  .update:focus-visible {
+    outline: 2px solid var(--cd-accent);
+    outline-offset: -2px;
+  }
+
+  .update-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--cd-brand);
+  }
+
+  @keyframes update-in {
+    from {
+      opacity: 0;
+      transform: translateY(-3px);
+    }
+  }
+
 
   .control {
     width: 44px;
@@ -253,6 +316,10 @@
 
   @media (prefers-reduced-motion: reduce) {
     .spin.spinning {
+      animation: none;
+    }
+
+    .update {
       animation: none;
     }
   }

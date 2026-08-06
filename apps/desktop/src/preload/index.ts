@@ -31,6 +31,11 @@ const api = {
     onLoadStop: (listener: () => void): Unsubscribe => subscribe(IPC.webview.loadStop, listener),
     onLoadError: (listener: (error: WebviewLoadError) => void): Unsubscribe =>
       subscribe(IPC.webview.loadError, listener)
+  },
+  updates: {
+    install: (): void => ipcRenderer.send(IPC.updates.install),
+    onDownloaded: (listener: (version: string) => void): Unsubscribe =>
+      subscribe(IPC.updates.downloaded, listener)
   }
 }
 
