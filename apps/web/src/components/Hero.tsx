@@ -6,8 +6,8 @@ export default function Hero() {
   const stars = useGitHubStars()
 
   return (
-    <section className="min-w-0">
-      <div className="flex items-center gap-2.5">
+    <section className="flex w-full min-w-0 flex-col items-center">
+      <div className="rise flex items-center gap-2.5">
         <img
           className="block shrink-0 rounded-md"
           src="/favicon-32x32.png"
@@ -15,20 +15,29 @@ export default function Hero() {
           height={28}
           alt=""
         />
-        <span className="font-bold font-display text-[17px] tracking-tight">{site.name}</span>
+        <span className="font-display font-semibold text-[16px] tracking-tight">{site.name}</span>
       </div>
 
-      <h1 className="mt-6 max-w-[16ch] text-balance font-bold font-display text-[clamp(1.9rem,4.2vw,3rem)] leading-[1.08] tracking-[-0.035em]">
+      <h1
+        className="rise mt-6 max-w-[20ch] text-balance font-bold font-display text-[clamp(2rem,1.05rem+4.2vw,3.25rem)] leading-[1.06] tracking-[-0.035em]"
+        style={{ animationDelay: '60ms' }}
+      >
         {site.tagline}
       </h1>
 
-      <p className="mt-5 max-w-[46ch] text-[clamp(0.98rem,1.3vw,1.06rem)] text-ink-muted">
+      <p
+        className="rise mt-5 max-w-[52ch] text-pretty text-[clamp(1rem,0.95rem+0.35vw,1.125rem)] text-ink-muted"
+        style={{ animationDelay: '120ms' }}
+      >
         {site.description}
       </p>
 
-      <div className="mt-8 flex flex-wrap items-center gap-3">
+      <div
+        className="rise mt-8 flex w-full max-w-[320px] flex-col gap-3 min-[480px]:w-auto min-[480px]:max-w-none min-[480px]:flex-row"
+        style={{ animationDelay: '180ms' }}
+      >
         <a
-          className="inline-flex items-center gap-2.5 rounded-xl border border-accent bg-accent px-5 py-3 font-semibold text-[15px] text-accent-ink transition-colors hover:border-accent-hover hover:bg-accent-hover"
+          className="inline-flex items-center justify-center gap-2.5 rounded-full border border-accent bg-accent px-6 py-3 font-semibold text-[15px] text-accent-ink transition-colors hover:border-accent-hover hover:bg-accent-hover"
           href={latestRelease}
         >
           <GitHubMark />
@@ -42,7 +51,7 @@ export default function Hero() {
         </a>
 
         <a
-          className="inline-flex items-center gap-2 rounded-xl border border-line bg-surface px-5 py-3 font-medium text-[15px] text-ink transition-colors hover:border-line-strong hover:bg-surface-2"
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-line bg-surface px-6 py-3 font-medium text-[15px] text-ink transition-colors hover:border-line-strong hover:bg-surface-hover"
           href={repository}
         >
           View the source

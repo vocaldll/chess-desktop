@@ -5,7 +5,7 @@ import Showcase from './components/Showcase'
 export default function App() {
   return (
     <>
-      <main className="shell grid min-h-0 flex-1 grid-cols-1 content-center items-center gap-x-[clamp(32px,5vw,72px)] gap-y-[clamp(32px,5vh,56px)] py-[clamp(32px,6vh,64px)] wide:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)]">
+      <main className="shell flex flex-1 flex-col items-center justify-center gap-y-[clamp(40px,6vh,64px)] py-[clamp(32px,5vh,56px)] text-center">
         <Hero />
         <Showcase />
       </main>

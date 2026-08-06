@@ -5,6 +5,7 @@
   --color-canvas: var(--cd-background);
   --color-surface: var(--cd-surface);
   --color-surface-2: var(--cd-surface-raised);
+  --color-surface-hover: var(--cd-surface-hover);
   --color-line: var(--cd-border);
   --color-line-strong: #3d3d3d;
   --color-ink: var(--cd-text);
@@ -19,7 +20,7 @@
   --font-body: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
 
-  --breakpoint-wide: 900px;
+  --default-transition-duration: 120ms;
 }
 
 @layer base {
@@ -39,15 +40,9 @@
     min-height: 100dvh;
   }
 
-  @media (min-width: 900px) and (min-height: 620px) {
-    body {
-      height: 100dvh;
-      overflow: hidden;
-    }
-
-    #root {
-      height: 100dvh;
-    }
+  ::selection {
+    background: var(--color-brand);
+    color: var(--color-accent-ink);
   }
 
   :focus-visible {
@@ -59,6 +54,19 @@
 
 @utility shell {
   margin-inline: auto;
-  width: min(1240px, 100%);
-  padding-inline: clamp(20px, 5vw, 48px);
+  width: min(1040px, 100%);
+  padding-inline: clamp(20px, 5vw, 40px);
+}
+
+@utility rise {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: rise 480ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 }

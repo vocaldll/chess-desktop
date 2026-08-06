@@ -19,7 +19,7 @@ export default function Footer() {
             height={20}
             alt=""
           />
-          <span className="font-mono text-[13px] text-ink-faint">{site.domain}</span>
+          <span className="font-mono text-[13px] text-ink-muted">{site.domain}</span>
         </div>
 
         <nav className="flex flex-wrap gap-x-6 gap-y-2 text-[14px]">
@@ -32,7 +32,7 @@ export default function Footer() {
       </div>
 
       <div className="shell pb-5">
-        <p className="text-[12px] text-ink-faint">
+        <p className="text-[12px] text-ink-muted">
           Not affiliated with Chess.com or Lichess. All trademarks belong to their owners.
         </p>
       </div>
