@@ -136,9 +136,13 @@
 
 <style>
   .titlebar {
+    --omnibox-width: 520px;
+    --window-controls-reserve: 191px;
+
     position: relative;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     flex: 0 0 var(--cd-titlebar-height);
     height: var(--cd-titlebar-height);
     padding: 0 0 0 var(--cd-space-2);
@@ -167,12 +171,17 @@
   }
 
   .omnibox {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
     gap: var(--cd-space-2);
-    flex: 1;
-    justify-content: center;
     min-width: 0;
+    width: min(
+      calc(var(--omnibox-width) + var(--cd-space-4) * 2),
+      calc(100% - var(--window-controls-reserve) * 2)
+    );
     padding: 0 var(--cd-space-4);
   }
 

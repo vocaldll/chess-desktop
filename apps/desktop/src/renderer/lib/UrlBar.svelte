@@ -136,7 +136,6 @@
     align-items: center;
     flex: 1;
     min-width: 0;
-    max-width: 520px;
     height: 28px;
     padding: 0 var(--cd-space-1);
     background: var(--cd-background);
