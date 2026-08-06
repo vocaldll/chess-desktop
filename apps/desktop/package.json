@@ -2,7 +2,9 @@
   "name": "@chess-desktop/desktop",
   "version": "0.1.0",
   "private": true,
-  "description": "Desktop client for Chess.com",
+  "license": "MIT",
+  "author": "vocaldll",
+  "description": "Desktop client for Chess.com and Lichess",
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",

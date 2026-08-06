@@ -1,5 +1,6 @@
 appId: app.chessdesktop.client
 productName: Chess Desktop
+copyright: Copyright (c) 2026 vocaldll
 
 directories:
   buildResources: resources
@@ -17,6 +18,7 @@ win:
         - x64
 
 nsis:
+  license: ../../LICENSE
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
@@ -26,7 +28,7 @@ nsis:
 
 linux:
   category: Game
-  synopsis: Desktop client for Chess.com
+  synopsis: Desktop client for Chess.com and Lichess
   artifactName: Chess-Desktop-${version}-${arch}.${ext}
   target:
     - target: AppImage

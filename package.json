@@ -2,7 +2,8 @@
   "name": "chess-desktop",
   "version": "0.1.0",
   "private": true,
-  "description": "Desktop client for online chess",
+  "license": "MIT",
+  "description": "Desktop client for Chess.com and Lichess",
   "packageManager": "pnpm@11.18.0",
   "engines": {
     "node": ">=22"
