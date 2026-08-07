@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, Menu } from 'electron'
 import { registerContextMenus } from './context-menu'
 import { registerIpc } from './ipc'
 import { applySettings } from './settings-effects'
@@ -44,6 +44,7 @@ if (!app.requestSingleInstanceLock()) {
   registerIpc(getWindow)
 
   app.whenReady().then(() => {
+    Menu.setApplicationMenu(null)
     createWindow()
     startAutoUpdates(getWindow)
 
