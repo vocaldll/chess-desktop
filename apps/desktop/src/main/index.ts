@@ -1,4 +1,5 @@
 import { app, BrowserWindow } from 'electron'
+import { registerContextMenus } from './context-menu'
 import { registerIpc } from './ipc'
 import { applySettings } from './settings-effects'
 import { registerShortcuts } from './shortcuts'
@@ -39,6 +40,7 @@ if (!app.requestSingleInstanceLock()) {
 
   registerWebviewHandling(getWindow)
   registerShortcuts(getWindow)
+  registerContextMenus(getWindow)
   registerIpc(getWindow)
 
   app.whenReady().then(() => {
