@@ -77,9 +77,18 @@ export function createMainWindow(): BrowserWindow {
     window.webContents.send(IPC.window.maximizeChanged, false)
   })
 
+  window.on('enter-full-screen', () => {
+    window.webContents.send(IPC.window.fullscreenChanged, true)
+  })
+
+  window.on('leave-full-screen', () => {
+    window.webContents.send(IPC.window.fullscreenChanged, false)
+  })
+
   window.on('close', () => {
     const isMaximized = window.isMaximized()
-    const current = isMaximized ? window.getNormalBounds() : window.getBounds()
+    const isRestorable = isMaximized || window.isFullScreen()
+    const current = isRestorable ? window.getNormalBounds() : window.getBounds()
 
     setWindowBounds({
       width: current.width,

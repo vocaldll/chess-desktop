@@ -10,6 +10,7 @@
   import X from '@lucide/svelte/icons/x'
   import UrlBar from './UrlBar.svelte'
   import { browser } from './browser.svelte'
+  import { fullscreen } from './fullscreen.svelte'
   import { anchor } from './onboarding.svelte'
 
   interface Props {
@@ -40,6 +41,18 @@
     })
   })
 
+  $effect(() =>
+    window.api.shortcuts.onCommand((command) => {
+      if (command === 'reload') {
+        reload()
+      } else if (command === 'back') {
+        browser.back()
+      } else if (command === 'forward') {
+        browser.forward()
+      }
+    })
+  )
+
   $effect(() => {
     stopAtRevolution = !browser.isLoading
   })
@@ -63,94 +76,96 @@
   }
 </script>
 
-<header class="titlebar" class:interactive={addressFocused}>
-  <div class="group">
-    <button
-      class="btn"
-      title="Back"
-      aria-label="Back"
-      disabled={!browser.canGoBack}
-      onclick={() => browser.back()}
-    >
-      <ArrowLeft size={ICON} strokeWidth={STROKE} />
-    </button>
-    <button
-      class="btn"
-      title="Forward"
-      aria-label="Forward"
-      disabled={!browser.canGoForward}
-      onclick={() => browser.forward()}
-    >
-      <ArrowRight size={ICON} strokeWidth={STROKE} />
-    </button>
-    <button class="btn" title="Reload" aria-label="Reload" onclick={reload}>
-      <span class="spin" class:spinning onanimationiteration={onRevolution}>
-        <RotateCw size={ICON} strokeWidth={STROKE} />
-      </span>
-    </button>
-  </div>
-
-  <div class="omnibox">
-    <UrlBar bind:editing={addressFocused} />
-  </div>
-
-  <div class="group">
-    {#if updateVersion !== null}
+{#if !fullscreen.active}
+  <header class="titlebar" class:interactive={addressFocused}>
+    <div class="group">
       <button
-        class="update"
-        title={`Restart to update to version ${updateVersion}`}
-        onclick={() => window.api.updates.install()}
+        class="btn"
+        title="Back"
+        aria-label="Back"
+        disabled={!browser.canGoBack}
+        onclick={() => browser.back()}
       >
-        <span class="update-dot"></span>
-        Restart to update
+        <ArrowLeft size={ICON} strokeWidth={STROKE} />
       </button>
-    {/if}
+      <button
+        class="btn"
+        title="Forward"
+        aria-label="Forward"
+        disabled={!browser.canGoForward}
+        onclick={() => browser.forward()}
+      >
+        <ArrowRight size={ICON} strokeWidth={STROKE} />
+      </button>
+      <button class="btn" title="Reload" aria-label="Reload" onclick={reload}>
+        <span class="spin" class:spinning onanimationiteration={onRevolution}>
+          <RotateCw size={ICON} strokeWidth={STROKE} />
+        </span>
+      </button>
+    </div>
 
-    <button
-      class="btn"
-      title="Settings"
-      aria-label="Settings"
-      onclick={onOpenSettings}
-      use:anchor={'settings'}
-    >
-      <Settings size={ICON} strokeWidth={STROKE} />
-    </button>
+    <div class="omnibox">
+      <UrlBar bind:editing={addressFocused} />
+    </div>
 
-    <div class="divider"></div>
-
-    <button
-      class="btn control"
-      title="Minimize"
-      aria-label="Minimize"
-      onclick={() => window.api.window.minimize()}
-      use:anchor={'controlStrip'}
-    >
-      <Minus size={CONTROL_ICON} strokeWidth={CONTROL_STROKE} />
-    </button>
-    <button
-      class="btn control"
-      title={isMaximized ? 'Restore' : 'Maximize'}
-      aria-label={isMaximized ? 'Restore' : 'Maximize'}
-      onclick={() => window.api.window.toggleMaximize()}
-    >
-      {#if isMaximized}
-        <Copy size={CONTROL_ICON} strokeWidth={CONTROL_STROKE} />
-      {:else}
-        <Square size={CONTROL_ICON} strokeWidth={CONTROL_STROKE} />
+    <div class="group">
+      {#if updateVersion !== null}
+        <button
+          class="update"
+          title={`Restart to update to version ${updateVersion}`}
+          onclick={() => window.api.updates.install()}
+        >
+          <span class="update-dot"></span>
+          Restart to update
+        </button>
       {/if}
-    </button>
-    <button
-      class="btn control close"
-      title="Close"
-      aria-label="Close"
-      onclick={() => window.api.window.close()}
-    >
-      <X size={CONTROL_ICON} strokeWidth={CONTROL_STROKE} />
-    </button>
-  </div>
 
-  <ProgressBar />
-</header>
+      <button
+        class="btn"
+        title="Settings"
+        aria-label="Settings"
+        onclick={onOpenSettings}
+        use:anchor={'settings'}
+      >
+        <Settings size={ICON} strokeWidth={STROKE} />
+      </button>
+
+      <div class="divider"></div>
+
+      <button
+        class="btn control"
+        title="Minimize"
+        aria-label="Minimize"
+        onclick={() => window.api.window.minimize()}
+        use:anchor={'controlStrip'}
+      >
+        <Minus size={CONTROL_ICON} strokeWidth={CONTROL_STROKE} />
+      </button>
+      <button
+        class="btn control"
+        title={isMaximized ? 'Restore' : 'Maximize'}
+        aria-label={isMaximized ? 'Restore' : 'Maximize'}
+        onclick={() => window.api.window.toggleMaximize()}
+      >
+        {#if isMaximized}
+          <Copy size={CONTROL_ICON} strokeWidth={CONTROL_STROKE} />
+        {:else}
+          <Square size={CONTROL_ICON} strokeWidth={CONTROL_STROKE} />
+        {/if}
+      </button>
+      <button
+        class="btn control close"
+        title="Close"
+        aria-label="Close"
+        onclick={() => window.api.window.close()}
+      >
+        <X size={CONTROL_ICON} strokeWidth={CONTROL_STROKE} />
+      </button>
+    </div>
+
+    <ProgressBar />
+  </header>
+{/if}
 
 <style>
   .titlebar {

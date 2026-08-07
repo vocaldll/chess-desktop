@@ -46,6 +46,15 @@
     return () => document.removeEventListener('pointerdown', onPointerDown, true)
   })
 
+  $effect(() =>
+    window.api.shortcuts.onCommand((command) => {
+      if (command === 'focus-address') {
+        field?.focus()
+        field?.select()
+      }
+    })
+  )
+
   $effect(() => {
     return () => clearTimeout(copiedTimer)
   })

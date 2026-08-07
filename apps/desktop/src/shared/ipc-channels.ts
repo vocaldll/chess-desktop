@@ -4,7 +4,11 @@ export const IPC = {
     toggleMaximize: 'window:toggle-maximize',
     close: 'window:close',
     isMaximized: 'window:is-maximized',
-    maximizeChanged: 'window:maximize-changed'
+    maximizeChanged: 'window:maximize-changed',
+    fullscreenChanged: 'window:fullscreen-changed'
+  },
+  shortcuts: {
+    triggered: 'shortcuts:triggered'
   },
   settings: {
     getAll: 'settings:get-all',
@@ -20,6 +24,8 @@ export const IPC = {
     install: 'updates:install'
   }
 } as const
+
+export type ShortcutCommand = 'focus-address' | 'reload' | 'back' | 'forward' | 'toggle-mute'
 
 export interface WebviewLoadError {
   errorCode: number

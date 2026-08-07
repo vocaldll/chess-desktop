@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron'
 import { registerIpc } from './ipc'
 import { applySettings } from './settings-effects'
+import { registerShortcuts } from './shortcuts'
 import { getSettings } from './store'
 import { startAutoUpdates } from './updates'
 import {
@@ -37,6 +38,7 @@ if (!app.requestSingleInstanceLock()) {
   })
 
   registerWebviewHandling(getWindow)
+  registerShortcuts(getWindow)
   registerIpc(getWindow)
 
   app.whenReady().then(() => {

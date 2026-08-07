@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IPC, type WebviewLoadError } from '../shared/ipc-channels'
+import { IPC, type ShortcutCommand, type WebviewLoadError } from '../shared/ipc-channels'
 import type { SettingKey, Settings } from '../shared/settings'
 
 type Unsubscribe = () => void
@@ -19,7 +19,13 @@ const api = {
     close: (): void => ipcRenderer.send(IPC.window.close),
     isMaximized: (): Promise<boolean> => ipcRenderer.invoke(IPC.window.isMaximized),
     onMaximizeChange: (listener: (isMaximized: boolean) => void): Unsubscribe =>
-      subscribe(IPC.window.maximizeChanged, listener)
+      subscribe(IPC.window.maximizeChanged, listener),
+    onFullscreenChange: (listener: (isFullscreen: boolean) => void): Unsubscribe =>
+      subscribe(IPC.window.fullscreenChanged, listener)
+  },
+  shortcuts: {
+    onCommand: (listener: (command: ShortcutCommand) => void): Unsubscribe =>
+      subscribe(IPC.shortcuts.triggered, listener)
   },
   settings: {
     getAll: (): Promise<Settings> => ipcRenderer.invoke(IPC.settings.getAll),
