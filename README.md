@@ -4,7 +4,7 @@
 
 # Chess Desktop
 
-**Play Chess.com and Lichess natively on your desktop, not in a browser tab.**
+**Play Chess.com and Lichess natively on your desktop.**
 
 Free, open source, for Windows and Linux.
 
