@@ -17,7 +17,6 @@ const REVIEWING = 'Reviewing a game'
 const PUZZLES = 'Solving puzzles'
 const LESSON = 'Taking a lesson'
 const ANALYSIS = 'Analyzing a position'
-const TOURNAMENT = 'Playing a tournament'
 const OPENINGS = 'Studying openings'
 
 const CHESSCOM_ACTIVITIES: Record<string, string> = {
@@ -85,8 +84,10 @@ const LICHESS_NON_GAME = new Set([
   'simul',
   'source',
   'streamer',
+  'swiss',
   'team',
   'timeline',
+  'tournament',
   'video'
 ])
 
@@ -162,11 +163,7 @@ function chesscomPlayActivity(
     return SOLO_PLAY_LABELS[role]
   }
 
-  if (third === 'watch') {
-    return BROWSING
-  }
-
-  return third === 'tournaments' ? TOURNAMENT : LOOKING
+  return third === 'watch' || third === 'tournaments' ? BROWSING : LOOKING
 }
 
 function chesscomActivity(segments: string[], role: GameRole): string {
@@ -230,10 +227,6 @@ function lichessActivity(segments: string[], role: GameRole): string {
 
   if (first === 'broadcast' || first === 'relay') {
     return second ? WATCHING_GAME : BROWSING
-  }
-
-  if (first === 'tournament' || first === 'swiss') {
-    return second ? TOURNAMENT : BROWSING
   }
 
   if (Object.hasOwn(LICHESS_ACTIVITIES, first)) {
