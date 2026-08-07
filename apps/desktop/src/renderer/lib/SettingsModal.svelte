@@ -94,18 +94,6 @@
 
             <div class="row">
               <div class="info">
-                <div class="label">Mute all sounds</div>
-                <div class="description">Silence audio from both sites</div>
-              </div>
-              <Toggle
-                label="Mute all sounds"
-                checked={settings.current.soundMuted}
-                onchange={(value) => settings.set('soundMuted', value)}
-              />
-            </div>
-
-            <div class="row">
-              <div class="info">
                 <div class="label">Always on top</div>
                 <div class="description">Keep the window above other windows</div>
               </div>

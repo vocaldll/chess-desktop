@@ -3,6 +3,7 @@ import { app, type BrowserWindow, shell, type WebContents } from 'electron'
 import { IPC, type WebviewLoadError } from '../shared/ipc-channels'
 import { isOpenableExternally, isSiteURL, SITES } from '../shared/sites'
 import { toZoomFactor } from '../shared/zoom'
+import { applyVolume } from './audio'
 import { rejectCookieBanners } from './consent'
 import { getSettings } from './store'
 
@@ -93,6 +94,7 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
     const settings = getSettings()
 
     contents.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
+    applyVolume(contents, settings.volume)
     rejectCookieBanners(contents)
   })
 

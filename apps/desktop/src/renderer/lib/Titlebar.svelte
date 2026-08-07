@@ -9,6 +9,7 @@
   import Square from '@lucide/svelte/icons/square'
   import X from '@lucide/svelte/icons/x'
   import UrlBar from './UrlBar.svelte'
+  import VolumeControl from './VolumeControl.svelte'
   import { browser } from './browser.svelte'
   import { fullscreen } from './fullscreen.svelte'
   import { anchor } from './onboarding.svelte'
@@ -133,6 +134,8 @@
           {installing ? 'Restarting' : 'Restart to update'}
         </button>
       {/if}
+
+      <VolumeControl />
 
       <button
         class="btn"

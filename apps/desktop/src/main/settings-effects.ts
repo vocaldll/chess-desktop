@@ -1,6 +1,7 @@
 import type { BrowserWindow } from 'electron'
 import type { Settings } from '../shared/settings'
 import { toZoomFactor } from '../shared/zoom'
+import { applyVolume } from './audio'
 import { getSiteWebContents } from './webview'
 
 export function applySettings(window: BrowserWindow | null, settings: Settings): void {
@@ -9,4 +10,5 @@ export function applySettings(window: BrowserWindow | null, settings: Settings):
   const contents = getSiteWebContents()
   contents?.setAudioMuted(settings.soundMuted)
   contents?.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
+  applyVolume(contents, settings.volume)
 }

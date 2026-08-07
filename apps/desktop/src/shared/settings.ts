@@ -1,9 +1,11 @@
 import { DEFAULT_SITE, isSiteId, type SiteId } from './sites'
+import { DEFAULT_VOLUME, isVolumePercent } from './volume'
 import { coerceSiteZoom, isSiteZoom, type SiteZoom } from './zoom'
 
 export interface Settings {
   activeSite: SiteId
   soundMuted: boolean
+  volume: number
   alwaysOnTop: boolean
   notificationsEnabled: boolean
   discordRpcEnabled: boolean
@@ -14,6 +16,7 @@ export interface Settings {
 export const defaultSettings: Settings = {
   activeSite: DEFAULT_SITE,
   soundMuted: false,
+  volume: DEFAULT_VOLUME,
   alwaysOnTop: false,
   notificationsEnabled: true,
   discordRpcEnabled: false,
@@ -37,6 +40,10 @@ export function isValidSettingValue<K extends SettingKey>(
 
   if (key === 'zoom') {
     return isSiteZoom(value)
+  }
+
+  if (key === 'volume') {
+    return isVolumePercent(value)
   }
 
   return typeof value === typeof defaultSettings[key]

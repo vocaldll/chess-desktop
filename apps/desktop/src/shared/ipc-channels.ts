@@ -14,6 +14,9 @@ export const IPC = {
     getAll: 'settings:get-all',
     set: 'settings:set'
   },
+  audio: {
+    setVolume: 'audio:set-volume'
+  },
   webview: {
     loadStart: 'webview:load-start',
     loadStop: 'webview:load-stop',

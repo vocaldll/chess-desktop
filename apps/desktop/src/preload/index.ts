@@ -33,6 +33,9 @@ const api = {
     set: <K extends SettingKey>(key: K, value: Settings[K]): Promise<Settings> =>
       ipcRenderer.invoke(IPC.settings.set, key, value)
   },
+  audio: {
+    setVolume: (percent: number): void => ipcRenderer.send(IPC.audio.setVolume, percent)
+  },
   webview: {
     onLoadStart: (listener: () => void): Unsubscribe => subscribe(IPC.webview.loadStart, listener),
     onLoadStop: (listener: () => void): Unsubscribe => subscribe(IPC.webview.loadStop, listener),
