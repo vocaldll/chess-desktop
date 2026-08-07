@@ -25,8 +25,6 @@ export const IPC = {
   }
 } as const
 
-export type ShortcutCommand = 'focus-address' | 'reload' | 'back' | 'forward' | 'toggle-mute'
-
 export interface WebviewLoadError {
   errorCode: number
   errorDescription: string

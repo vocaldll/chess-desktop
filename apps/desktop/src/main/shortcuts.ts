@@ -1,39 +1,21 @@
 import { app, type BrowserWindow, type Input } from 'electron'
-import { IPC, type ShortcutCommand } from '../shared/ipc-channels'
+import { IPC } from '../shared/ipc-channels'
+import { SHORTCUTS, type ShortcutAction } from '../shared/shortcuts'
 
-type Command = ShortcutCommand | 'fullscreen' | 'exit-fullscreen'
-
-interface Binding {
-  key: string
-  control: boolean
-  alt: boolean
-  command: Command
-}
-
-const BINDINGS: readonly Binding[] = [
-  { key: 'l', control: true, alt: false, command: 'focus-address' },
-  { key: 'r', control: true, alt: false, command: 'reload' },
-  { key: 'F5', control: false, alt: false, command: 'reload' },
-  { key: 'ArrowLeft', control: false, alt: true, command: 'back' },
-  { key: 'ArrowRight', control: false, alt: true, command: 'forward' },
-  { key: 'm', control: true, alt: false, command: 'toggle-mute' },
-  { key: 'F11', control: false, alt: false, command: 'fullscreen' },
-  { key: 'Escape', control: false, alt: false, command: 'exit-fullscreen' }
-]
-
-function matchCommand(input: Input): Command | null {
+function matchCommand(input: Input): ShortcutAction | null {
   if (input.type !== 'keyDown' || input.isAutoRepeat || input.shift || input.meta) {
     return null
   }
 
   const key = input.key.length === 1 ? input.key.toLowerCase() : input.key
 
-  const binding = BINDINGS.find(
-    (candidate) =>
-      candidate.key === key && candidate.control === input.control && candidate.alt === input.alt
+  const shortcut = SHORTCUTS.find((candidate) =>
+    candidate.chords.some(
+      (chord) => chord.key === key && chord.control === input.control && chord.alt === input.alt
+    )
   )
 
-  return binding?.command ?? null
+  return shortcut?.command ?? null
 }
 
 export function registerShortcuts(getWindow: () => BrowserWindow | null): void {

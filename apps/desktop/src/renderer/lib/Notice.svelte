@@ -2,6 +2,7 @@
   import Maximize from '@lucide/svelte/icons/maximize'
   import Volume2 from '@lucide/svelte/icons/volume-2'
   import VolumeOff from '@lucide/svelte/icons/volume-off'
+  import Key from './Key.svelte'
   import { fullscreen } from './fullscreen.svelte'
   import { type Notice, notices } from './notices.svelte'
 
@@ -56,7 +57,7 @@
       Press
       {#each shown.keys as key, index (key)}
         {#if index > 0}or{/if}
-        <kbd>{key}</kbd>
+        <Key label={key} />
       {/each}
       to {shown.action}
     </span>
@@ -113,22 +114,6 @@
     gap: var(--cd-space-1);
     font-size: var(--cd-font-size-sm);
     color: var(--cd-text-muted);
-  }
-
-  kbd {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 22px;
-    height: 20px;
-    padding: 0 6px;
-    border: 1px solid var(--cd-border);
-    border-radius: var(--cd-radius-sm);
-    background: var(--cd-surface-raised);
-    color: var(--cd-text);
-    font-family: var(--cd-font-mono);
-    font-size: 11px;
-    line-height: 1;
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,9 @@
 <script lang="ts">
+  import ArrowLeft from '@lucide/svelte/icons/arrow-left'
+  import Keyboard from '@lucide/svelte/icons/keyboard'
   import X from '@lucide/svelte/icons/x'
+  import { SHORTCUTS } from '$shared/shortcuts'
+  import Key from './Key.svelte'
   import Toggle from './Toggle.svelte'
   import { onboarding } from './onboarding.svelte'
   import { settings } from './settings.svelte'
@@ -11,6 +15,16 @@
 
   let { open, onClose }: Props = $props()
 
+  let showShortcuts = $state(false)
+
+  const title = $derived(showShortcuts ? 'Keyboard shortcuts' : 'Settings')
+
+  $effect(() => {
+    if (open) {
+      showShortcuts = false
+    }
+  })
+
   function onKeydown(event: KeyboardEvent): void {
     if (open && event.key === 'Escape') {
       onClose()
@@ -21,82 +35,125 @@
 <svelte:window onkeydown={onKeydown} />
 
 {#if open}
-  <div class="modal" role="dialog" aria-modal="true" aria-label="Settings">
+  <div class="modal" role="dialog" aria-modal="true" aria-label={title}>
     <button class="backdrop" aria-label="Close settings" onclick={onClose}></button>
 
     <div class="panel">
       <header>
-        <h2>Settings</h2>
-        <button class="icon" title="Close" aria-label="Close" onclick={onClose}>
-          <X size={16} strokeWidth={1.8} />
-        </button>
+        <h2>{title}</h2>
+
+        <div class="actions">
+          {#if showShortcuts}
+            <button
+              class="icon"
+              title="Back to settings"
+              aria-label="Back to settings"
+              onclick={() => (showShortcuts = false)}
+            >
+              <ArrowLeft size={16} strokeWidth={1.8} />
+            </button>
+          {:else}
+            <button
+              class="icon"
+              title="Keyboard shortcuts"
+              aria-label="Keyboard shortcuts"
+              onclick={() => (showShortcuts = true)}
+            >
+              <Keyboard size={16} strokeWidth={1.8} />
+            </button>
+          {/if}
+
+          <button class="icon" title="Close" aria-label="Close" onclick={onClose}>
+            <X size={16} strokeWidth={1.8} />
+          </button>
+        </div>
       </header>
 
-      <div class="body">
-        <section>
-          <h3>General</h3>
-
-          <div class="row">
-            <div class="info">
-              <div class="label">Mute all sounds</div>
-              <div class="description">Silence audio from both sites</div>
-            </div>
-            <Toggle
-              label="Mute all sounds"
-              checked={settings.current.soundMuted}
-              onchange={(value) => settings.set('soundMuted', value)}
-            />
-          </div>
-
-          <div class="row">
-            <div class="info">
-              <div class="label">Always on top</div>
-              <div class="description">Keep the window above other windows</div>
-            </div>
-            <Toggle
-              label="Always on top"
-              checked={settings.current.alwaysOnTop}
-              onchange={(value) => settings.set('alwaysOnTop', value)}
-            />
-          </div>
-
-          <div class="row">
-            <div class="info">
-              <div class="label">Show introduction again</div>
-              <div class="description">Replay the first-run walkthrough</div>
-            </div>
-            <button
-              class="action"
-              onclick={() => {
-                onClose()
-                onboarding.start()
-              }}
-            >
-              Replay
-            </button>
-          </div>
-        </section>
-
-        <section>
-          <h3>Integrations</h3>
-
-          <div class="row">
-            <div class="info">
-              <div class="label">
-                Discord Rich Presence
-                <span class="badge">Coming soon</span>
+      {#if showShortcuts}
+        <div class="body">
+          <section>
+            {#each SHORTCUTS as shortcut (shortcut.command)}
+              <div class="row">
+                <div class="info">
+                  <div class="label">{shortcut.description}</div>
+                </div>
+                <div class="keys">
+                  {#each shortcut.chords as chord, index (chord.label)}
+                    {#if index > 0}<span class="or">or</span>{/if}
+                    <Key label={chord.label} />
+                  {/each}
+                </div>
               </div>
-              <div class="description">Show what you're playing on your Discord profile</div>
+            {/each}
+          </section>
+        </div>
+      {:else}
+        <div class="body">
+          <section>
+            <h3>General</h3>
+
+            <div class="row">
+              <div class="info">
+                <div class="label">Mute all sounds</div>
+                <div class="description">Silence audio from both sites</div>
+              </div>
+              <Toggle
+                label="Mute all sounds"
+                checked={settings.current.soundMuted}
+                onchange={(value) => settings.set('soundMuted', value)}
+              />
             </div>
-            <Toggle
-              label="Discord Rich Presence"
-              disabled
-              checked={settings.current.discordRpcEnabled}
-              onchange={(value) => settings.set('discordRpcEnabled', value)}
-            />
-          </div>
-        </section>
-      </div>
+
+            <div class="row">
+              <div class="info">
+                <div class="label">Always on top</div>
+                <div class="description">Keep the window above other windows</div>
+              </div>
+              <Toggle
+                label="Always on top"
+                checked={settings.current.alwaysOnTop}
+                onchange={(value) => settings.set('alwaysOnTop', value)}
+              />
+            </div>
+
+            <div class="row">
+              <div class="info">
+                <div class="label">Show introduction again</div>
+                <div class="description">Replay the first-run walkthrough</div>
+              </div>
+              <button
+                class="action"
+                onclick={() => {
+                  onClose()
+                  onboarding.start()
+                }}
+              >
+                Replay
+              </button>
+            </div>
+          </section>
+
+          <section>
+            <h3>Integrations</h3>
+
+            <div class="row">
+              <div class="info">
+                <div class="label">
+                  Discord Rich Presence
+                  <span class="badge">Coming soon</span>
+                </div>
+                <div class="description">Show what you're playing on your Discord profile</div>
+              </div>
+              <Toggle
+                label="Discord Rich Presence"
+                disabled
+                checked={settings.current.discordRpcEnabled}
+                onchange={(value) => settings.set('discordRpcEnabled', value)}
+              />
+            </div>
+          </section>
+        </div>
+      {/if}
     </div>
   </div>
 {/if}
@@ -147,6 +204,12 @@
     margin: 0;
     font-size: var(--cd-font-size-lg);
     font-weight: 600;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--cd-space-1);
   }
 
   .icon {
@@ -203,6 +266,18 @@
     align-items: center;
     gap: var(--cd-space-2);
     font-weight: 500;
+  }
+
+  .keys {
+    display: flex;
+    align-items: center;
+    flex: none;
+    gap: var(--cd-space-2);
+  }
+
+  .or {
+    font-size: var(--cd-font-size-sm);
+    color: var(--cd-text-subtle);
   }
 
   .description {

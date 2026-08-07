@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IPC, type ShortcutCommand, type WebviewLoadError } from '../shared/ipc-channels'
+import { IPC, type WebviewLoadError } from '../shared/ipc-channels'
 import type { SettingKey, Settings } from '../shared/settings'
+import type { ShortcutCommand } from '../shared/shortcuts'
 
 type Unsubscribe = () => void
 
