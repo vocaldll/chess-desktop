@@ -13,4 +13,6 @@ export const contact = `contact@${site.domain}`
 export const repository = `https://github.com/${site.owner}/${site.repo}`
 export const releases = `${repository}/releases`
 export const latestRelease = `${releases}/latest`
+export const downloadWindows = `${latestRelease}/download/Chess-Desktop-Setup.exe`
+export const downloadLinux = `${latestRelease}/download/Chess-Desktop.AppImage`
 export const issues = `${repository}/issues`

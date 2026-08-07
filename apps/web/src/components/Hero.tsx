@@ -1,10 +1,9 @@
-import { latestRelease, repository, site } from '../site'
-import { formatStars, useGitHubStars } from '../useGitHubStars'
+import { downloadLinux, downloadWindows, repository, site } from '../site'
 import GitHubMark from './GitHubMark'
+import LinuxMark from './LinuxMark'
+import WindowsMark from './WindowsMark'
 
 export default function Hero() {
-  const stars = useGitHubStars()
-
   return (
     <section className="flex w-full min-w-0 flex-col items-center">
       <div className="rise flex items-center gap-2.5">
@@ -33,32 +32,35 @@ export default function Hero() {
       </p>
 
       <div
-        className="rise mt-8 flex w-full max-w-[320px] flex-col gap-3 min-[480px]:w-auto min-[480px]:max-w-none min-[480px]:flex-row"
+        className="rise mt-8 flex w-full flex-col items-center gap-4"
         style={{ animationDelay: '180ms' }}
       >
-        <a
-          className="inline-flex items-center justify-center gap-2.5 rounded-full border border-accent bg-accent px-6 py-3 font-semibold text-[15px] text-accent-ink transition-colors hover:border-accent-hover hover:bg-accent-hover"
-          href={latestRelease}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <GitHubMark />
-          <span>Download on GitHub</span>
-          {stars !== null && (
-            <span className="ml-0.5 border-black/20 border-l pl-2.5 font-medium text-[13px]">
-              <span className="opacity-55">★ </span>
-              {formatStars(stars)}
-            </span>
-          )}
-        </a>
+        <div className="flex w-full max-w-[320px] flex-col gap-3 min-[480px]:w-auto min-[480px]:max-w-none min-[480px]:flex-row">
+          <a
+            className="inline-flex items-center justify-center gap-2.5 rounded-full border border-[#0078d4] bg-[#0078d4] px-6 py-3 font-semibold text-[15px] text-white transition-colors hover:border-[#1a86da] hover:bg-[#1a86da]"
+            href={downloadWindows}
+          >
+            <WindowsMark />
+            Download for Windows
+          </a>
+
+          <a
+            className="inline-flex items-center justify-center gap-2.5 rounded-full border border-[#fcc624] bg-[#fcc624] px-6 py-3 font-semibold text-[15px] text-black transition-colors hover:border-[#ffd23e] hover:bg-[#ffd23e]"
+            href={downloadLinux}
+          >
+            <LinuxMark size={17} />
+            Download for Linux
+          </a>
+        </div>
 
         <a
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-line bg-surface px-6 py-3 font-medium text-[15px] text-ink transition-colors hover:border-line-strong hover:bg-surface-hover"
+          className="inline-flex items-center gap-2 font-medium text-[14px] text-ink-muted transition-colors hover:text-ink"
           href={repository}
           target="_blank"
           rel="noreferrer"
         >
-          View the source
+          <GitHubMark size={16} />
+          View on GitHub
         </a>
       </div>
     </section>
