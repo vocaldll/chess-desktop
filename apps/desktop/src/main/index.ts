@@ -23,7 +23,7 @@ app.setName(app.isPackaged ? 'Chess Desktop' : 'Chess Desktop Dev')
 if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
-  app.setAppUserModelId('app.chessdesktop')
+  app.setAppUserModelId('app.chessdesktop.client')
   app.userAgentFallback = browserUserAgent()
 
   app.on('second-instance', () => {
