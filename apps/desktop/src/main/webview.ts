@@ -2,6 +2,7 @@ import { join } from 'node:path'
 import { app, type BrowserWindow, shell, type WebContents } from 'electron'
 import { IPC, type WebviewLoadError } from '../shared/ipc-channels'
 import { isOpenableExternally, isSiteURL, SITES } from '../shared/sites'
+import { rejectCookieBanners } from './consent'
 import { getSettings } from './store'
 
 const ABORTED_BY_USER = -3
@@ -85,6 +86,10 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
       event.preventDefault()
       openExternally(url)
     }
+  })
+
+  contents.on('dom-ready', () => {
+    rejectCookieBanners(contents)
   })
 
   contents.on('did-start-loading', () => {
