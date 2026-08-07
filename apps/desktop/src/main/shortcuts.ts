@@ -3,7 +3,7 @@ import { IPC } from '../shared/ipc-channels'
 import { SHORTCUTS, type ShortcutAction } from '../shared/shortcuts'
 
 function matchCommand(input: Input): ShortcutAction | null {
-  if (input.type !== 'keyDown' || input.isAutoRepeat || input.shift || input.meta) {
+  if (input.type !== 'keyDown' || input.isAutoRepeat || input.meta) {
     return null
   }
 
@@ -11,7 +11,8 @@ function matchCommand(input: Input): ShortcutAction | null {
 
   const shortcut = SHORTCUTS.find((candidate) =>
     candidate.chords.some(
-      (chord) => chord.key === key && chord.control === input.control && chord.alt === input.alt
+      (chord) =>
+        chord.keys.includes(key) && chord.control === input.control && chord.alt === input.alt
     )
   )
 

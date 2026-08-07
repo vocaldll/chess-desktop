@@ -1,4 +1,5 @@
 import { DEFAULT_SITE, isSiteId, type SiteId } from './sites'
+import { coerceSiteZoom, isSiteZoom, type SiteZoom } from './zoom'
 
 export interface Settings {
   activeSite: SiteId
@@ -6,6 +7,7 @@ export interface Settings {
   alwaysOnTop: boolean
   discordRpcEnabled: boolean
   onboardingCompleted: boolean
+  zoom: SiteZoom
 }
 
 export const defaultSettings: Settings = {
@@ -13,7 +15,8 @@ export const defaultSettings: Settings = {
   soundMuted: false,
   alwaysOnTop: false,
   discordRpcEnabled: false,
-  onboardingCompleted: false
+  onboardingCompleted: false,
+  zoom: coerceSiteZoom(null)
 }
 
 export type SettingKey = keyof Settings
@@ -30,15 +33,15 @@ export function isValidSettingValue<K extends SettingKey>(
     return isSiteId(value)
   }
 
+  if (key === 'zoom') {
+    return isSiteZoom(value)
+  }
+
   return typeof value === typeof defaultSettings[key]
 }
 
 export function coerceSettings(raw: unknown): Settings {
-  if (typeof raw !== 'object' || raw === null) {
-    return { ...defaultSettings }
-  }
-
-  const source = raw as Record<string, unknown>
+  const source = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {}
   const result = { ...defaultSettings }
 
   for (const key of Object.keys(defaultSettings) as SettingKey[]) {
@@ -47,6 +50,8 @@ export function coerceSettings(raw: unknown): Settings {
       result[key] = value as never
     }
   }
+
+  result.zoom = coerceSiteZoom(source.zoom)
 
   return result
 }

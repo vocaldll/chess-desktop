@@ -1,7 +1,10 @@
 <script lang="ts">
   import Check from '@lucide/svelte/icons/check'
   import Copy from '@lucide/svelte/icons/copy'
+  import ZoomIn from '@lucide/svelte/icons/zoom-in'
+  import ZoomOut from '@lucide/svelte/icons/zoom-out'
   import { SITES, normalizeSiteInput } from '$shared/sites'
+  import { DEFAULT_ZOOM } from '$shared/zoom'
   import SiteSwitcher from './SiteSwitcher.svelte'
   import { browser } from './browser.svelte'
   import { anchor } from './onboarding.svelte'
@@ -24,6 +27,7 @@
   let copiedTimer: ReturnType<typeof setTimeout> | undefined
 
   const site = $derived(SITES[settings.current.activeSite])
+  const zoom = $derived(settings.current.zoom[settings.current.activeSite])
 
   $effect(() => {
     if (!editing) {
@@ -87,6 +91,10 @@
     }
   }
 
+  function resetZoom(): void {
+    settings.setZoom(settings.current.activeSite, DEFAULT_ZOOM)
+  }
+
   async function copyUrl(): Promise<void> {
     if (!browser.url) {
       return
@@ -122,6 +130,22 @@
     oninput={() => (rejected = false)}
     onkeydown={onKeydown}
   />
+
+  {#if zoom !== DEFAULT_ZOOM}
+    <button
+      class="zoom"
+      title={`Zoom is ${zoom}%, click to reset`}
+      aria-label={`Zoom is ${zoom} percent, click to reset`}
+      onclick={resetZoom}
+    >
+      {#if zoom > DEFAULT_ZOOM}
+        <ZoomIn size={12} strokeWidth={1.8} />
+      {:else}
+        <ZoomOut size={12} strokeWidth={1.8} />
+      {/if}
+      {zoom}%
+    </button>
+  {/if}
 
   <button
     class="copy"
@@ -203,6 +227,37 @@
   input::selection {
     background: var(--cd-accent);
     color: var(--cd-accent-contrast);
+  }
+
+  .zoom {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex: none;
+    height: 20px;
+    margin-right: var(--cd-space-1);
+    padding: 0 7px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--cd-surface-hover);
+    color: var(--cd-text-muted);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background var(--cd-transition),
+      color var(--cd-transition);
+  }
+
+  .zoom:hover {
+    background: var(--cd-border);
+    color: var(--cd-text);
+  }
+
+  .zoom:focus-visible {
+    outline: 2px solid var(--cd-accent);
+    outline-offset: -2px;
   }
 
   .copy {

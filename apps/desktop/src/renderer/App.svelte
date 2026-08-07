@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { DEFAULT_ZOOM, stepZoom } from '$shared/zoom'
   import Notice from './lib/Notice.svelte'
   import OnboardingTour from './lib/OnboardingTour.svelte'
   import SettingsModal from './lib/SettingsModal.svelte'
@@ -35,9 +36,33 @@
     window.api.shortcuts.onCommand((command) => {
       if (command === 'toggle-mute') {
         toggleMute()
+      } else if (command === 'zoom-in') {
+        changeZoom(1)
+      } else if (command === 'zoom-out') {
+        changeZoom(-1)
+      } else if (command === 'zoom-reset') {
+        resetZoom()
       }
     })
   )
+
+  function changeZoom(direction: 1 | -1): void {
+    const site = settings.current.activeSite
+    const current = settings.current.zoom[site]
+    const next = stepZoom(current, direction)
+
+    if (next !== current) {
+      settings.setZoom(site, next)
+    }
+  }
+
+  function resetZoom(): void {
+    const site = settings.current.activeSite
+
+    if (settings.current.zoom[site] !== DEFAULT_ZOOM) {
+      settings.setZoom(site, DEFAULT_ZOOM)
+    }
+  }
 
   function toggleMute(): void {
     const muted = !settings.current.soundMuted

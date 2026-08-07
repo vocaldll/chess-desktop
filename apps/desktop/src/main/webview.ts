@@ -2,6 +2,7 @@ import { join } from 'node:path'
 import { app, type BrowserWindow, shell, type WebContents } from 'electron'
 import { IPC, type WebviewLoadError } from '../shared/ipc-channels'
 import { isOpenableExternally, isSiteURL, SITES } from '../shared/sites'
+import { toZoomFactor } from '../shared/zoom'
 import { rejectCookieBanners } from './consent'
 import { getSettings } from './store'
 
@@ -89,6 +90,9 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
   })
 
   contents.on('dom-ready', () => {
+    const settings = getSettings()
+
+    contents.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
     rejectCookieBanners(contents)
   })
 

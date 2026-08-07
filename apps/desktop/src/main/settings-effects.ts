@@ -1,8 +1,12 @@
 import type { BrowserWindow } from 'electron'
 import type { Settings } from '../shared/settings'
+import { toZoomFactor } from '../shared/zoom'
 import { getSiteWebContents } from './webview'
 
 export function applySettings(window: BrowserWindow | null, settings: Settings): void {
   window?.setAlwaysOnTop(settings.alwaysOnTop)
-  getSiteWebContents()?.setAudioMuted(settings.soundMuted)
+
+  const contents = getSiteWebContents()
+  contents?.setAudioMuted(settings.soundMuted)
+  contents?.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
 }
