@@ -28,6 +28,7 @@
   let addressFocused = $state(false)
   let spinning = $state(false)
   let updateVersion = $state<string | null>(null)
+  let installing = $state(false)
 
   let stopAtRevolution = false
 
@@ -63,10 +64,21 @@
     })
   )
 
+  $effect(() =>
+    window.api.updates.onInstallFailed(() => {
+      installing = false
+    })
+  )
+
   function reload(): void {
     spinning = true
     stopAtRevolution = true
     browser.reload()
+  }
+
+  function install(): void {
+    installing = true
+    window.api.updates.install()
   }
 
   function onRevolution(): void {
@@ -112,11 +124,13 @@
       {#if updateVersion !== null}
         <button
           class="update"
+          class:installing
           title={`Restart to update to version ${updateVersion}`}
-          onclick={() => window.api.updates.install()}
+          disabled={installing}
+          onclick={install}
         >
           <span class="update-dot"></span>
-          Restart to update
+          {installing ? 'Restarting' : 'Restart to update'}
         </button>
       {/if}
 
@@ -293,9 +307,13 @@
       color var(--cd-transition);
   }
 
-  .update:hover {
+  .update:hover:not(:disabled) {
     background: var(--cd-surface-hover);
     color: var(--cd-text);
+  }
+
+  .update:disabled {
+    cursor: default;
   }
 
   .update:focus-visible {
@@ -310,10 +328,20 @@
     background: var(--cd-brand);
   }
 
+  .update.installing .update-dot {
+    animation: pulse 900ms ease-in-out infinite;
+  }
+
   @keyframes update-in {
     from {
       opacity: 0;
       transform: translateY(-3px);
+    }
+  }
+
+  @keyframes pulse {
+    50% {
+      opacity: 0.25;
     }
   }
 
@@ -334,7 +362,8 @@
       animation: none;
     }
 
-    .update {
+    .update,
+    .update.installing .update-dot {
       animation: none;
     }
   }

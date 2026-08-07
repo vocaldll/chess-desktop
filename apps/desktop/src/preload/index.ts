@@ -42,7 +42,9 @@ const api = {
   updates: {
     install: (): void => ipcRenderer.send(IPC.updates.install),
     onDownloaded: (listener: (version: string) => void): Unsubscribe =>
-      subscribe(IPC.updates.downloaded, listener)
+      subscribe(IPC.updates.downloaded, listener),
+    onInstallFailed: (listener: () => void): Unsubscribe =>
+      subscribe(IPC.updates.installFailed, listener)
   }
 }
 

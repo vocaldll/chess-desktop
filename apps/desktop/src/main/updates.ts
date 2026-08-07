@@ -13,8 +13,18 @@ export function startAutoUpdates(getWindow: () => BrowserWindow | null): void {
     return
   }
 
+  let installing = false
+
   ipcMain.on(IPC.updates.install, () => {
+    installing = true
     autoUpdater.quitAndInstall(true, true)
+  })
+
+  autoUpdater.on('error', () => {
+    if (installing) {
+      installing = false
+      getWindow()?.webContents.send(IPC.updates.installFailed)
+    }
   })
 
   const check = (): void => {

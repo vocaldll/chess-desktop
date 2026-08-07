@@ -21,7 +21,8 @@ export const IPC = {
   },
   updates: {
     downloaded: 'updates:downloaded',
-    install: 'updates:install'
+    install: 'updates:install',
+    installFailed: 'updates:install-failed'
   }
 } as const
 
