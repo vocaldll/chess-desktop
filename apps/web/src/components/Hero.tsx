@@ -1,9 +1,13 @@
 import { downloadLinux, downloadWindows, repository, site } from '../site'
+import { formatStars, useGitHubStars } from '../useGitHubStars'
 import GitHubMark from './GitHubMark'
 import LinuxMark from './LinuxMark'
+import StarMark from './StarMark'
 import WindowsMark from './WindowsMark'
 
 export default function Hero() {
+  const stars = useGitHubStars()
+
   return (
     <section className="flex w-full min-w-0 flex-col items-center">
       <div className="rise flex items-center gap-2.5">
@@ -55,6 +59,12 @@ export default function Hero() {
         >
           <GitHubMark size={16} />
           View on GitHub
+          {stars !== null && (
+            <span className="inline-flex items-center gap-1.5">
+              <StarMark />
+              {formatStars(stars)}
+            </span>
+          )}
         </a>
       </div>
     </section>
