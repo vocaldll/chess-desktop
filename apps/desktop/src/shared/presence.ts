@@ -18,7 +18,6 @@ const PUZZLES = 'Solving puzzles'
 const LESSON = 'Taking a lesson'
 const ANALYSIS = 'Analyzing a position'
 const TOURNAMENT = 'Playing a tournament'
-const SIMUL = 'Playing a simul'
 const OPENINGS = 'Studying openings'
 
 const CHESSCOM_ACTIVITIES: Record<string, string> = {
@@ -54,10 +53,7 @@ const LICHESS_ACTIVITIES: Record<string, string> = {
   tv: WATCHING_GAME,
   learn: LESSON,
   practice: LESSON,
-  coordinate: LESSON,
-  tournament: TOURNAMENT,
-  swiss: TOURNAMENT,
-  simul: SIMUL
+  coordinate: LESSON
 }
 
 const LICHESS_NON_GAME = new Set([
@@ -86,6 +82,7 @@ const LICHESS_NON_GAME = new Set([
   'report',
   'settings',
   'signup',
+  'simul',
   'source',
   'streamer',
   'team',
@@ -233,6 +230,10 @@ function lichessActivity(segments: string[], role: GameRole): string {
 
   if (first === 'broadcast' || first === 'relay') {
     return second ? WATCHING_GAME : BROWSING
+  }
+
+  if (first === 'tournament' || first === 'swiss') {
+    return second ? TOURNAMENT : BROWSING
   }
 
   if (Object.hasOwn(LICHESS_ACTIVITIES, first)) {
