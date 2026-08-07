@@ -25,11 +25,12 @@ Free, open source, for Windows and Linux.
 
 - Chess.com and Lichess sit one click apart in the same window
 - Each site keeps its own login, so you stay signed in to both
-- Reopens exactly where you left off, window size and position included
+- Reopens on the site you were last using, at the same window size and position
 - Keep the board above your other windows while you play or watch
 - One switch mutes both sites
-- Mouse back and forward buttons work like they do in a browser
+- Keyboard and mouse shortcuts work like they do in a browser
 - Links that lead anywhere else open in your regular browser
+- Cookie consent banners are declined automatically
 - Updates itself in the background, so you never reinstall by hand
 
 ## Installing
