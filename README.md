@@ -26,8 +26,9 @@ Free, open source, for Windows and Linux.
 - Chess.com and Lichess sit one click apart in the same window
 - Each site keeps its own login, so you stay signed in to both
 - Reopens on the site you were last using, at the same window size and position
-- Keep the board above your other windows while you play or watch
-- One switch mutes both sites
+- Keep the board above your other windows while you play
+- Set the volume for both sites from the title bar
+- Show what you are playing on your Discord profile
 - Keyboard and mouse shortcuts work like they do in a browser
 - Links that lead anywhere else open in your regular browser
 - Cookie consent banners are declined automatically
