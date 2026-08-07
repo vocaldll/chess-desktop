@@ -118,6 +118,18 @@
 
             <div class="row">
               <div class="info">
+                <div class="label">Desktop notifications</div>
+                <div class="description">Let both sites send system notifications</div>
+              </div>
+              <Toggle
+                label="Desktop notifications"
+                checked={settings.current.notificationsEnabled}
+                onchange={(value) => settings.set('notificationsEnabled', value)}
+              />
+            </div>
+
+            <div class="row">
+              <div class="info">
                 <div class="label">Show introduction again</div>
                 <div class="description">Replay the first-run walkthrough</div>
               </div>

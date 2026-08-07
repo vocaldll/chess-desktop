@@ -5,6 +5,7 @@ export interface Settings {
   activeSite: SiteId
   soundMuted: boolean
   alwaysOnTop: boolean
+  notificationsEnabled: boolean
   discordRpcEnabled: boolean
   onboardingCompleted: boolean
   zoom: SiteZoom
@@ -14,6 +15,7 @@ export const defaultSettings: Settings = {
   activeSite: DEFAULT_SITE,
   soundMuted: false,
   alwaysOnTop: false,
+  notificationsEnabled: true,
   discordRpcEnabled: false,
   onboardingCompleted: false,
   zoom: coerceSiteZoom(null)

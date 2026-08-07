@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Menu } from 'electron'
 import { registerContextMenus } from './context-menu'
 import { registerIpc } from './ipc'
+import { registerPermissions } from './permissions'
 import { applySettings } from './settings-effects'
 import { registerShortcuts } from './shortcuts'
 import { getSettings } from './store'
@@ -45,6 +46,7 @@ if (!app.requestSingleInstanceLock()) {
 
   app.whenReady().then(() => {
     Menu.setApplicationMenu(null)
+    registerPermissions()
     createWindow()
     startAutoUpdates(getWindow)
 
