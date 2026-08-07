@@ -138,15 +138,11 @@
 
             <div class="row">
               <div class="info">
-                <div class="label">
-                  Discord Rich Presence
-                  <span class="badge">Coming soon</span>
-                </div>
+                <div class="label">Discord Rich Presence</div>
                 <div class="description">Show what you're playing on your Discord profile</div>
               </div>
               <Toggle
                 label="Discord Rich Presence"
-                disabled
                 checked={settings.current.discordRpcEnabled}
                 onchange={(value) => settings.set('discordRpcEnabled', value)}
               />
@@ -311,17 +307,6 @@
   .action:focus-visible {
     outline: 2px solid var(--cd-accent);
     outline-offset: 2px;
-  }
-
-  .badge {
-    padding: 2px 7px;
-    border-radius: 999px;
-    background: var(--cd-surface-raised);
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--cd-text-subtle);
   }
 
   @keyframes fade {

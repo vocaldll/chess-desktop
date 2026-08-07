@@ -1,5 +1,6 @@
 import { app, BrowserWindow, Menu } from 'electron'
 import { registerContextMenus } from './context-menu'
+import { shutdownPresence } from './discord'
 import { registerIpc } from './ipc'
 import { registerPermissions } from './permissions'
 import { applySettings } from './settings-effects'
@@ -55,6 +56,10 @@ if (!app.requestSingleInstanceLock()) {
         createWindow()
       }
     })
+  })
+
+  app.on('before-quit', () => {
+    shutdownPresence()
   })
 
   app.on('window-all-closed', () => {
