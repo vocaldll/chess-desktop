@@ -7,13 +7,7 @@ export default function Hero() {
   return (
     <section className="flex w-full min-w-0 flex-col items-center">
       <div className="rise flex items-center gap-2.5">
-        <img
-          className="block shrink-0 rounded-md"
-          src="/favicon-32x32.png"
-          width={28}
-          height={28}
-          alt=""
-        />
+        <img className="block shrink-0 rounded-md" src="/logo.png" width={28} height={28} alt="" />
         <span className="font-display font-semibold text-[16px] tracking-tight">{site.name}</span>
       </div>
 

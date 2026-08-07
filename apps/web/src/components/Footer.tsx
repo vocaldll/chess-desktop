@@ -14,7 +14,7 @@ export default function Footer() {
         <div className="flex items-center gap-2.5">
           <img
             className="block shrink-0 rounded-[5px]"
-            src="/favicon-32x32.png"
+            src="/logo.png"
             width={20}
             height={20}
             alt=""
