@@ -39,7 +39,7 @@
           <div class="row">
             <div class="info">
               <div class="label">Mute all sounds</div>
-              <div class="description">Silence audio coming from Chess.com</div>
+              <div class="description">Silence audio from both sites</div>
             </div>
             <Toggle
               label="Mute all sounds"
