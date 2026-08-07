@@ -16,6 +16,8 @@ let mainWindow: BrowserWindow | null = null
 const getWindow = (): BrowserWindow | null =>
   mainWindow && !mainWindow.isDestroyed() ? mainWindow : null
 
+app.setName(app.isPackaged ? 'Chess Desktop' : 'Chess Desktop Dev')
+
 if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
