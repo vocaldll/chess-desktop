@@ -1,13 +1,14 @@
 import { join } from 'node:path'
 import { app, type BrowserWindow, shell, type WebContents } from 'electron'
 import { IPC, type WebviewLoadError } from '../shared/ipc-channels'
-import { type GameRole, needsGameRole } from '../shared/presence'
+import { type GameRole, isPlayingGame, needsGameRole } from '../shared/presence'
 import { isOpenableExternally, isSiteURL, SITES, type SiteId } from '../shared/sites'
 import { toZoomFactor } from '../shared/zoom'
 import { applyVolume } from './audio'
 import { rejectCookieBanners } from './consent'
 import { updatePresenceLocation } from './discord'
 import { probeGameRole } from './game-role'
+import { updatePlayingState } from './keep-awake'
 import { getSettings } from './store'
 
 const ABORTED_BY_USER = -3
@@ -42,11 +43,13 @@ function stopRolePolling(): void {
   nonPlayerStreak = 0
   unknownStreak = 0
   rolePublished = false
+  updatePlayingState(false)
 }
 
 function publishRole(siteId: SiteId, url: string, role: GameRole): void {
   roleValue = role
   rolePublished = true
+  updatePlayingState(isPlayingGame(siteId, url, role))
   updatePresenceLocation(siteId, url, role)
 }
 
@@ -92,11 +95,13 @@ function trackPresence(url: string): void {
   const { activeSite } = getSettings()
 
   if (!isSiteURL(activeSite, url)) {
+    stopRolePolling()
     return
   }
 
   if (!needsGameRole(activeSite, url)) {
     stopRolePolling()
+    updatePlayingState(isPlayingGame(activeSite, url))
     updatePresenceLocation(activeSite, url)
     return
   }

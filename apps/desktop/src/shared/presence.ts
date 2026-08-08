@@ -254,6 +254,18 @@ export function needsGameRole(siteId: SiteId, url: string): boolean {
   return isChesscomGameURL(segments) || isChesscomSoloPlayURL(segments)
 }
 
+export function isPlayingGame(siteId: SiteId, url: string, role: GameRole = 'unknown'): boolean {
+  const segments = pathSegments(url)
+
+  if (siteId === 'lichess') {
+    const [first] = segments
+    const playerUrl = first !== undefined && isLichessGameId(first, LICHESS_PLAYER_ID)
+    return playerUrl || (isLichessSpectatorURL(segments) && role === 'playing')
+  }
+
+  return (isChesscomGameURL(segments) || isChesscomSoloPlayURL(segments)) && role === 'playing'
+}
+
 export function describePresence(
   siteId: SiteId,
   url: string,

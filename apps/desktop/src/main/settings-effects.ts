@@ -3,6 +3,7 @@ import type { Settings } from '../shared/settings'
 import { toZoomFactor } from '../shared/zoom'
 import { applyVolume } from './audio'
 import { applyPresenceSettings } from './discord'
+import { applyKeepAwakeSettings } from './keep-awake'
 import { getSiteWebContents } from './webview'
 
 export function applySettings(window: BrowserWindow | null, settings: Settings): void {
@@ -13,4 +14,5 @@ export function applySettings(window: BrowserWindow | null, settings: Settings):
   contents?.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
   applyVolume(contents, settings.volume)
   applyPresenceSettings(settings)
+  applyKeepAwakeSettings(settings)
 }

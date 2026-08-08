@@ -2,6 +2,7 @@ import { app, BrowserWindow, Menu } from 'electron'
 import { registerContextMenus } from './context-menu'
 import { shutdownPresence } from './discord'
 import { registerIpc } from './ipc'
+import { shutdownKeepAwake } from './keep-awake'
 import { registerPermissions } from './permissions'
 import { applySettings } from './settings-effects'
 import { registerShortcuts } from './shortcuts'
@@ -59,6 +60,7 @@ if (!app.requestSingleInstanceLock()) {
   })
 
   app.on('before-quit', () => {
+    shutdownKeepAwake()
     shutdownPresence()
   })
 
