@@ -21,6 +21,7 @@ export const IPC = {
     openRepository: 'links:open-repository'
   },
   webview: {
+    getLastSiteUrls: 'webview:get-last-site-urls',
     loadStart: 'webview:load-start',
     loadStop: 'webview:load-stop',
     loadError: 'webview:load-error'

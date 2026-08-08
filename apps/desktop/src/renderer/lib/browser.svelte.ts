@@ -1,5 +1,5 @@
 import type { WebviewLoadError } from '$shared/ipc-channels'
-import { SITES, type SiteId } from '$shared/sites'
+import { SITE_ORDER, SITES, type SiteId } from '$shared/sites'
 import type { SiteWebviewElement } from './webview-element'
 
 class Browser {
@@ -11,6 +11,14 @@ class Browser {
   error = $state<WebviewLoadError | null>(null)
 
   #lastUrls = new Map<SiteId, string>()
+
+  async load(): Promise<void> {
+    const urls = await window.api.webview.getLastSiteUrls()
+
+    for (const id of SITE_ORDER) {
+      this.#lastUrls.set(id, urls[id])
+    }
+  }
 
   rememberedUrl(siteId: SiteId): string {
     return this.#lastUrls.get(siteId) ?? SITES[siteId].startUrl

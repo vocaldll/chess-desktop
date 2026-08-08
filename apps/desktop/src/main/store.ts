@@ -2,6 +2,13 @@ import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { app } from 'electron'
 import { coerceSettings, defaultSettings, type SettingKey, type Settings } from '../shared/settings'
+import {
+  coerceLastSiteUrls,
+  DEFAULT_LAST_SITE_URLS,
+  isSiteURL,
+  type LastSiteUrls,
+  type SiteId
+} from '../shared/sites'
 
 export interface WindowBounds {
   width: number
@@ -14,6 +21,7 @@ export interface WindowBounds {
 interface PersistedState {
   settings: Settings
   window: WindowBounds
+  lastSiteUrls: LastSiteUrls
 }
 
 const defaultWindowBounds: WindowBounds = {
@@ -55,12 +63,14 @@ function read(): PersistedState {
     const raw = JSON.parse(readFileSync(statePath(), 'utf8')) as Record<string, unknown>
     cached = {
       settings: coerceSettings(raw.settings),
-      window: coerceWindowBounds(raw.window)
+      window: coerceWindowBounds(raw.window),
+      lastSiteUrls: coerceLastSiteUrls(raw.lastSiteUrls)
     }
   } catch {
     cached = {
       settings: { ...defaultSettings },
-      window: { ...defaultWindowBounds }
+      window: { ...defaultWindowBounds },
+      lastSiteUrls: { ...DEFAULT_LAST_SITE_URLS }
     }
   }
 
@@ -89,6 +99,24 @@ export function setSetting<K extends SettingKey>(key: K, value: Settings[K]): Se
   state.settings[key] = value
   write(state)
   return { ...state.settings }
+}
+
+export function getLastSiteUrls(): LastSiteUrls {
+  return { ...read().lastSiteUrls }
+}
+
+export function setLastSiteUrl(siteId: SiteId, url: string): void {
+  if (!isSiteURL(siteId, url)) {
+    return
+  }
+
+  const state = read()
+  if (state.lastSiteUrls[siteId] === url) {
+    return
+  }
+
+  state.lastSiteUrls[siteId] = url
+  write(state)
 }
 
 export function getWindowBounds(): WindowBounds {

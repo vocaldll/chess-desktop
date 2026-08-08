@@ -6,6 +6,7 @@
   import SettingsModal from './lib/SettingsModal.svelte'
   import SiteWebview from './lib/SiteWebview.svelte'
   import Titlebar from './lib/Titlebar.svelte'
+  import { browser } from './lib/browser.svelte'
   import { fullscreen } from './lib/fullscreen.svelte'
   import { notices } from './lib/notices.svelte'
   import { onboarding } from './lib/onboarding.svelte'
@@ -78,7 +79,7 @@
   }
 
   onMount(() => {
-    settings.load().then(() => {
+    Promise.all([settings.load(), browser.load()]).then(() => {
       if (!settings.current.onboardingCompleted) {
         onboarding.start()
       }

@@ -7,6 +7,7 @@ import {
 } from '../shared/ipc-channels'
 import type { SettingKey, Settings } from '../shared/settings'
 import type { ShortcutCommand } from '../shared/shortcuts'
+import type { LastSiteUrls } from '../shared/sites'
 
 type Unsubscribe = () => void
 
@@ -45,6 +46,7 @@ const api = {
     openRepository: (): void => ipcRenderer.send(IPC.links.openRepository)
   },
   webview: {
+    getLastSiteUrls: (): Promise<LastSiteUrls> => ipcRenderer.invoke(IPC.webview.getLastSiteUrls),
     onLoadStart: (listener: () => void): Unsubscribe => subscribe(IPC.webview.loadStart, listener),
     onLoadStop: (listener: () => void): Unsubscribe => subscribe(IPC.webview.loadStop, listener),
     onLoadError: (listener: (error: WebviewLoadError) => void): Unsubscribe =>

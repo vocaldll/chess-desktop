@@ -1,5 +1,7 @@
 export type SiteId = 'chesscom' | 'lichess'
 
+export type LastSiteUrls = Record<SiteId, string>
+
 export interface Site {
   id: SiteId
   name: string
@@ -29,6 +31,11 @@ export const SITE_ORDER: readonly SiteId[] = ['chesscom', 'lichess']
 
 export const DEFAULT_SITE: SiteId = 'chesscom'
 
+export const DEFAULT_LAST_SITE_URLS: LastSiteUrls = {
+  chesscom: SITES.chesscom.startUrl,
+  lichess: SITES.lichess.startUrl
+}
+
 const EXTERNAL_PROTOCOLS = new Set(['https:', 'http:', 'mailto:'])
 
 export function isSiteId(value: unknown): value is SiteId {
@@ -50,6 +57,20 @@ export function isSiteURL(siteId: SiteId, value: string): boolean {
 
   const { host } = SITES[siteId]
   return url.hostname === host || url.hostname.endsWith(`.${host}`)
+}
+
+export function coerceLastSiteUrls(raw: unknown): LastSiteUrls {
+  const source = typeof raw === 'object' && raw !== null ? (raw as Record<string, unknown>) : {}
+  const result = { ...DEFAULT_LAST_SITE_URLS }
+
+  for (const id of SITE_ORDER) {
+    const value = source[id]
+    if (typeof value === 'string' && isSiteURL(id, value)) {
+      result[id] = value
+    }
+  }
+
+  return result
 }
 
 export function normalizeSiteInput(siteId: SiteId, raw: string): string | null {

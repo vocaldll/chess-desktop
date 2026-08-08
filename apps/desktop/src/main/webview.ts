@@ -9,7 +9,7 @@ import { rejectCookieBanners } from './consent'
 import { updatePresenceLocation } from './discord'
 import { probeGameRole } from './game-role'
 import { updatePlayingState } from './keep-awake'
-import { getSettings } from './store'
+import { getSettings, setLastSiteUrl } from './store'
 
 const ABORTED_BY_USER = -3
 const ROLE_POLL_INTERVAL = 3_000
@@ -98,6 +98,8 @@ function trackPresence(url: string): void {
     stopRolePolling()
     return
   }
+
+  setLastSiteUrl(activeSite, url)
 
   if (!needsGameRole(activeSite, url)) {
     stopRolePolling()
