@@ -8,7 +8,8 @@ export const IPC = {
     fullscreenChanged: 'window:fullscreen-changed'
   },
   shortcuts: {
-    triggered: 'shortcuts:triggered'
+    triggered: 'shortcuts:triggered',
+    recording: 'shortcuts:recording'
   },
   settings: {
     getAll: 'settings:get-all',

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { resolveShortcutChords, SHORTCUTS, type ShortcutAction } from '$shared/shortcuts'
   import { DEFAULT_ZOOM, stepZoom } from '$shared/zoom'
   import Notice from './lib/Notice.svelte'
   import OnboardingTour from './lib/OnboardingTour.svelte'
@@ -24,7 +25,7 @@
           source: 'fullscreen',
           icon: 'fullscreen',
           title: "You're in full screen",
-          keys: ['Esc', 'F11'],
+          keys: [...shortcutKeys('exit-fullscreen'), ...shortcutKeys('fullscreen')],
           action: 'exit'
         })
       } else {
@@ -59,6 +60,15 @@
     }
   }
 
+  function shortcutKeys(command: ShortcutAction): string[] {
+    const shortcut = SHORTCUTS.find((candidate) => candidate.command === command)
+    return shortcut
+      ? resolveShortcutChords(shortcut, settings.current.shortcutOverrides).map(
+          (chord) => chord.label
+        )
+      : []
+  }
+
   function resetZoom(): void {
     const site = settings.current.activeSite
 
@@ -75,7 +85,7 @@
       source: 'mute',
       icon: muted ? 'sound-off' : 'sound-on',
       title: muted ? 'Sound off' : 'Sound on',
-      keys: ['Ctrl+M'],
+      keys: shortcutKeys('toggle-mute'),
       action: muted ? 'unmute' : 'mute'
     })
   }
@@ -88,7 +98,7 @@
       source: 'always-on-top',
       icon: alwaysOnTop ? 'pin' : 'pin-off',
       title: alwaysOnTop ? 'Always on top enabled' : 'Always on top disabled',
-      keys: ['Ctrl+Alt+P'],
+      keys: shortcutKeys('toggle-always-on-top'),
       action: alwaysOnTop ? 'disable' : 'enable'
     })
   }

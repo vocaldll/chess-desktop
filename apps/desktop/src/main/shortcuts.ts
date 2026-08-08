@@ -1,6 +1,14 @@
-import { app, type BrowserWindow, type Input } from 'electron'
+import { app, type BrowserWindow, type Input, ipcMain } from 'electron'
 import { IPC } from '../shared/ipc-channels'
-import { SHORTCUTS, type ShortcutAction } from '../shared/shortcuts'
+import {
+  resolveShortcutChords,
+  SHORTCUTS,
+  type ShortcutAction,
+  shortcutChordMatchesBinding
+} from '../shared/shortcuts'
+import { getSettings } from './store'
+
+let recordingContentsId: number | null = null
 
 function matchCommand(input: Input): ShortcutAction | null {
   if (input.type !== 'keyDown' || input.isAutoRepeat || input.meta) {
@@ -8,11 +16,17 @@ function matchCommand(input: Input): ShortcutAction | null {
   }
 
   const key = input.key.length === 1 ? input.key.toLowerCase() : input.key
+  const binding = {
+    key,
+    control: input.control,
+    alt: input.alt,
+    shift: input.shift
+  }
+  const { shortcutOverrides } = getSettings()
 
   const shortcut = SHORTCUTS.find((candidate) =>
-    candidate.chords.some(
-      (chord) =>
-        chord.keys.includes(key) && chord.control === input.control && chord.alt === input.alt
+    resolveShortcutChords(candidate, shortcutOverrides).some((chord) =>
+      shortcutChordMatchesBinding(chord, binding)
     )
   )
 
@@ -20,6 +34,14 @@ function matchCommand(input: Input): ShortcutAction | null {
 }
 
 export function registerShortcuts(getWindow: () => BrowserWindow | null): void {
+  ipcMain.on(IPC.shortcuts.recording, (event, recording: unknown) => {
+    if (event.sender !== getWindow()?.webContents) {
+      return
+    }
+
+    recordingContentsId = recording === true ? event.sender.id : null
+  })
+
   app.on('web-contents-created', (_event, contents) => {
     const type = contents.getType()
 
@@ -27,7 +49,20 @@ export function registerShortcuts(getWindow: () => BrowserWindow | null): void {
       return
     }
 
+    const clearRecording = (): void => {
+      if (contents.id === recordingContentsId) {
+        recordingContentsId = null
+      }
+    }
+
+    contents.on('did-start-loading', clearRecording)
+    contents.on('destroyed', clearRecording)
+
     contents.on('before-input-event', (event, input) => {
+      if (contents.id === recordingContentsId) {
+        return
+      }
+
       const command = matchCommand(input)
       const window = getWindow()
 

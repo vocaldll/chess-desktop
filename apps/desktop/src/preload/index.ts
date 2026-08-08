@@ -32,7 +32,8 @@ const api = {
   },
   shortcuts: {
     onCommand: (listener: (command: ShortcutCommand) => void): Unsubscribe =>
-      subscribe(IPC.shortcuts.triggered, listener)
+      subscribe(IPC.shortcuts.triggered, listener),
+    setRecording: (recording: boolean): void => ipcRenderer.send(IPC.shortcuts.recording, recording)
   },
   settings: {
     getAll: (): Promise<Settings> => ipcRenderer.invoke(IPC.settings.getAll),

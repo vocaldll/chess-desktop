@@ -1,3 +1,4 @@
+import { coerceShortcutOverrides, isShortcutOverrides, type ShortcutOverrides } from './shortcuts'
 import { DEFAULT_SITE, isSiteId, type SiteId } from './sites'
 import { DEFAULT_VOLUME, isVolumePercent } from './volume'
 import { coerceSiteZoom, isSiteZoom, type SiteZoom } from './zoom'
@@ -11,6 +12,7 @@ export interface Settings {
   notificationsEnabled: boolean
   discordRpcEnabled: boolean
   onboardingCompleted: boolean
+  shortcutOverrides: ShortcutOverrides
   zoom: SiteZoom
 }
 
@@ -23,6 +25,7 @@ export const defaultSettings: Settings = {
   notificationsEnabled: true,
   discordRpcEnabled: false,
   onboardingCompleted: false,
+  shortcutOverrides: {},
   zoom: coerceSiteZoom(null)
 }
 
@@ -48,6 +51,10 @@ export function isValidSettingValue<K extends SettingKey>(
     return isVolumePercent(value)
   }
 
+  if (key === 'shortcutOverrides') {
+    return isShortcutOverrides(value)
+  }
+
   return typeof value === typeof defaultSettings[key]
 }
 
@@ -63,6 +70,7 @@ export function coerceSettings(raw: unknown): Settings {
   }
 
   result.zoom = coerceSiteZoom(source.zoom)
+  result.shortcutOverrides = coerceShortcutOverrides(source.shortcutOverrides)
 
   return result
 }

@@ -2,7 +2,15 @@
   import ArrowLeft from '@lucide/svelte/icons/arrow-left'
   import Keyboard from '@lucide/svelte/icons/keyboard'
   import X from '@lucide/svelte/icons/x'
-  import { SHORTCUTS } from '$shared/shortcuts'
+  import {
+    normalizeShortcutKey,
+    resolveShortcutChords,
+    shortcutChordMatchesBinding,
+    SHORTCUTS,
+    type Shortcut,
+    type ShortcutAction,
+    type ShortcutBinding
+  } from '$shared/shortcuts'
   import Key from './Key.svelte'
   import Toggle from './Toggle.svelte'
   import GitHubMark from './marks/GitHubMark.svelte'
@@ -17,8 +25,13 @@
   let { open, onClose }: Props = $props()
 
   let showShortcuts = $state(false)
+  let editingShortcut = $state<ShortcutAction | null>(null)
+  let recordingError = $state('')
 
   const title = $derived(showShortcuts ? 'Keyboard shortcuts' : 'Settings')
+  const hasShortcutOverrides = $derived(
+    Object.keys(settings.current.shortcutOverrides).length > 0
+  )
   const updateButtonDisabled = $derived(
     updates.downloadedVersion
       ? updates.installing
@@ -96,8 +109,21 @@
   $effect(() => {
     if (open) {
       showShortcuts = false
+      editingShortcut = null
+      recordingError = ''
       if (!updates.info) {
         void updates.loadInfo()
+      }
+    }
+  })
+
+  $effect(() => {
+    const recording = open && showShortcuts && editingShortcut !== null
+    window.api.shortcuts.setRecording(recording)
+
+    return () => {
+      if (recording) {
+        window.api.shortcuts.setRecording(false)
       }
     }
   })
@@ -110,8 +136,115 @@
     }
   }
 
+  function chordsFor(shortcut: Shortcut) {
+    return resolveShortcutChords(shortcut, settings.current.shortcutOverrides)
+  }
+
+  function beginEditing(command: ShortcutAction): void {
+    editingShortcut = command
+    recordingError = ''
+  }
+
+  function stopEditing(): void {
+    editingShortcut = null
+    recordingError = ''
+  }
+
+  function showSettings(): void {
+    stopEditing()
+    showShortcuts = false
+  }
+
+  async function setShortcutOverride(
+    command: ShortcutAction,
+    binding: ShortcutBinding | null
+  ): Promise<void> {
+    await settings.set('shortcutOverrides', {
+      ...settings.current.shortcutOverrides,
+      [command]: binding
+    })
+  }
+
+  async function removeShortcut(command: ShortcutAction): Promise<void> {
+    stopEditing()
+    await setShortcutOverride(command, null)
+  }
+
+  async function resetAllShortcuts(): Promise<void> {
+    stopEditing()
+    await settings.set('shortcutOverrides', {})
+  }
+
+  function findConflict(command: ShortcutAction, binding: ShortcutBinding): Shortcut | undefined {
+    return SHORTCUTS.find(
+      (shortcut) =>
+        shortcut.command !== command &&
+        chordsFor(shortcut).some((chord) => shortcutChordMatchesBinding(chord, binding))
+    )
+  }
+
+  async function recordShortcut(event: KeyboardEvent): Promise<void> {
+    const command = editingShortcut
+    if (!command || event.repeat) {
+      return
+    }
+
+    if (event.key === 'Escape') {
+      stopEditing()
+      return
+    }
+
+    if (event.key === 'Backspace' || event.key === 'Delete') {
+      await removeShortcut(command)
+      return
+    }
+
+    if (['Alt', 'AltGraph', 'Control', 'Meta', 'Shift'].includes(event.key)) {
+      return
+    }
+
+    if (event.metaKey) {
+      recordingError = 'System key unsupported'
+      return
+    }
+
+    const binding: ShortcutBinding = {
+      key: normalizeShortcutKey(event.key),
+      control: event.ctrlKey,
+      alt: event.altKey,
+      shift: event.shiftKey
+    }
+    const hasModifier = binding.control || binding.alt || binding.shift
+    const isFunctionKey = /^F(?:[1-9]|1[0-2])$/.test(binding.key)
+
+    if (!hasModifier && !isFunctionKey) {
+      recordingError = 'Modifier required'
+      return
+    }
+
+    const conflict = findConflict(command, binding)
+    if (conflict) {
+      recordingError = 'Not available'
+      return
+    }
+
+    stopEditing()
+    await setShortcutOverride(command, binding)
+  }
+
   function onKeydown(event: KeyboardEvent): void {
-    if (open && event.key === 'Escape') {
+    if (!open) {
+      return
+    }
+
+    if (editingShortcut) {
+      event.preventDefault()
+      event.stopPropagation()
+      void recordShortcut(event)
+      return
+    }
+
+    if (event.key === 'Escape') {
       onClose()
     }
   }
@@ -134,11 +267,21 @@
 
         <div class="actions">
           {#if showShortcuts}
+            {#if hasShortcutOverrides}
+              <button
+                class="reset-all"
+                title="Reset all shortcuts to their defaults"
+                onclick={() => void resetAllShortcuts()}
+              >
+                Reset all
+              </button>
+            {/if}
+
             <button
               class="icon"
               title="Back to settings"
               aria-label="Back to settings"
-              onclick={() => (showShortcuts = false)}
+              onclick={showSettings}
             >
               <ArrowLeft size={16} strokeWidth={1.8} />
             </button>
@@ -183,17 +326,47 @@
         <div class="body">
           <section>
             {#each SHORTCUTS as shortcut (shortcut.command)}
-              <div class="row">
+              {@const chords = chordsFor(shortcut)}
+              <button
+                type="button"
+                class="row shortcut-row"
+                class:editing={editingShortcut === shortcut.command}
+                disabled={shortcut.customizable === false}
+                title={shortcut.customizable === false ? 'This shortcut is fixed' : 'Edit shortcut'}
+                onclick={() => beginEditing(shortcut.command)}
+              >
                 <div class="info">
                   <div class="label">{shortcut.description}</div>
                 </div>
-                <div class="keys">
-                  {#each shortcut.chords as chord, index (chord.label)}
-                    {#if index > 0}<span class="or">or</span>{/if}
-                    <Key label={chord.label} />
-                  {/each}
-                </div>
-              </div>
+
+                {#if editingShortcut === shortcut.command}
+                  <div class="recorder" aria-live="polite">
+                    {#if recordingError}
+                      <span class="error">{recordingError}</span>
+                    {:else}
+                      <span>
+                        Press a shortcut<span class="waiting-dots" aria-hidden="true">
+                          <span>.</span><span>.</span><span>.</span>
+                        </span>
+                      </span>
+                    {/if}
+                    <span class="recording-hint">Esc cancel · Del remove</span>
+                  </div>
+                {:else}
+                  <div class="shortcut-controls">
+                    <div class="keys">
+                      {#if chords.length === 0}
+                        <Key label="None" />
+                      {:else}
+                        {#each chords as chord, index (chord.label)}
+                          {#if index > 0}<span class="or">or</span>{/if}
+                          <Key label={chord.label} />
+                        {/each}
+                      {/if}
+                    </div>
+                  </div>
+                {/if}
+              </button>
             {/each}
           </section>
         </div>
@@ -348,6 +521,29 @@
     color: var(--cd-text);
   }
 
+  .reset-all {
+    height: 28px;
+    padding: 0 9px;
+    border: 0;
+    border-radius: var(--cd-radius-sm);
+    background: transparent;
+    color: var(--cd-text-muted);
+    font-family: inherit;
+    font-size: var(--cd-font-size-sm);
+    cursor: pointer;
+    transition: background var(--cd-transition), color var(--cd-transition);
+  }
+
+  .reset-all:hover {
+    background: var(--cd-surface-hover);
+    color: var(--cd-text);
+  }
+
+  .reset-all:focus-visible {
+    outline: 2px solid var(--cd-accent);
+    outline-offset: 2px;
+  }
+
   .update-check {
     height: 28px;
     padding: 0 10px;
@@ -417,6 +613,43 @@
     border-bottom: 0;
   }
 
+  .info {
+    min-width: 0;
+  }
+
+  .shortcut-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 190px;
+    width: 100%;
+    min-height: 45px;
+    border: 0;
+    border-bottom: 1px solid var(--cd-border);
+    background: transparent;
+    color: var(--cd-text);
+    font-family: inherit;
+    font-size: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--cd-transition);
+  }
+
+  .shortcut-row:not(:disabled):hover {
+    background: var(--cd-surface-raised);
+  }
+
+  .shortcut-row:disabled {
+    cursor: default;
+  }
+
+  .shortcut-row:focus-visible {
+    outline: 2px solid var(--cd-accent);
+    outline-offset: -2px;
+  }
+
+  .shortcut-row.editing {
+    background: var(--cd-surface-raised);
+  }
+
   .label {
     display: flex;
     align-items: center;
@@ -427,8 +660,73 @@
   .keys {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
     flex: none;
     gap: var(--cd-space-2);
+  }
+
+  .shortcut-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 190px;
+  }
+
+  .recorder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-self: end;
+    width: 180px;
+    max-width: 180px;
+    min-width: 0;
+    padding: 4px 8px;
+    border: 1px solid var(--cd-accent);
+    border-radius: var(--cd-radius-sm);
+    background: var(--cd-surface-raised);
+    box-shadow: 0 0 0 2px var(--cd-accent-soft);
+    color: var(--cd-accent);
+    font-size: var(--cd-font-size-sm);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+
+  .recorder > span {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .recorder .error {
+    color: var(--cd-danger);
+  }
+
+  .waiting-dots {
+    display: inline-flex;
+  }
+
+  .waiting-dots span {
+    opacity: 0.25;
+    animation: waiting-dot 1.2s ease-in-out infinite;
+  }
+
+  .waiting-dots span:nth-child(2) {
+    animation-delay: 150ms;
+  }
+
+  .waiting-dots span:nth-child(3) {
+    animation-delay: 300ms;
+  }
+
+  .recording-hint {
+    margin-top: 2px;
+    color: var(--cd-text-subtle);
+    font-size: 11px;
+    font-weight: 400;
   }
 
   .or {
@@ -455,4 +753,18 @@
       transform: translateY(8px) scale(0.98);
     }
   }
+
+  @keyframes waiting-dot {
+    40% {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .waiting-dots span {
+      opacity: 1;
+      animation: none;
+    }
+  }
+
 </style>
