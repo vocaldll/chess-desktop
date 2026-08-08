@@ -28,6 +28,10 @@ export function getSiteWebContents(): WebContents | null {
   return siteContents && !siteContents.isDestroyed() ? siteContents : null
 }
 
+function isCurrentSiteContents(contents: WebContents): boolean {
+  return getSiteWebContents() === contents
+}
+
 function isActiveSiteURL(url: string): boolean {
   return isSiteURL(getSettings().activeSite, url)
 }
@@ -195,6 +199,10 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
   })
 
   contents.on('dom-ready', () => {
+    if (!isCurrentSiteContents(contents)) {
+      return
+    }
+
     const settings = getSettings()
 
     contents.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
@@ -204,25 +212,31 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
   })
 
   contents.on('did-navigate', (_event, url) => {
-    trackPresence(url)
+    if (isCurrentSiteContents(contents)) {
+      trackPresence(url)
+    }
   })
 
   contents.on('did-navigate-in-page', (_event, url, isMainFrame) => {
-    if (isMainFrame) {
+    if (isMainFrame && isCurrentSiteContents(contents)) {
       trackPresence(url)
     }
   })
 
   contents.on('did-start-loading', () => {
-    getWindow()?.webContents.send(IPC.webview.loadStart)
+    if (isCurrentSiteContents(contents)) {
+      getWindow()?.webContents.send(IPC.webview.loadStart)
+    }
   })
 
   contents.on('did-stop-loading', () => {
-    getWindow()?.webContents.send(IPC.webview.loadStop)
+    if (isCurrentSiteContents(contents)) {
+      getWindow()?.webContents.send(IPC.webview.loadStop)
+    }
   })
 
-  contents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
-    if (errorCode === ABORTED_BY_USER) {
+  contents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL, isMainFrame) => {
+    if (errorCode === ABORTED_BY_USER || !isMainFrame || !isCurrentSiteContents(contents)) {
       return
     }
 
