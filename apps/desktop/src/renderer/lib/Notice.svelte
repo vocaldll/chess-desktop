@@ -1,5 +1,7 @@
 <script lang="ts">
   import Maximize from '@lucide/svelte/icons/maximize'
+  import Pin from '@lucide/svelte/icons/pin'
+  import PinOff from '@lucide/svelte/icons/pin-off'
   import Volume2 from '@lucide/svelte/icons/volume-2'
   import VolumeOff from '@lucide/svelte/icons/volume-off'
   import Key from './Key.svelte'
@@ -12,6 +14,8 @@
 
   const icons = {
     fullscreen: Maximize,
+    pin: Pin,
+    'pin-off': PinOff,
     'sound-on': Volume2,
     'sound-off': VolumeOff
   }

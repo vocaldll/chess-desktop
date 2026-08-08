@@ -37,6 +37,8 @@
     window.api.shortcuts.onCommand((command) => {
       if (command === 'toggle-mute') {
         toggleMute()
+      } else if (command === 'toggle-always-on-top') {
+        toggleAlwaysOnTop()
       } else if (command === 'zoom-in') {
         changeZoom(1)
       } else if (command === 'zoom-out') {
@@ -75,6 +77,19 @@
       title: muted ? 'Sound off' : 'Sound on',
       keys: ['Ctrl+M'],
       action: muted ? 'unmute' : 'mute'
+    })
+  }
+
+  function toggleAlwaysOnTop(): void {
+    const alwaysOnTop = !settings.current.alwaysOnTop
+    settings.set('alwaysOnTop', alwaysOnTop)
+
+    notices.show({
+      source: 'always-on-top',
+      icon: alwaysOnTop ? 'pin' : 'pin-off',
+      title: alwaysOnTop ? 'Always on top enabled' : 'Always on top disabled',
+      keys: ['Ctrl+Alt+P'],
+      action: alwaysOnTop ? 'disable' : 'enable'
     })
   }
 

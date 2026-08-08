@@ -3,6 +3,7 @@ export type ShortcutCommand =
   | 'reload'
   | 'back'
   | 'forward'
+  | 'toggle-always-on-top'
   | 'toggle-mute'
   | 'zoom-in'
   | 'zoom-out'
@@ -46,6 +47,11 @@ export const SHORTCUTS: readonly Shortcut[] = [
     command: 'forward',
     description: 'Go forward',
     chords: [{ keys: ['ArrowRight'], control: false, alt: true, label: 'Alt+→' }]
+  },
+  {
+    command: 'toggle-always-on-top',
+    description: 'Toggle always on top',
+    chords: [{ keys: ['p'], control: true, alt: true, label: 'Ctrl+Alt+P' }]
   },
   {
     command: 'toggle-mute',

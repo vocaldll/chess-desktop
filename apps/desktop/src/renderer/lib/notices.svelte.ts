@@ -1,6 +1,6 @@
-export type NoticeSource = 'fullscreen' | 'mute'
+export type NoticeSource = 'fullscreen' | 'mute' | 'always-on-top'
 
-export type NoticeIcon = 'fullscreen' | 'sound-on' | 'sound-off'
+export type NoticeIcon = 'fullscreen' | 'sound-on' | 'sound-off' | 'pin' | 'pin-off'
 
 export interface Notice {
   source: NoticeSource
