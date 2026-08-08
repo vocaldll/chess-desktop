@@ -1,4 +1,5 @@
-import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
+import { mkdir, rename, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { app } from 'electron'
 import { coerceSettings, defaultSettings, type SettingKey, type Settings } from '../shared/settings'
@@ -30,7 +31,12 @@ const defaultWindowBounds: WindowBounds = {
   isMaximized: false
 }
 
+const WRITE_DELAY = 500
+
 let cached: PersistedState | null = null
+let dirty = false
+let writeTimer: NodeJS.Timeout | null = null
+let writeQueue = Promise.resolve()
 
 function statePath(): string {
   return join(app.getPath('userData'), 'state.json')
@@ -77,17 +83,47 @@ function read(): PersistedState {
   return cached
 }
 
-function write(state: PersistedState): void {
+async function write(state: string): Promise<void> {
   const target = statePath()
   const temp = `${target}.tmp`
 
-  try {
-    mkdirSync(dirname(target), { recursive: true })
-    writeFileSync(temp, JSON.stringify(state, null, 2), 'utf8')
-    renameSync(temp, target)
-  } catch (error) {
-    console.error('Failed to persist state:', error)
+  await mkdir(dirname(target), { recursive: true })
+  await writeFile(temp, state, 'utf8')
+  await rename(temp, target)
+}
+
+function scheduleWrite(): void {
+  dirty = true
+
+  if (writeTimer) {
+    clearTimeout(writeTimer)
   }
+
+  writeTimer = setTimeout(() => {
+    writeTimer = null
+    void flushState()
+  }, WRITE_DELAY)
+  writeTimer.unref()
+}
+
+export async function flushState(): Promise<void> {
+  if (writeTimer) {
+    clearTimeout(writeTimer)
+    writeTimer = null
+  }
+
+  do {
+    if (dirty) {
+      dirty = false
+      const serialized = JSON.stringify(read(), null, 2)
+
+      writeQueue = writeQueue
+        .then(() => write(serialized))
+        .catch((error) => console.error('Failed to persist state:', error))
+    }
+
+    await writeQueue
+  } while (dirty)
 }
 
 export function getSettings(): Settings {
@@ -97,7 +133,7 @@ export function getSettings(): Settings {
 export function setSetting<K extends SettingKey>(key: K, value: Settings[K]): Settings {
   const state = read()
   state.settings[key] = value
-  write(state)
+  scheduleWrite()
   return { ...state.settings }
 }
 
@@ -116,7 +152,7 @@ export function setLastSiteUrl(siteId: SiteId, url: string): void {
   }
 
   state.lastSiteUrls[siteId] = url
-  write(state)
+  scheduleWrite()
 }
 
 export function getWindowBounds(): WindowBounds {
@@ -126,5 +162,5 @@ export function getWindowBounds(): WindowBounds {
 export function setWindowBounds(bounds: WindowBounds): void {
   const state = read()
   state.window = bounds
-  write(state)
+  scheduleWrite()
 }

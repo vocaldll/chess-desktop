@@ -6,7 +6,7 @@ import { shutdownKeepAwake } from './keep-awake'
 import { registerPermissions } from './permissions'
 import { applySettings } from './settings-effects'
 import { registerShortcuts } from './shortcuts'
-import { getSettings } from './store'
+import { flushState, getSettings } from './store'
 import { startAutoUpdates } from './updates'
 import {
   browserUserAgent,
@@ -17,6 +17,7 @@ import {
 import { createMainWindow } from './window'
 
 let mainWindow: BrowserWindow | null = null
+let stateFlushed = false
 
 const getWindow = (): BrowserWindow | null =>
   mainWindow && !mainWindow.isDestroyed() ? mainWindow : null
@@ -62,6 +63,19 @@ if (!app.requestSingleInstanceLock()) {
   app.on('before-quit', () => {
     shutdownKeepAwake()
     shutdownPresence()
+  })
+
+  app.on('will-quit', (event) => {
+    if (stateFlushed) {
+      return
+    }
+
+    event.preventDefault()
+
+    void flushState().finally(() => {
+      stateFlushed = true
+      app.quit()
+    })
   })
 
   app.on('window-all-closed', () => {
