@@ -55,7 +55,7 @@ export const SHORTCUTS: readonly Shortcut[] = [
   },
   {
     command: 'toggle-mute',
-    description: 'Mute or unmute sound',
+    description: 'Toggle sound',
     chords: [{ keys: ['m'], control: true, alt: false, label: 'Ctrl+M' }]
   },
   {
