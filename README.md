@@ -26,7 +26,7 @@ Free, open source, for Windows and Linux.
 - **Chess.com and Lichess in one app**: switch between them instantly, stay signed in to both
 - **Picks up where you left off**: remembers the last page on each site, window size, and position
 - **Desktop controls**: always-on-top mode, keep-awake during games, volume control from the title bar
-- **Feels like your browser**: familiar keyboard and mouse shortcuts
+- **Feels like your browser**: familiar mouse navigation and customizable keyboard shortcuts
 - **Discord Rich Presence**: shows your current game on your profile
 - **No maintenance**: cookie banners rejected automatically, updates install in the background
 
