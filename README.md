@@ -23,8 +23,8 @@ Free, open source, for Windows and Linux.
 
 ## What it does
 
-- **Chess.com and Lichess in one app**: switch between them instantly, both signed in at once
-- **Picks up where you left off**: same site, same window size and position
+- **Chess.com and Lichess in one app**: switch between them instantly, stay signed in to both
+- **Picks up where you left off**: remembers your site, window size, and position
 - **Desktop controls**: always-on-top mode, per-site volume from the title bar
 - **Feels like your browser**: familiar keyboard and mouse shortcuts
 - **Discord Rich Presence**: shows your current game on your profile
@@ -37,7 +37,7 @@ Free, open source, for Windows and Linux.
 **Linux**: download the AppImage, make it executable (`chmod +x Chess-Desktop.AppImage`, or right click, Properties, allow executing), and start it.
 
 > [!NOTE]
-> If Windows SmartScreen warns you, choose "More info", then "Run anyway". The app is new and unsigned, not unsafe.
+> If Windows SmartScreen warns you, choose "More info", then "Run anyway". The warning appears because the app is unsigned.
 
 ## Questions or problems
 
