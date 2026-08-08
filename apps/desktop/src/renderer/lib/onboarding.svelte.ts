@@ -1,7 +1,7 @@
 import type { Action } from 'svelte/action'
 import { settings } from './settings.svelte'
 
-export type AnchorId = 'switcher' | 'address' | 'settings' | 'controlStrip'
+export type AnchorId = 'switcher' | 'address' | 'volume' | 'settings' | 'controlStrip'
 
 export interface OnboardingStep {
   id: string
@@ -29,10 +29,16 @@ export const STEPS: readonly OnboardingStep[] = [
     body: 'Type a path like /puzzles and press Enter. Addresses outside the active site are rejected instead of loaded.'
   },
   {
+    id: 'volume',
+    anchor: 'volume',
+    title: 'Control the sound',
+    body: 'Adjust the volume or mute the app without changing the sound on the rest of your computer.'
+  },
+  {
     id: 'settings',
     anchor: 'settings',
     title: 'Make it yours',
-    body: 'Everything you can change about the app lives behind the gear.'
+    body: 'App preferences and the full keyboard shortcut list live behind the gear.'
   }
 ]
 

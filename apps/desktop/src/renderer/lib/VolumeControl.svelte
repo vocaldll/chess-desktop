@@ -3,6 +3,7 @@
   import Volume2 from '@lucide/svelte/icons/volume-2'
   import VolumeX from '@lucide/svelte/icons/volume-x'
   import { MAX_VOLUME, MIN_VOLUME } from '$shared/volume'
+  import { anchor } from './onboarding.svelte'
   import { settings } from './settings.svelte'
 
   const ICON = 16
@@ -77,6 +78,7 @@
     aria-label="Volume"
     aria-expanded={open}
     onclick={() => (open = !open)}
+    use:anchor={'volume'}
   >
     <Icon size={ICON} strokeWidth={STROKE} />
   </button>
