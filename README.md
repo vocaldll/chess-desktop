@@ -23,22 +23,21 @@ Free, open source, for Windows and Linux.
 
 ## What it does
 
-- Chess.com and Lichess sit one click apart in the same window
-- Each site keeps its own login, so you stay signed in to both
-- Reopens on the site you were last using, at the same window size and position
-- Keep the board above your other windows while you play
-- Set the volume for both sites from the title bar
-- Show what you are playing on your Discord profile
-- Keyboard and mouse shortcuts work like they do in a browser
-- Links that lead anywhere else open in your regular browser
-- Cookie consent banners are declined automatically
-- Updates itself in the background, so you never reinstall by hand
+- **Chess.com and Lichess in one app**: switch between them instantly, both signed in at once
+- **Picks up where you left off**: same site, same window size and position
+- **Desktop controls**: always-on-top mode, per-site volume from the title bar
+- **Feels like your browser**: familiar keyboard and mouse shortcuts
+- **Discord Rich Presence**: shows your current game on your profile
+- **No maintenance**: cookie banners rejected automatically, updates install in the background
 
 ## Installing
 
-**Windows**: download the installer, run it, and follow the steps. If Windows SmartScreen shows a warning, choose "More info" and then "Run anyway". The warning appears because the app is new and unsigned, not because anything is wrong with it.
+**Windows**: download the installer and run it.
 
-**Linux**: the AppImage runs on any distribution. Make it executable (right click, Properties, allow executing, or `chmod +x Chess-Desktop.AppImage`) and start it.
+**Linux**: download the AppImage, make it executable (`chmod +x Chess-Desktop.AppImage`, or right click, Properties, allow executing), and start it.
+
+> [!NOTE]
+> If Windows SmartScreen warns you, choose "More info", then "Run anyway". The app is new and unsigned, not unsafe.
 
 ## Questions or problems
 
