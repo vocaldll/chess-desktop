@@ -17,12 +17,19 @@ export const IPC = {
   audio: {
     setVolume: 'audio:set-volume'
   },
+  links: {
+    openRepository: 'links:open-repository'
+  },
   webview: {
     loadStart: 'webview:load-start',
     loadStop: 'webview:load-stop',
     loadError: 'webview:load-error'
   },
   updates: {
+    info: 'updates:info',
+    check: 'updates:check',
+    available: 'updates:available',
+    failed: 'updates:failed',
     downloaded: 'updates:downloaded',
     install: 'updates:install',
     installFailed: 'updates:install-failed'
@@ -34,3 +41,15 @@ export interface WebviewLoadError {
   errorDescription: string
   validatedURL: string
 }
+
+export interface AppUpdateInfo {
+  version: string
+  canCheck: boolean
+  downloadedVersion: string | null
+}
+
+export type AppUpdateCheckResult =
+  | { status: 'current' }
+  | { status: 'available'; version: string }
+  | { status: 'unsupported' }
+  | { status: 'error' }

@@ -1,5 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { IPC, type WebviewLoadError } from '../shared/ipc-channels'
+import {
+  type AppUpdateCheckResult,
+  type AppUpdateInfo,
+  IPC,
+  type WebviewLoadError
+} from '../shared/ipc-channels'
 import type { SettingKey, Settings } from '../shared/settings'
 import type { ShortcutCommand } from '../shared/shortcuts'
 
@@ -36,6 +41,9 @@ const api = {
   audio: {
     setVolume: (percent: number): void => ipcRenderer.send(IPC.audio.setVolume, percent)
   },
+  links: {
+    openRepository: (): void => ipcRenderer.send(IPC.links.openRepository)
+  },
   webview: {
     onLoadStart: (listener: () => void): Unsubscribe => subscribe(IPC.webview.loadStart, listener),
     onLoadStop: (listener: () => void): Unsubscribe => subscribe(IPC.webview.loadStop, listener),
@@ -43,7 +51,12 @@ const api = {
       subscribe(IPC.webview.loadError, listener)
   },
   updates: {
+    getInfo: (): Promise<AppUpdateInfo> => ipcRenderer.invoke(IPC.updates.info),
+    check: (): Promise<AppUpdateCheckResult> => ipcRenderer.invoke(IPC.updates.check),
     install: (): void => ipcRenderer.send(IPC.updates.install),
+    onAvailable: (listener: (version: string) => void): Unsubscribe =>
+      subscribe(IPC.updates.available, listener),
+    onFailed: (listener: () => void): Unsubscribe => subscribe(IPC.updates.failed, listener),
     onDownloaded: (listener: (version: string) => void): Unsubscribe =>
       subscribe(IPC.updates.downloaded, listener),
     onInstallFailed: (listener: () => void): Unsubscribe =>

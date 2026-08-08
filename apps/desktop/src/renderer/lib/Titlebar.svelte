@@ -13,6 +13,7 @@
   import { browser } from './browser.svelte'
   import { fullscreen } from './fullscreen.svelte'
   import { anchor } from './onboarding.svelte'
+  import { updates } from './updates.svelte'
 
   interface Props {
     onOpenSettings: () => void
@@ -28,8 +29,6 @@
   let isMaximized = $state(false)
   let addressFocused = $state(false)
   let spinning = $state(false)
-  let updateVersion = $state<string | null>(null)
-  let installing = $state(false)
 
   let stopAtRevolution = false
 
@@ -59,27 +58,10 @@
     stopAtRevolution = !browser.isLoading
   })
 
-  $effect(() =>
-    window.api.updates.onDownloaded((version) => {
-      updateVersion = version
-    })
-  )
-
-  $effect(() =>
-    window.api.updates.onInstallFailed(() => {
-      installing = false
-    })
-  )
-
   function reload(): void {
     spinning = true
     stopAtRevolution = true
     browser.reload()
-  }
-
-  function install(): void {
-    installing = true
-    window.api.updates.install()
   }
 
   function onRevolution(): void {
@@ -122,16 +104,16 @@
     </div>
 
     <div class="group">
-      {#if updateVersion !== null}
+      {#if updates.downloadedVersion !== null}
         <button
           class="update"
-          class:installing
-          title={`Restart to update to version ${updateVersion}`}
-          disabled={installing}
-          onclick={install}
+          class:installing={updates.installing}
+          title={`Restart to update to version ${updates.downloadedVersion}`}
+          disabled={updates.installing}
+          onclick={() => updates.install()}
         >
           <span class="update-dot"></span>
-          {installing ? 'Restarting' : 'Restart to update'}
+          {updates.installing ? 'Restarting' : 'Restart to update'}
         </button>
       {/if}
 

@@ -5,7 +5,9 @@
   import { SHORTCUTS } from '$shared/shortcuts'
   import Key from './Key.svelte'
   import Toggle from './Toggle.svelte'
+  import GitHubMark from './marks/GitHubMark.svelte'
   import { settings } from './settings.svelte'
+  import { updates } from './updates.svelte'
 
   interface Props {
     open: boolean
@@ -17,12 +19,96 @@
   let showShortcuts = $state(false)
 
   const title = $derived(showShortcuts ? 'Keyboard shortcuts' : 'Settings')
+  const updateButtonDisabled = $derived(
+    updates.downloadedVersion
+      ? updates.installing
+      : updates.checking ||
+          !updates.info?.canCheck ||
+          updates.checkResult?.status === 'available' ||
+          updates.checkResult?.status === 'unsupported'
+  )
+  const updateButtonLabel = $derived.by(() => {
+    if (updates.installing) {
+      return 'Restarting'
+    }
+
+    if (updates.downloadedVersion) {
+      return 'Restart to update'
+    }
+
+    if (updates.checking) {
+      return 'Checking…'
+    }
+
+    if (updates.checkResult?.status === 'current') {
+      return 'Up to date'
+    }
+
+    if (updates.checkResult?.status === 'available') {
+      return 'Downloading…'
+    }
+
+    if (updates.checkResult?.status === 'error') {
+      return 'Try again'
+    }
+
+    if (updates.checkResult?.status === 'unsupported') {
+      return 'Unavailable'
+    }
+
+    return 'Check for updates'
+  })
+  const updateButtonTitle = $derived.by(() => {
+    if (updates.downloadedVersion) {
+      return `Restart to update to version ${updates.downloadedVersion}`
+    }
+
+    if (updates.checking) {
+      return 'Checking for updates'
+    }
+
+    if (updates.infoFailed) {
+      return 'Update information is unavailable'
+    }
+
+    if (
+      updates.checkResult?.status === 'unsupported' ||
+      (updates.info && !updates.info.canCheck)
+    ) {
+      return 'Update checks are unavailable for this build'
+    }
+
+    if (updates.checkResult?.status === 'available') {
+      return `Version ${updates.checkResult.version} is downloading in the background`
+    }
+
+    if (updates.checkResult?.status === 'error') {
+      return "Couldn't check for updates"
+    }
+
+    if (updates.checkResult?.status === 'current') {
+      return "You're up to date"
+    }
+
+    return 'Check for updates'
+  })
 
   $effect(() => {
     if (open) {
       showShortcuts = false
+      if (!updates.info) {
+        void updates.loadInfo()
+      }
     }
   })
+
+  function onUpdateClick(): void {
+    if (updates.downloadedVersion) {
+      updates.install()
+    } else {
+      void updates.check()
+    }
+  }
 
   function onKeydown(event: KeyboardEvent): void {
     if (open && event.key === 'Escape') {
@@ -39,7 +125,12 @@
 
     <div class="panel">
       <header>
-        <h2>{title}</h2>
+        <div class="heading">
+          <h2>{title}</h2>
+          {#if !showShortcuts && updates.info}
+            <span class="version">v{updates.info.version}</span>
+          {/if}
+        </div>
 
         <div class="actions">
           {#if showShortcuts}
@@ -52,6 +143,26 @@
               <ArrowLeft size={16} strokeWidth={1.8} />
             </button>
           {:else}
+            <button
+              class="update-check"
+              class:error={updates.checkResult?.status === 'error'}
+              title={updateButtonTitle}
+              disabled={updateButtonDisabled}
+              onclick={onUpdateClick}
+              aria-live="polite"
+            >
+              {updateButtonLabel}
+            </button>
+
+            <button
+              class="icon"
+              title="View on GitHub"
+              aria-label="View Chess Desktop on GitHub"
+              onclick={() => window.api.links.openRepository()}
+            >
+              <GitHubMark size={16} />
+            </button>
+
             <button
               class="icon"
               title="Keyboard shortcuts"
@@ -201,6 +312,18 @@
     font-weight: 600;
   }
 
+  .heading {
+    display: flex;
+    align-items: baseline;
+    gap: var(--cd-space-2);
+  }
+
+  .version {
+    color: var(--cd-text-subtle);
+    font-size: var(--cd-font-size-sm);
+    font-weight: 500;
+  }
+
   .actions {
     display: flex;
     align-items: center;
@@ -223,6 +346,44 @@
   .icon:hover {
     background: var(--cd-surface-hover);
     color: var(--cd-text);
+  }
+
+  .update-check {
+    height: 28px;
+    padding: 0 10px;
+    border: 1px solid var(--cd-border);
+    border-radius: var(--cd-radius-sm);
+    background: var(--cd-surface-raised);
+    color: var(--cd-text-muted);
+    font-family: inherit;
+    font-size: var(--cd-font-size-sm);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background var(--cd-transition),
+      border-color var(--cd-transition),
+      color var(--cd-transition);
+  }
+
+  .update-check:hover:not(:disabled) {
+    background: var(--cd-surface-hover);
+    border-color: var(--cd-text-subtle);
+    color: var(--cd-text);
+  }
+
+  .update-check:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .update-check.error {
+    color: var(--cd-danger);
+  }
+
+  .update-check:focus-visible {
+    outline: 2px solid var(--cd-accent);
+    outline-offset: 2px;
   }
 
   .body {
