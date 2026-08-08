@@ -5,14 +5,35 @@ import {
   clipboard,
   Menu,
   type MenuItemConstructorOptions,
+  shell,
   type WebContents
 } from 'electron'
+import { isOpenableExternally } from '../shared/sites'
+import { getSiteWebContents } from './webview'
+
+function openExternally(url: string): void {
+  if (!isOpenableExternally(url)) {
+    return
+  }
+
+  shell.openExternal(url).catch((error) => {
+    console.error('Failed to open external URL:', error)
+  })
+}
 
 function buildTemplate(
   contents: WebContents,
-  params: ContextMenuParams
+  params: ContextMenuParams,
+  currentPageURL?: string
 ): MenuItemConstructorOptions[] {
   const items: MenuItemConstructorOptions[] = []
+
+  if (currentPageURL && isOpenableExternally(currentPageURL)) {
+    items.push(
+      { label: 'Open in browser', click: () => openExternally(currentPageURL) },
+      { type: 'separator' }
+    )
+  }
 
   if (params.isEditable) {
     items.push(
@@ -35,6 +56,13 @@ function buildTemplate(
       items.push({ type: 'separator' })
     }
 
+    if (isOpenableExternally(params.linkURL)) {
+      items.push({
+        label: 'Open in browser',
+        click: () => openExternally(params.linkURL)
+      })
+    }
+
     items.push({
       label: 'Copy link address',
       click: () => clipboard.writeText(params.linkURL)
@@ -54,7 +82,9 @@ export function registerContextMenus(getWindow: () => BrowserWindow | null): voi
 
     contents.on('context-menu', (_contextEvent, params) => {
       const window = getWindow()
-      const template = buildTemplate(contents, params)
+      const currentPageURL =
+        type === 'window' && params.isEditable ? getSiteWebContents()?.getURL() : undefined
+      const template = buildTemplate(contents, params, currentPageURL)
 
       if (!window || template.length === 0) {
         return
