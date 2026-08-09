@@ -44,7 +44,7 @@ export default function Showcase() {
   }, [])
 
   useEffect(() => {
-    if (paused || expanded || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (paused || expanded) {
       return
     }
 
@@ -74,7 +74,7 @@ export default function Showcase() {
             {shots.map((shot, index) => (
               <img
                 key={shot.src}
-                className={`col-start-1 row-start-1 block h-auto max-h-[min(56dvh,560px)] w-auto max-w-full rounded-xl border border-line object-contain transition-opacity duration-500 group-hover:border-line-strong ${index === active ? 'opacity-100' : 'opacity-0'}`}
+                className={`col-start-1 row-start-1 block h-auto max-h-[min(56dvh,560px)] w-auto max-w-full rounded-xl border border-line object-contain transition-opacity duration-500 group-hover:border-line-strong motion-reduce:transition-none ${index === active ? 'opacity-100' : 'opacity-0'}`}
                 src={shot.src}
                 width={1738}
                 height={1087}

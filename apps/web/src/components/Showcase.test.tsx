@@ -5,6 +5,7 @@ import Showcase from './Showcase'
 describe('Showcase', () => {
   afterEach(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   it('allows visitors to choose a screenshot', () => {
@@ -29,6 +30,20 @@ describe('Showcase', () => {
     const figure = screen.getByRole('button', { name: /View full size/ }).closest('figure')
     expect(figure).not.toBeNull()
     fireEvent.mouseEnter(figure as HTMLElement)
+    act(() => vi.advanceTimersByTime(5000))
+
+    expect(screen.getByRole('button', { name: 'Lichess' })).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('rotates screenshots without a transition when reduced motion is enabled', () => {
+    vi.useFakeTimers()
+    vi.spyOn(window, 'matchMedia').mockReturnValue({ matches: true } as MediaQueryList)
+    render(<Showcase />)
+
+    expect(screen.getByRole('img', { name: 'Chess Desktop running Chess.com' })).toHaveClass(
+      'motion-reduce:transition-none'
+    )
+
     act(() => vi.advanceTimersByTime(5000))
 
     expect(screen.getByRole('button', { name: 'Lichess' })).toHaveAttribute('aria-pressed', 'true')
