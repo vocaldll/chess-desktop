@@ -19,6 +19,9 @@ win:
 
 nsis:
   license: ../../LICENSE
+  include: resources/installer.nsh
+  installerSidebar: resources/sidebar.bmp
+  uninstallerSidebar: resources/sidebar.bmp
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
