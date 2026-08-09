@@ -3,12 +3,12 @@ import { useEffect, useRef, useState } from 'react'
 
 const shots = [
   {
-    src: '/showcase-chesscom.png',
+    src: '/showcase-chesscom.webp',
     label: 'Chess.com',
     alt: 'Chess Desktop running Chess.com'
   },
   {
-    src: '/showcase-lichess.png',
+    src: '/showcase-lichess.webp',
     label: 'Lichess',
     alt: 'Chess Desktop running Lichess'
   }

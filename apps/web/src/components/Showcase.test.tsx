@@ -56,7 +56,7 @@ describe('Showcase', () => {
 
     const dialog = screen.getByRole('dialog')
     expect(dialog).toHaveAttribute('open')
-    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/showcase-lichess.png')
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/showcase-lichess.webp')
 
     fireEvent.click(dialog)
     expect(dialog).not.toHaveAttribute('open')
@@ -72,12 +72,12 @@ describe('Showcase', () => {
     expect(close).not.toHaveClass('md:absolute')
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Lichess' }))
-    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/showcase-lichess.png')
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/showcase-lichess.webp')
 
     fireEvent.keyDown(dialog, { key: 'ArrowLeft' })
-    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/showcase-chesscom.png')
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/showcase-chesscom.webp')
 
     fireEvent.keyDown(dialog, { key: 'ArrowRight' })
-    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/showcase-lichess.png')
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/showcase-lichess.webp')
   })
 })
