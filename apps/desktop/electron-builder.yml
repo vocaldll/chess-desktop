@@ -40,3 +40,4 @@ publish:
   provider: github
   owner: vocaldll
   repo: chess-desktop
+  releaseType: draft
