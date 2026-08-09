@@ -2,6 +2,7 @@ import type { BrowserWindow } from 'electron'
 import type { Settings } from '../shared/settings'
 import { toZoomFactor } from '../shared/zoom'
 import { applyVolume } from './audio'
+import { applyChatVisibility } from './chat-visibility'
 import { applyPresenceSettings } from './discord'
 import { applyKeepAwakeSettings } from './keep-awake'
 import { getSiteWebContents } from './webview'
@@ -13,6 +14,7 @@ export function applySettings(window: BrowserWindow | null, settings: Settings):
   contents?.setAudioMuted(settings.soundMuted)
   contents?.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
   applyVolume(contents, settings.volume)
+  applyChatVisibility(contents, settings.activeSite, settings.hideChat)
   applyPresenceSettings(settings)
   applyKeepAwakeSettings(settings)
 }

@@ -448,6 +448,18 @@
                 onchange={(value) => settings.set('keepAwakeWhilePlaying', value)}
               />
             </div>
+
+            <div class="row">
+              <div class="info">
+                <div class="label">Hide chat</div>
+                <div class="description">Hide chat across Chess.com and Lichess</div>
+              </div>
+              <Toggle
+                label="Hide chat"
+                checked={settings.current.hideChat}
+                onchange={(value) => settings.set('hideChat', value)}
+              />
+            </div>
           </section>
 
           <section>

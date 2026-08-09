@@ -9,6 +9,7 @@ export interface Settings {
   volume: number
   alwaysOnTop: boolean
   keepAwakeWhilePlaying: boolean
+  hideChat: boolean
   notificationsEnabled: boolean
   discordRpcEnabled: boolean
   onboardingCompleted: boolean
@@ -22,6 +23,7 @@ export const defaultSettings: Settings = {
   volume: DEFAULT_VOLUME,
   alwaysOnTop: false,
   keepAwakeWhilePlaying: false,
+  hideChat: false,
   notificationsEnabled: true,
   discordRpcEnabled: false,
   onboardingCompleted: false,

@@ -26,6 +26,7 @@ describe('setting keys and values', () => {
 
   it('requires booleans for boolean settings', () => {
     expect(isValidSettingValue('soundMuted', true)).toBe(true)
+    expect(isValidSettingValue('hideChat', false)).toBe(true)
     expect(isValidSettingValue('soundMuted', 1)).toBe(false)
     expect(isValidSettingValue('notificationsEnabled', 'false')).toBe(false)
   })
@@ -43,6 +44,7 @@ describe('settings coercion', () => {
       volume: 42,
       alwaysOnTop: true,
       keepAwakeWhilePlaying: true,
+      hideChat: true,
       notificationsEnabled: false,
       discordRpcEnabled: true,
       onboardingCompleted: true,

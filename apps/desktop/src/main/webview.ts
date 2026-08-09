@@ -5,6 +5,7 @@ import { type GameRole, isPlayingGame, needsGameRole } from '../shared/presence'
 import { isOpenableExternally, isSiteURL, SITES, type SiteId } from '../shared/sites'
 import { toZoomFactor } from '../shared/zoom'
 import { applyVolume } from './audio'
+import { applyChatVisibility } from './chat-visibility'
 import { rejectCookieBanners } from './consent'
 import { updatePresenceLocation } from './discord'
 import { probeGameRole } from './game-role'
@@ -207,6 +208,7 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
 
     contents.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
     applyVolume(contents, settings.volume)
+    applyChatVisibility(contents, settings.activeSite, settings.hideChat, true)
     rejectCookieBanners(contents)
     trackPresence(contents.getURL())
   })

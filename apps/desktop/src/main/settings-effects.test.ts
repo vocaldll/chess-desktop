@@ -3,12 +3,14 @@ import { defaultSettings } from '../shared/settings'
 
 const mocks = vi.hoisted(() => ({
   applyVolume: vi.fn(),
+  applyChatVisibility: vi.fn(),
   applyPresenceSettings: vi.fn(),
   applyKeepAwakeSettings: vi.fn(),
   getSiteWebContents: vi.fn()
 }))
 
 vi.mock('./audio', () => ({ applyVolume: mocks.applyVolume }))
+vi.mock('./chat-visibility', () => ({ applyChatVisibility: mocks.applyChatVisibility }))
 vi.mock('./discord', () => ({ applyPresenceSettings: mocks.applyPresenceSettings }))
 vi.mock('./keep-awake', () => ({ applyKeepAwakeSettings: mocks.applyKeepAwakeSettings }))
 vi.mock('./webview', () => ({ getSiteWebContents: mocks.getSiteWebContents }))
@@ -28,6 +30,7 @@ describe('applySettings', () => {
       activeSite: 'lichess' as const,
       alwaysOnTop: true,
       soundMuted: true,
+      hideChat: true,
       volume: 35,
       zoom: { chesscom: 80, lichess: 125 }
     }
@@ -39,6 +42,7 @@ describe('applySettings', () => {
     expect(contents.setAudioMuted).toHaveBeenCalledWith(true)
     expect(contents.setZoomFactor).toHaveBeenCalledWith(1.25)
     expect(mocks.applyVolume).toHaveBeenCalledWith(contents, 35)
+    expect(mocks.applyChatVisibility).toHaveBeenCalledWith(contents, 'lichess', true)
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(settings)
     expect(mocks.applyKeepAwakeSettings).toHaveBeenCalledWith(settings)
   })
@@ -49,6 +53,11 @@ describe('applySettings', () => {
     applySettings(null, defaultSettings)
 
     expect(mocks.applyVolume).toHaveBeenCalledWith(null, defaultSettings.volume)
+    expect(mocks.applyChatVisibility).toHaveBeenCalledWith(
+      null,
+      defaultSettings.activeSite,
+      defaultSettings.hideChat
+    )
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(defaultSettings)
     expect(mocks.applyKeepAwakeSettings).toHaveBeenCalledWith(defaultSettings)
   })
