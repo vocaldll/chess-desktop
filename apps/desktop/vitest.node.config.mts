@@ -11,6 +11,6 @@ export default defineProject({
   test: {
     name: 'desktop-node',
     environment: 'node',
-    include: ['src/{main,preload,shared}/**/*.test.ts']
+    include: ['src/{main,shared}/**/*.test.ts', 'src/preload/{audio,index}.test.ts']
   }
 })
