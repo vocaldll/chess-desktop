@@ -14,12 +14,17 @@
     "build:desktop": "pnpm --filter @chess-desktop/desktop build",
     "build:web": "pnpm --filter @chess-desktop/web build",
     "package:desktop": "pnpm --filter @chess-desktop/desktop package",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "pnpm -r typecheck",
     "lint": "biome check .",
     "format": "biome check --write ."
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.7",
-    "typescript": "5.9.3"
+    "@vitest/coverage-v8": "^4.1.10",
+    "typescript": "5.9.3",
+    "vitest": "^4.1.10"
   }
 }

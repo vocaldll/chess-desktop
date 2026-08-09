@@ -5,6 +5,7 @@ dist/
 build/
 .svelte-kit/
 .vite/
+coverage/
 *.tsbuildinfo
 
 package-lock.json
