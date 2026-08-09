@@ -9,6 +9,8 @@ allowBuilds:
   esbuild: true
   '@biomejs/biome': true
   electron-winstaller: false
+  edgedriver: false
+  geckodriver: false
 
 minimumReleaseAgeExclude:
   - '@biomejs/biome@2.5.7'
