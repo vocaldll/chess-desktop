@@ -38,6 +38,12 @@ class FakeContents {
   readonly setWindowOpenHandler = vi.fn()
   readonly setZoomFactor = vi.fn()
   readonly loadURL = vi.fn()
+  readonly navigationHistory = {
+    canGoBack: vi.fn(),
+    canGoForward: vi.fn(),
+    goBack: vi.fn(),
+    goForward: vi.fn()
+  }
   destroyed = false
   url = 'https://www.chess.com/home'
 
@@ -85,6 +91,7 @@ describe('webview event scoping', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.resetModules()
+    mocks.openExternal.mockResolvedValue(undefined)
     mocks.getSettings.mockReturnValue({
       activeSite: 'chesscom',
       soundMuted: false,
@@ -148,5 +155,90 @@ describe('webview event scoping', () => {
     second.emit('destroyed')
     expect(webview.getSiteWebContents()).toBeNull()
     expect(mocks.updatePlayingState).toHaveBeenCalledWith(false)
+  })
+
+  it('hardens attachment preferences and replaces untrusted initial URLs', async () => {
+    const host = new FakeContents()
+    const webview = await import('./webview')
+    webview.hardenWebviewAttachment(host as unknown as WebContents)
+    const preferences: Record<string, unknown> = { nodeIntegration: true }
+    const params = { src: 'https://example.com/' }
+
+    host.emit('will-attach-webview', {}, preferences, params)
+
+    expect(preferences).toMatchObject({
+      nodeIntegration: false,
+      contextIsolation: true
+    })
+    expect(String(preferences.preload)).toMatch(/preload[\\/]webview\.js$/)
+    expect(params.src).toBe('https://www.chess.com/')
+
+    params.src = 'https://www.chess.com/puzzles'
+    host.emit('will-attach-webview', {}, preferences, params)
+    expect(params.src).toBe('https://www.chess.com/puzzles')
+  })
+
+  it('keeps same-site popups internal and sends external URLs to the browser', async () => {
+    const contents = new FakeContents()
+    await configure(contents)
+    const openWindow = contents.setWindowOpenHandler.mock.calls[0][0]
+
+    expect(openWindow({ url: 'https://www.chess.com/puzzles' })).toEqual({ action: 'deny' })
+    expect(contents.loadURL).toHaveBeenCalledWith('https://www.chess.com/puzzles')
+
+    expect(openWindow({ url: 'https://example.com/' })).toEqual({ action: 'deny' })
+    expect(mocks.openExternal).toHaveBeenCalledWith('https://example.com/')
+  })
+
+  it('blocks external top-level navigation and reapplies page settings on readiness', async () => {
+    const contents = new FakeContents()
+    await configure(contents)
+    const event = { preventDefault: vi.fn() }
+
+    contents.emit('will-navigate', event, 'https://example.com/')
+    expect(event.preventDefault).toHaveBeenCalledOnce()
+    expect(mocks.openExternal).toHaveBeenCalledWith('https://example.com/')
+
+    contents.emit('dom-ready')
+    expect(contents.setZoomFactor).toHaveBeenCalledWith(1)
+    expect(mocks.applyVolume).toHaveBeenCalledWith(contents, 100)
+    expect(mocks.rejectCookieBanners).toHaveBeenCalledWith(contents)
+    expect(mocks.setLastSiteUrl).toHaveBeenCalledWith('chesscom', contents.url)
+  })
+
+  it('handles mouse navigation commands through the active history', async () => {
+    const webview = await import('./webview')
+    const handlers = new Map<string, Handler>()
+    const window = {
+      on: (event: string, handler: Handler) => handlers.set(event, handler)
+    }
+    const contents = new FakeContents()
+    contents.navigationHistory.canGoBack.mockReturnValue(true)
+    contents.navigationHistory.canGoForward.mockReturnValue(true)
+    await configure(contents)
+    webview.registerAppCommands(window as never)
+
+    handlers.get('app-command')?.({}, 'browser-backward')
+    handlers.get('app-command')?.({}, 'browser-forward')
+
+    expect(contents.navigationHistory.goBack).toHaveBeenCalledOnce()
+    expect(contents.navigationHistory.goForward).toHaveBeenCalledOnce()
+  })
+
+  it('publishes a probed playing role for active games', async () => {
+    const contents = new FakeContents()
+    contents.url = 'https://www.chess.com/game/123'
+    mocks.probeGameRole.mockResolvedValue('playing')
+    await configure(contents)
+
+    contents.emit('did-navigate', {}, contents.url)
+
+    await vi.waitFor(() => {
+      expect(mocks.updatePresenceLocation).toHaveBeenCalledWith('chesscom', contents.url, 'playing')
+    })
+    expect(mocks.updatePlayingState).toHaveBeenCalledWith(true)
+
+    contents.destroyed = true
+    contents.emit('destroyed')
   })
 })
