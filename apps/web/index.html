@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0e0e0e" />
     <meta name="color-scheme" content="dark" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="application-name" content="Chess Desktop" />
 
     <title>Chess Desktop | A desktop client for Chess.com and Lichess</title>
     <meta
       name="description"
-      content="Play Chess.com and Lichess natively on your desktop. Free, open source, and works on Windows and Linux."
+      content="Play Chess.com and Lichess natively on your desktop. Free, open source, and works on Windows and Linux. Packed with quality-of-life features and settings."
     />
     <link rel="canonical" href="https://chessdesktop.app/" />
 
@@ -22,7 +22,7 @@
     <meta property="og:title" content="Chess Desktop | A desktop client for Chess.com and Lichess" />
     <meta
       property="og:description"
-      content="Play Chess.com and Lichess natively on your desktop. Free, open source, and works on Windows and Linux."
+      content="Play Chess.com and Lichess natively on your desktop. Free, open source, and works on Windows and Linux. Packed with quality-of-life features and settings."
     />
     <meta property="og:image" content="https://chessdesktop.app/og-image.png" />
     <meta property="og:image:type" content="image/png" />
@@ -40,7 +40,7 @@
     />
     <meta
       name="twitter:description"
-      content="Play Chess.com and Lichess natively on your desktop. Free, open source, and works on Windows and Linux."
+      content="Play Chess.com and Lichess natively on your desktop. Free, open source, and works on Windows and Linux. Packed with quality-of-life features and settings."
     />
     <meta name="twitter:image" content="https://chessdesktop.app/og-image.png" />
     <meta
@@ -72,12 +72,36 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Chess Desktop",
+        "url": "https://chessdesktop.app/"
+      }
+    </script>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "Chess Desktop",
         "url": "https://chessdesktop.app/",
-        "description": "Play Chess.com and Lichess natively on your desktop. Free, open source, and works on Windows and Linux.",
+        "description": "Play Chess.com and Lichess natively on your desktop. Free, open source, and works on Windows and Linux. Packed with quality-of-life features and settings.",
         "applicationCategory": "GameApplication",
+        "applicationSubCategory": "Chess",
         "operatingSystem": "Windows 10, Windows 11, Linux",
+        "author": {
+          "@type": "Person",
+          "name": "vocaldll",
+          "url": "https://github.com/vocaldll"
+        },
+        "license": "https://github.com/vocaldll/chess-desktop/blob/master/LICENSE",
+        "featureList": [
+          "Chess.com and Lichess in one app",
+          "Restores the last page, window size, and position",
+          "Always-on-top mode and keep-awake during games",
+          "Customizable keyboard shortcuts",
+          "Discord Rich Presence",
+          "Background updates"
+        ],
         "image": "https://chessdesktop.app/og-image.png",
         "screenshot": [
           "https://chessdesktop.app/showcase-chesscom.png",
