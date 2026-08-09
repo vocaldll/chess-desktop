@@ -14,10 +14,10 @@ export default defineConfig({
       include: ['apps/*/src/**/*.{ts,tsx,svelte}'],
       exclude: ['**/*.d.ts', '**/*.test.{ts,tsx}', '**/main.ts', '**/entry-server.tsx'],
       thresholds: {
-        statements: 30,
-        branches: 30,
-        functions: 30,
-        lines: 30
+        statements: 55,
+        branches: 55,
+        functions: 55,
+        lines: 55
       }
     }
   }
