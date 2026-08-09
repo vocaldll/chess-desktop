@@ -6,7 +6,7 @@
     "src/renderer/**/*.d.ts",
     "src/preload/**/*.d.ts",
     "src/shared/**/*.ts",
-    "test/**/*.ts"
+    "test/setup.ts"
   ],
   "compilerOptions": {
     "target": "ES2022",

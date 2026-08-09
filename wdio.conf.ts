@@ -13,6 +13,11 @@ const desktopPackage = JSON.parse(
   readFileSync(resolve(desktopRoot, 'package.json'), 'utf8')
 ) as DesktopPackage
 const userDataDirectory = mkdtempSync(join(tmpdir(), 'chess-desktop-e2e-'))
+const appArgs = [`--user-data-dir=${userDataDirectory}`]
+
+if (process.platform === 'linux') {
+  appArgs.push('--no-sandbox')
+}
 
 export const config: WebdriverIO.Config = {
   runner: 'local',
@@ -29,7 +34,7 @@ export const config: WebdriverIO.Config = {
       'electron',
       {
         appEntryPoint: resolve(desktopRoot, 'out/main/index.js'),
-        appArgs: [`--user-data-dir=${userDataDirectory}`]
+        appArgs
       }
     ]
   ],

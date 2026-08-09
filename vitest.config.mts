@@ -12,7 +12,13 @@ export default defineConfig({
       reporter: ['text', 'html', 'lcov'],
       reportsDirectory: 'coverage',
       include: ['apps/*/src/**/*.{ts,tsx,svelte}'],
-      exclude: ['**/*.d.ts', '**/*.test.{ts,tsx}', '**/main.ts', '**/entry-server.tsx']
+      exclude: ['**/*.d.ts', '**/*.test.{ts,tsx}', '**/main.ts', '**/entry-server.tsx'],
+      thresholds: {
+        statements: 30,
+        branches: 30,
+        functions: 30,
+        lines: 30
+      }
     }
   }
 })

@@ -25,6 +25,38 @@ jobs:
 
       - run: pnpm typecheck
 
+      - run: pnpm test:coverage
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage
+          if-no-files-found: ignore
+
       - run: pnpm build:desktop
 
       - run: pnpm build:web
+
+  electron-smoke:
+    name: Electron smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm test:e2e
