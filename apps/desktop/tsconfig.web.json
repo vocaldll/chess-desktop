@@ -5,7 +5,8 @@
     "src/renderer/**/*.svelte",
     "src/renderer/**/*.d.ts",
     "src/preload/**/*.d.ts",
-    "src/shared/**/*.ts"
+    "src/shared/**/*.ts",
+    "test/**/*.ts"
   ],
   "compilerOptions": {
     "target": "ES2022",

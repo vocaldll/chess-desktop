@@ -3,16 +3,22 @@ import { site } from './site'
 
 let pending: Promise<number | null> | null = null
 
-function load(): Promise<number | null> {
-  if (!pending) {
-    pending = fetch(`https://api.github.com/repos/${site.owner}/${site.repo}`, {
+export async function fetchGitHubStars(fetcher: typeof fetch = fetch): Promise<number | null> {
+  try {
+    const response = await fetcher(`https://api.github.com/repos/${site.owner}/${site.repo}`, {
       headers: { accept: 'application/vnd.github+json' }
     })
-      .then((response) => (response.ok ? response.json() : null))
-      .then((data) =>
-        data && typeof data.stargazers_count === 'number' ? data.stargazers_count : null
-      )
-      .catch(() => null)
+    const data = response.ok ? await response.json() : null
+
+    return data && typeof data.stargazers_count === 'number' ? data.stargazers_count : null
+  } catch {
+    return null
+  }
+}
+
+function load(): Promise<number | null> {
+  if (!pending) {
+    pending = fetchGitHubStars()
   }
 
   return pending

@@ -4,6 +4,7 @@ import { defineProject } from 'vitest/config'
 
 export default defineProject({
   resolve: {
+    conditions: ['browser'],
     alias: {
       '@chess-desktop/tokens': resolve(import.meta.dirname, '../../packages/tokens/src/index.ts'),
       '@chess-desktop/tokens/tokens.css': resolve(
