@@ -42,6 +42,14 @@ describe('Chess Desktop', () => {
     const settingsDialog = $('[role="dialog"][aria-label="Settings"]')
     await expect(settingsDialog).toBeDisplayed()
     await expect(settingsDialog.$('aria/Keyboard shortcuts')).toBeDisplayed()
+    await expect(
+      settingsDialog.$(
+        'aria/Beta: Discord status detection is still being tested and may sometimes be inaccurate.'
+      )
+    ).toHaveAttribute(
+      'title',
+      'Discord status detection is still being tested and may sometimes be inaccurate.'
+    )
     await settingsDialog.$('aria/Close').click()
     await settingsDialog.waitForExist({ reverse: true })
 

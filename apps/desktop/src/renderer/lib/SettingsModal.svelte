@@ -28,6 +28,9 @@
   let editingShortcut = $state<ShortcutAction | null>(null)
   let recordingError = $state('')
 
+  const discordBetaNotice =
+    'Discord status detection is still being tested and may sometimes be inaccurate.'
+
   const title = $derived(showShortcuts ? 'Keyboard shortcuts' : 'Settings')
   const hasShortcutOverrides = $derived(
     Object.keys(settings.current.shortcutOverrides).length > 0
@@ -421,7 +424,14 @@
 
             <div class="row">
               <div class="info">
-                <div class="label">Discord Rich Presence</div>
+                <div class="label">
+                  Discord Rich Presence
+                  <span
+                    class="beta"
+                    title={discordBetaNotice}
+                    aria-label={`Beta: ${discordBetaNotice}`}
+                  >BETA</span>
+                </div>
                 <div class="description">Show what you're playing on your Discord profile</div>
               </div>
               <Toggle
@@ -655,6 +665,22 @@
     align-items: center;
     gap: var(--cd-space-2);
     font-weight: 500;
+  }
+
+  .beta {
+    display: inline-flex;
+    align-items: center;
+    height: 16px;
+    padding: 0 5px;
+    border: 1px solid color-mix(in srgb, var(--cd-brand) 45%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--cd-brand) 12%, transparent);
+    color: var(--cd-brand-hover);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    cursor: help;
   }
 
   .keys {
