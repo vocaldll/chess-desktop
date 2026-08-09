@@ -32,6 +32,7 @@ export default function Hero() {
       <div
         className="rise mt-8 flex w-full flex-col items-center gap-4"
         style={{ animationDelay: '180ms' }}
+        data-nosnippet=""
       >
         <div className="flex w-full max-w-[320px] flex-col gap-3 min-[480px]:w-auto min-[480px]:max-w-none min-[480px]:flex-row">
           <a

@@ -30,6 +30,17 @@ describe('Hero', () => {
     expect(screen.getByText('0')).toHaveClass('invisible')
   })
 
+  it('keeps the call to action out of search result snippets', () => {
+    render(<Hero />)
+
+    expect(
+      screen.getByRole('link', { name: 'Download for Windows' }).closest('[data-nosnippet]')
+    ).not.toBeNull()
+    expect(
+      screen.getByRole('link', { name: /View on GitHub/ }).closest('[data-nosnippet]')
+    ).not.toBeNull()
+  })
+
   it('shows a compact star count after it loads', () => {
     mocks.useGitHubStars.mockReturnValue(1525)
 
