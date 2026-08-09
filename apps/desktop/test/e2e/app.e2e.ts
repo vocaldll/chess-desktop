@@ -3,6 +3,10 @@ import { $, browser, expect } from '@wdio/globals'
 interface TestSettings {
   activeSite: string
   onboardingCompleted: boolean
+  shortcutOverrides: Record<
+    string,
+    Record<string, { key: string; control: boolean; alt: boolean; shift: boolean } | null>
+  >
 }
 
 async function readSettings(): Promise<TestSettings> {
@@ -50,6 +54,24 @@ describe('Chess Desktop', () => {
       'title',
       'Discord status detection is still being tested and may sometimes be inaccurate.'
     )
+
+    await settingsDialog.$('aria/Keyboard shortcuts').click()
+    const shortcutsDialog = $('[role="dialog"][aria-label="Keyboard shortcuts"]')
+    await shortcutsDialog.$('aria/Edit reload the page shortcut 1').click()
+    await browser.keys(['Control', 'Shift', 'k'])
+    await browser.waitUntil(async () => {
+      const settings = await readSettings()
+      return settings.shortcutOverrides.reload?.['0']?.key === 'k'
+    })
+
+    await shortcutsDialog.$('aria/Edit reload the page shortcut 2').click()
+    await browser.keys(['Control', 'Shift', 'j'])
+    await browser.waitUntil(async () => {
+      const settings = await readSettings()
+      const reload = settings.shortcutOverrides.reload
+      return reload?.['0']?.key === 'k' && reload?.['1']?.key === 'j'
+    })
+
     await settingsDialog.$('aria/Close').click()
     await settingsDialog.waitForExist({ reverse: true })
 

@@ -18,7 +18,9 @@ export interface ShortcutBinding {
   shift: boolean
 }
 
-export type ShortcutOverrides = Partial<Record<ShortcutAction, ShortcutBinding | null>>
+export type ShortcutSlotOverrides = Partial<Record<number, ShortcutBinding | null>>
+
+export type ShortcutOverrides = Partial<Record<ShortcutAction, ShortcutSlotOverrides>>
 
 export interface ShortcutChord {
   keys: readonly string[]
@@ -90,17 +92,12 @@ export function isShortcutOverrides(value: unknown): value is ShortcutOverrides 
     return false
   }
 
-  const customizable = new Set(
-    SHORTCUTS.filter((shortcut) => shortcut.customizable !== false).map(
-      (shortcut) => shortcut.command
+  return Object.entries(value).every(([command, slotOverrides]) => {
+    const shortcut = SHORTCUTS.find(
+      (candidate) => candidate.command === command && candidate.customizable !== false
     )
-  )
-
-  return Object.entries(value).every(
-    ([command, binding]) =>
-      customizable.has(command as ShortcutAction) &&
-      (binding === null || isShortcutBinding(binding))
-  )
+    return shortcut !== undefined && isShortcutSlotOverrides(slotOverrides, shortcut)
+  })
 }
 
 export function coerceShortcutOverrides(value: unknown): ShortcutOverrides {
@@ -108,30 +105,78 @@ export function coerceShortcutOverrides(value: unknown): ShortcutOverrides {
     return {}
   }
 
-  const customizable = new Set(
-    SHORTCUTS.filter((shortcut) => shortcut.customizable !== false).map(
-      (shortcut) => shortcut.command
-    )
-  )
   const result: ShortcutOverrides = {}
-  for (const [command, binding] of Object.entries(value)) {
-    if (
-      !customizable.has(command as ShortcutAction) ||
-      (binding !== null && !isShortcutBinding(binding))
-    ) {
+  for (const [command, rawOverride] of Object.entries(value)) {
+    const shortcut = SHORTCUTS.find(
+      (candidate) => candidate.command === command && candidate.customizable !== false
+    )
+    if (!shortcut) {
       continue
     }
 
-    result[command as ShortcutAction] = binding
-      ? {
-          key: normalizeShortcutKey(binding.key),
-          control: binding.control,
-          alt: binding.alt,
-          shift: binding.shift
-        }
-      : null
+    if (rawOverride === null || isShortcutBinding(rawOverride)) {
+      result[shortcut.command] = Object.fromEntries(
+        shortcut.chords.map((_, index) => [
+          index,
+          index === 0 && rawOverride ? normalizeShortcutBinding(rawOverride) : null
+        ])
+      )
+      continue
+    }
+
+    if (typeof rawOverride !== 'object' || Array.isArray(rawOverride)) {
+      continue
+    }
+
+    const slotOverrides: ShortcutSlotOverrides = {}
+    for (const [slot, binding] of Object.entries(rawOverride)) {
+      const index = Number(slot)
+      if (
+        !isShortcutSlotIndex(slot, index, shortcut.chords.length) ||
+        (binding !== null && !isShortcutBinding(binding))
+      ) {
+        continue
+      }
+
+      slotOverrides[index] = binding ? normalizeShortcutBinding(binding) : null
+    }
+
+    if (Object.keys(slotOverrides).length > 0) {
+      result[shortcut.command] = slotOverrides
+    }
   }
   return result
+}
+
+function normalizeShortcutBinding(binding: ShortcutBinding): ShortcutBinding {
+  return {
+    key: normalizeShortcutKey(binding.key),
+    control: binding.control,
+    alt: binding.alt,
+    shift: binding.shift
+  }
+}
+
+function isShortcutSlotIndex(slot: string, index: number, slotCount: number): boolean {
+  return String(index) === slot && Number.isInteger(index) && index >= 0 && index < slotCount
+}
+
+function isShortcutSlotOverrides(value: unknown, shortcut: Shortcut): boolean {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false
+  }
+
+  const entries = Object.entries(value)
+  return (
+    entries.length > 0 &&
+    entries.every(([slot, binding]) => {
+      const index = Number(slot)
+      return (
+        isShortcutSlotIndex(slot, index, shortcut.chords.length) &&
+        (binding === null || isShortcutBinding(binding))
+      )
+    })
+  )
 }
 
 export function isShortcutCustomized(
@@ -149,20 +194,38 @@ export function resolveShortcutChords(
     return shortcut.chords
   }
 
-  const binding = overrides[shortcut.command]
-  if (!binding) {
-    return []
+  return shortcut.chords
+    .map((_, index) => resolveShortcutChord(shortcut, index, overrides))
+    .filter((chord): chord is ShortcutChord => chord !== null)
+}
+
+export function resolveShortcutChord(
+  shortcut: Shortcut,
+  index: number,
+  overrides: ShortcutOverrides
+): ShortcutChord | null {
+  const defaultChord = shortcut.chords[index]
+  if (!defaultChord) {
+    return null
   }
 
-  return [
-    {
-      keys: [binding.key],
-      control: binding.control,
-      alt: binding.alt,
-      shift: binding.shift,
-      label: formatShortcutBinding(binding)
-    }
-  ]
+  const slotOverrides = overrides[shortcut.command]
+  if (!slotOverrides || !Object.hasOwn(slotOverrides, index)) {
+    return defaultChord
+  }
+
+  const binding = slotOverrides[index]
+  if (!binding) {
+    return null
+  }
+
+  return {
+    keys: [binding.key],
+    control: binding.control,
+    alt: binding.alt,
+    shift: binding.shift,
+    label: formatShortcutBinding(binding)
+  }
 }
 
 export function shortcutChordMatchesBinding(

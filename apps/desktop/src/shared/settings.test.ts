@@ -19,7 +19,7 @@ describe('setting keys and values', () => {
     expect(isValidSettingValue('zoom', { chesscom: 90 })).toBe(false)
     expect(
       isValidSettingValue('shortcutOverrides', {
-        reload: { key: 'r', control: true, alt: false, shift: true }
+        reload: { 0: { key: 'r', control: true, alt: false, shift: true } }
       })
     ).toBe(true)
   })
@@ -47,8 +47,8 @@ describe('settings coercion', () => {
       discordRpcEnabled: true,
       onboardingCompleted: true,
       shortcutOverrides: {
-        reload: { key: 'R', control: true, alt: false, shift: true },
-        back: null
+        reload: { 0: { key: 'R', control: true, alt: false, shift: true } },
+        back: { 0: null }
       },
       zoom: { chesscom: 75, lichess: 125 }
     }
@@ -56,8 +56,8 @@ describe('settings coercion', () => {
     expect(coerceSettings(source)).toEqual({
       ...source,
       shortcutOverrides: {
-        reload: { key: 'r', control: true, alt: false, shift: true },
-        back: null
+        reload: { 0: { key: 'r', control: true, alt: false, shift: true } },
+        back: { 0: null }
       }
     })
   })
@@ -71,8 +71,8 @@ describe('settings coercion', () => {
         alwaysOnTop: 'yes',
         zoom: { chesscom: 90, lichess: 123 },
         shortcutOverrides: {
-          reload: { key: 'Shift', control: false, alt: false, shift: true },
-          fullscreen: { key: 'F10', control: false, alt: false, shift: false }
+          reload: { 0: { key: 'Shift', control: false, alt: false, shift: true } },
+          fullscreen: { 0: { key: 'F10', control: false, alt: false, shift: false } }
         }
       })
     ).toEqual({
@@ -80,7 +80,7 @@ describe('settings coercion', () => {
       soundMuted: true,
       zoom: { chesscom: 90, lichess: 100 },
       shortcutOverrides: {
-        fullscreen: { key: 'F10', control: false, alt: false, shift: false }
+        fullscreen: { 0: { key: 'F10', control: false, alt: false, shift: false } }
       }
     })
   })

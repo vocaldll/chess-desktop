@@ -6,6 +6,7 @@ import {
   isShortcutCustomized,
   isShortcutOverrides,
   normalizeShortcutKey,
+  resolveShortcutChord,
   resolveShortcutChords,
   SHORTCUTS,
   type ShortcutBinding,
@@ -62,30 +63,49 @@ describe('shortcut formatting', () => {
 
 describe('shortcut overrides', () => {
   it('accepts valid customizable overrides and disabled shortcuts', () => {
-    expect(isShortcutOverrides({ reload: binding(), back: null })).toBe(true)
+    expect(isShortcutOverrides({ reload: { 0: binding() }, back: { 0: null } })).toBe(true)
   })
 
   it.each([
     null,
     [],
     { unknown: binding() },
-    { reload: binding({ key: 'Control' }) },
-    { 'exit-fullscreen': binding({ key: 'F10' }) }
+    { reload: binding() },
+    { reload: {} },
+    { reload: { 0: binding({ key: 'Control' }) } },
+    { reload: { 2: binding() } },
+    { 'exit-fullscreen': { 0: binding({ key: 'F10' }) } }
   ])('rejects invalid overrides %j', (value) => {
     expect(isShortcutOverrides(value)).toBe(false)
   })
 
-  it('keeps valid entries, normalizes keys, and drops invalid entries', () => {
+  it('keeps valid slots, normalizes keys, and drops invalid entries', () => {
     expect(
       coerceShortcutOverrides({
-        reload: binding({ key: 'R', shift: true }),
-        back: null,
+        reload: {
+          0: binding({ key: 'R', shift: true }),
+          1: null,
+          2: binding()
+        },
+        back: { 0: null },
         unknown: binding(),
-        fullscreen: binding({ key: 'Meta' })
+        fullscreen: { 0: binding({ key: 'Meta' }) }
       })
     ).toEqual({
-      reload: binding({ key: 'r', shift: true }),
-      back: null
+      reload: { 0: binding({ key: 'r', shift: true }), 1: null },
+      back: { 0: null }
+    })
+  })
+
+  it('migrates legacy action overrides without changing their behavior', () => {
+    expect(
+      coerceShortcutOverrides({
+        reload: binding({ key: 'F8', control: false }),
+        back: null
+      })
+    ).toEqual({
+      reload: { 0: binding({ key: 'F8', control: false }), 1: null },
+      back: { 0: null }
     })
   })
 
@@ -108,13 +128,17 @@ describe('shortcut resolution', () => {
   })
 
   it('returns no chords for a disabled shortcut', () => {
-    expect(resolveShortcutChords(reload, { reload: null })).toEqual([])
-    expect(isShortcutCustomized('reload', { reload: null })).toBe(true)
+    const overrides = { reload: { 0: null, 1: null } }
+
+    expect(resolveShortcutChords(reload, overrides)).toEqual([])
+    expect(isShortcutCustomized('reload', overrides)).toBe(true)
   })
 
-  it('turns a custom binding into a labeled chord', () => {
+  it('changes one binding without replacing its alternative', () => {
     expect(
-      resolveShortcutChords(reload, { reload: binding({ key: 'F8', control: false }) })
+      resolveShortcutChords(reload, {
+        reload: { 0: binding({ key: 'F8', control: false }) }
+      })
     ).toEqual([
       {
         keys: ['F8'],
@@ -122,8 +146,17 @@ describe('shortcut resolution', () => {
         alt: false,
         shift: false,
         label: 'F8'
-      }
+      },
+      reload.chords[1]
     ])
+  })
+
+  it('resolves each binding slot independently', () => {
+    const overrides = { reload: { 0: null, 1: binding({ key: 'F8', control: false }) } }
+
+    expect(resolveShortcutChord(reload, 0, overrides)).toBeNull()
+    expect(resolveShortcutChord(reload, 1, overrides)?.label).toBe('F8')
+    expect(resolveShortcutChords(reload, overrides).map((chord) => chord.label)).toEqual(['F8'])
   })
 
   it('matches key alternatives and optional shift state', () => {

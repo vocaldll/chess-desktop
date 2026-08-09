@@ -4,7 +4,7 @@
   import X from '@lucide/svelte/icons/x'
   import {
     normalizeShortcutKey,
-    resolveShortcutChords,
+    resolveShortcutChord,
     shortcutChordMatchesBinding,
     SHORTCUTS,
     type Shortcut,
@@ -24,8 +24,13 @@
 
   let { open, onClose }: Props = $props()
 
+  interface EditingShortcut {
+    command: ShortcutAction
+    index: number
+  }
+
   let showShortcuts = $state(false)
-  let editingShortcut = $state<ShortcutAction | null>(null)
+  let editingShortcut = $state<EditingShortcut | null>(null)
   let recordingError = $state('')
 
   const discordBetaNotice =
@@ -139,12 +144,16 @@
     }
   }
 
-  function chordsFor(shortcut: Shortcut) {
-    return resolveShortcutChords(shortcut, settings.current.shortcutOverrides)
+  function chordFor(shortcut: Shortcut, index: number) {
+    return resolveShortcutChord(shortcut, index, settings.current.shortcutOverrides)
   }
 
-  function beginEditing(command: ShortcutAction): void {
-    editingShortcut = command
+  function isEditing(command: ShortcutAction, index: number): boolean {
+    return editingShortcut?.command === command && editingShortcut.index === index
+  }
+
+  function beginEditing(command: ShortcutAction, index: number): void {
+    editingShortcut = { command, index }
     recordingError = ''
   }
 
@@ -160,17 +169,22 @@
 
   async function setShortcutOverride(
     command: ShortcutAction,
+    index: number,
     binding: ShortcutBinding | null
   ): Promise<void> {
+    const shortcutOverrides = $state.snapshot(settings.current.shortcutOverrides)
     await settings.set('shortcutOverrides', {
-      ...settings.current.shortcutOverrides,
-      [command]: binding
+      ...shortcutOverrides,
+      [command]: {
+        ...shortcutOverrides[command],
+        [index]: binding
+      }
     })
   }
 
-  async function removeShortcut(command: ShortcutAction): Promise<void> {
+  async function removeShortcut(command: ShortcutAction, index: number): Promise<void> {
     stopEditing()
-    await setShortcutOverride(command, null)
+    await setShortcutOverride(command, index, null)
   }
 
   async function resetAllShortcuts(): Promise<void> {
@@ -178,17 +192,26 @@
     await settings.set('shortcutOverrides', {})
   }
 
-  function findConflict(command: ShortcutAction, binding: ShortcutBinding): Shortcut | undefined {
-    return SHORTCUTS.find(
-      (shortcut) =>
-        shortcut.command !== command &&
-        chordsFor(shortcut).some((chord) => shortcutChordMatchesBinding(chord, binding))
+  function findConflict(
+    command: ShortcutAction,
+    index: number,
+    binding: ShortcutBinding
+  ): Shortcut | undefined {
+    return SHORTCUTS.find((shortcut) =>
+      shortcut.chords.some((_, candidateIndex) => {
+        if (shortcut.command === command && candidateIndex === index) {
+          return false
+        }
+
+        const chord = chordFor(shortcut, candidateIndex)
+        return chord !== null && shortcutChordMatchesBinding(chord, binding)
+      })
     )
   }
 
   async function recordShortcut(event: KeyboardEvent): Promise<void> {
-    const command = editingShortcut
-    if (!command || event.repeat) {
+    const editing = editingShortcut
+    if (!editing || event.repeat) {
       return
     }
 
@@ -198,7 +221,7 @@
     }
 
     if (event.key === 'Backspace' || event.key === 'Delete') {
-      await removeShortcut(command)
+      await removeShortcut(editing.command, editing.index)
       return
     }
 
@@ -225,14 +248,14 @@
       return
     }
 
-    const conflict = findConflict(command, binding)
+    const conflict = findConflict(editing.command, editing.index, binding)
     if (conflict) {
       recordingError = 'Not available'
       return
     }
 
     stopEditing()
-    await setShortcutOverride(command, binding)
+    await setShortcutOverride(editing.command, editing.index, binding)
   }
 
   function onKeydown(event: KeyboardEvent): void {
@@ -329,47 +352,55 @@
         <div class="body">
           <section>
             {#each SHORTCUTS as shortcut (shortcut.command)}
-              {@const chords = chordsFor(shortcut)}
-              <button
-                type="button"
+              <div
                 class="row shortcut-row"
-                class:editing={editingShortcut === shortcut.command}
-                disabled={shortcut.customizable === false}
-                title={shortcut.customizable === false ? 'This shortcut is fixed' : 'Edit shortcut'}
-                onclick={() => beginEditing(shortcut.command)}
+                class:editing={editingShortcut?.command === shortcut.command}
               >
                 <div class="info">
                   <div class="label">{shortcut.description}</div>
                 </div>
 
-                {#if editingShortcut === shortcut.command}
-                  <div class="recorder" aria-live="polite">
-                    {#if recordingError}
-                      <span class="error">{recordingError}</span>
-                    {:else}
-                      <span>
-                        Press a shortcut<span class="waiting-dots" aria-hidden="true">
-                          <span>.</span><span>.</span><span>.</span>
+                <div class="shortcut-controls">
+                  <div class="keys">
+                    {#each shortcut.chords as _, index}
+                      {@const chord = chordFor(shortcut, index)}
+                      {#if index > 0}<span class="or">or</span>{/if}
+
+                      {#if shortcut.customizable === false}
+                        <span title="This shortcut is fixed">
+                          <Key label={chord?.label ?? 'None'} />
                         </span>
-                      </span>
-                    {/if}
-                    <span class="recording-hint">Esc cancel · Del remove</span>
-                  </div>
-                {:else}
-                  <div class="shortcut-controls">
-                    <div class="keys">
-                      {#if chords.length === 0}
-                        <Key label="None" />
                       {:else}
-                        {#each chords as chord, index (chord.label)}
-                          {#if index > 0}<span class="or">or</span>{/if}
-                          <Key label={chord.label} />
-                        {/each}
+                        <button
+                          type="button"
+                          class="shortcut-key"
+                          class:editing-slot={isEditing(shortcut.command, index)}
+                          title={`Edit ${shortcut.description.toLowerCase()} shortcut`}
+                          aria-label={`Edit ${shortcut.description.toLowerCase()} shortcut ${index + 1}`}
+                          onclick={() => beginEditing(shortcut.command, index)}
+                        >
+                          {#if isEditing(shortcut.command, index)}
+                            <span class="recorder" aria-live="polite">
+                              {#if recordingError}
+                                <span class="error">{recordingError}</span>
+                              {:else}
+                                <span>
+                                  Press keys<span class="waiting-dots" aria-hidden="true">
+                                    <span>.</span><span>.</span><span>.</span>
+                                  </span>
+                                </span>
+                              {/if}
+                              <span class="recording-hint">Esc cancel · Del remove</span>
+                            </span>
+                          {:else}
+                            <Key label={chord?.label ?? 'None'} />
+                          {/if}
+                        </button>
                       {/if}
-                    </div>
+                    {/each}
                   </div>
-                {/if}
-              </button>
+                </div>
+              </div>
             {/each}
           </section>
         </div>
@@ -632,28 +663,10 @@
     grid-template-columns: minmax(0, 1fr) 190px;
     width: 100%;
     min-height: 45px;
-    border: 0;
     border-bottom: 1px solid var(--cd-border);
     background: transparent;
     color: var(--cd-text);
-    font-family: inherit;
-    font-size: inherit;
-    text-align: left;
-    cursor: pointer;
     transition: background var(--cd-transition);
-  }
-
-  .shortcut-row:not(:disabled):hover {
-    background: var(--cd-surface-raised);
-  }
-
-  .shortcut-row:disabled {
-    cursor: default;
-  }
-
-  .shortcut-row:focus-visible {
-    outline: 2px solid var(--cd-accent);
-    outline-offset: -2px;
   }
 
   .shortcut-row.editing {
@@ -698,13 +711,37 @@
     width: 190px;
   }
 
+  .shortcut-key {
+    display: flex;
+    padding: 2px;
+    border: 0;
+    border-radius: var(--cd-radius-sm);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .shortcut-key:hover,
+  .shortcut-key:focus-visible {
+    background: var(--cd-accent-soft);
+  }
+
+  .shortcut-key:focus-visible {
+    outline: 2px solid var(--cd-accent);
+    outline-offset: 1px;
+  }
+
+  .shortcut-key.editing-slot {
+    padding: 0;
+  }
+
   .recorder {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-self: end;
-    width: 180px;
-    max-width: 180px;
+    width: 116px;
+    max-width: 116px;
     min-width: 0;
     padding: 4px 8px;
     border: 1px solid var(--cd-accent);
