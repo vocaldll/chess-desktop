@@ -1,3 +1,4 @@
+import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { IPC } from '../shared/ipc-channels'
 import { defaultSettings } from '../shared/settings'
@@ -5,8 +6,7 @@ import { defaultSettings } from '../shared/settings'
 const mocks = vi.hoisted(() => ({
   constructWindow: vi.fn(),
   app: {
-    isPackaged: false,
-    getAppPath: vi.fn()
+    isPackaged: false
   },
   getDisplayMatching: vi.fn(),
   getPrimaryDisplay: vi.fn(),
@@ -79,7 +79,6 @@ describe('main window', () => {
     vi.clearAllMocks()
     vi.unstubAllEnvs()
     mocks.app.isPackaged = false
-    mocks.app.getAppPath.mockReturnValue('C:\\app')
     mocks.getSettings.mockReturnValue(defaultSettings)
     mocks.getWindowBounds.mockReturnValue({
       width: 1200,
@@ -107,6 +106,7 @@ describe('main window', () => {
         x: 0,
         y: 0,
         frame: false,
+        icon: join(__dirname, '../../resources/icon.ico'),
         webPreferences: expect.objectContaining({
           webviewTag: true,
           contextIsolation: true,
@@ -173,5 +173,13 @@ describe('main window', () => {
 
     expect(window.loadURL).toHaveBeenCalledWith('http://localhost:5173')
     expect(window.loadFile).not.toHaveBeenCalled()
+  })
+
+  it('lets the packaged executable provide its application icon', () => {
+    mocks.app.isPackaged = true
+
+    createMainWindow()
+
+    expect(mocks.constructWindow).toHaveBeenCalledWith(expect.objectContaining({ icon: undefined }))
   })
 })

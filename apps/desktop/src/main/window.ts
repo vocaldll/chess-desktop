@@ -5,7 +5,7 @@ import { IPC } from '../shared/ipc-channels'
 import { getSettings, getWindowBounds, setWindowBounds } from './store'
 
 function developmentIcon(): string | undefined {
-  return app.isPackaged ? undefined : join(app.getAppPath(), 'resources', 'icon.ico')
+  return app.isPackaged ? undefined : join(__dirname, '../../resources/icon.ico')
 }
 
 function resolveBounds(): Rectangle {
