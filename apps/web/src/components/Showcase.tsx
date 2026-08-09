@@ -107,7 +107,17 @@ export default function Showcase() {
 
       <dialog
         ref={lightbox}
+        aria-label="Screenshot preview"
         className="m-auto max-h-dvh max-w-full overflow-visible border-0 bg-transparent p-0 backdrop:bg-black/85 backdrop:backdrop-blur-sm md:max-h-[92dvh] md:max-w-[92vw]"
+        onKeyDown={(event) => {
+          if (event.key === 'ArrowLeft') {
+            event.preventDefault()
+            setActive((active - 1 + shots.length) % shots.length)
+          } else if (event.key === 'ArrowRight') {
+            event.preventDefault()
+            setActive((active + 1) % shots.length)
+          }
+        }}
       >
         <img
           className="block max-h-dvh w-auto max-w-full object-contain md:max-h-[92dvh] md:max-w-[92vw] md:rounded-xl md:border md:border-line"
@@ -117,11 +127,28 @@ export default function Showcase() {
           alt={shots[active].alt}
         />
 
+        <fieldset
+          className="fixed bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border border-line bg-canvas/85 p-1 font-mono text-[12px] backdrop-blur-sm"
+          aria-label="Choose screenshot"
+        >
+          {shots.map((shot, index) => (
+            <button
+              key={shot.label}
+              type="button"
+              aria-pressed={index === active}
+              className={`cursor-pointer rounded-full px-3 py-1.5 transition-colors ${index === active ? 'bg-surface-hover text-ink' : 'bg-transparent text-ink-muted hover:text-ink'}`}
+              onClick={() => setActive(index)}
+            >
+              {shot.label}
+            </button>
+          ))}
+        </fieldset>
+
         <form method="dialog">
           <button
             type="submit"
             aria-label="Close"
-            className="fixed top-3.5 right-3.5 grid size-10 cursor-pointer place-items-center rounded-full border border-line bg-canvas/80 p-0 text-ink backdrop-blur-sm transition-colors hover:border-line-strong hover:bg-canvas md:absolute md:top-3 md:right-3 md:size-9"
+            className="fixed top-3.5 right-3.5 grid size-10 cursor-pointer place-items-center rounded-full border border-line bg-canvas/80 p-0 text-ink backdrop-blur-sm transition-colors hover:border-line-strong hover:bg-canvas"
           >
             <X size={18} aria-hidden="true" />
           </button>

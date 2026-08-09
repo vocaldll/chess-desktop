@@ -61,4 +61,23 @@ describe('Showcase', () => {
     fireEvent.click(dialog)
     expect(dialog).not.toHaveAttribute('open')
   })
+
+  it('switches screenshots within the preview', () => {
+    render(<Showcase />)
+    fireEvent.click(screen.getByRole('button', { name: /View full size/ }))
+
+    const dialog = screen.getByRole('dialog', { name: 'Screenshot preview' })
+    const close = within(dialog).getByRole('button', { name: 'Close' })
+    expect(close).toHaveClass('fixed')
+    expect(close).not.toHaveClass('md:absolute')
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Lichess' }))
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/showcase-lichess.png')
+
+    fireEvent.keyDown(dialog, { key: 'ArrowLeft' })
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/showcase-chesscom.png')
+
+    fireEvent.keyDown(dialog, { key: 'ArrowRight' })
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/showcase-lichess.png')
+  })
 })
