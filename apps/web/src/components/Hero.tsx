@@ -52,19 +52,20 @@ export default function Hero() {
         </div>
 
         <a
-          className="inline-flex items-center gap-2 font-medium text-[14px] text-ink-muted transition-colors hover:text-ink"
+          className="relative inline-flex items-center gap-2 font-medium text-[14px] text-ink-muted transition-colors hover:text-ink"
           href={repository}
           target="_blank"
           rel="noreferrer"
         >
           <GitHubMark size={16} />
           View on GitHub
-          {stars !== null && (
-            <span className="inline-flex items-center gap-1.5">
-              <StarMark />
-              {formatStars(stars)}
-            </span>
-          )}
+          <span
+            className={`absolute left-full ml-2.5 inline-flex items-center gap-1.5 whitespace-nowrap tabular-nums ${stars === null ? 'invisible' : ''}`}
+            aria-hidden={stars === null}
+          >
+            <StarMark />
+            {stars === null ? '0' : formatStars(stars)}
+          </span>
         </a>
       </div>
     </section>

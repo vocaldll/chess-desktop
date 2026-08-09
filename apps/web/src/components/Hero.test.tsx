@@ -27,6 +27,7 @@ describe('Hero', () => {
       downloadLinux
     )
     expect(screen.getByRole('link', { name: /View on GitHub/ })).toHaveAttribute('href', repository)
+    expect(screen.getByText('0')).toHaveClass('invisible')
   })
 
   it('shows a compact star count after it loads', () => {
@@ -35,5 +36,6 @@ describe('Hero', () => {
     render(<Hero />)
 
     expect(screen.getByText('1.5k')).toBeInTheDocument()
+    expect(screen.getByText('1.5k')).not.toHaveClass('invisible')
   })
 })
