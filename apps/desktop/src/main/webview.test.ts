@@ -130,25 +130,6 @@ describe('webview event scoping', () => {
     })
   })
 
-  it('forwards page clicks only from the current webview', async () => {
-    const first = new FakeContents()
-    const second = new FakeContents()
-    const send = vi.fn()
-
-    await configure(first, send)
-    await configure(second, send)
-
-    first.emit('input-event', {}, { type: 'mouseDown' })
-    expect(send).not.toHaveBeenCalled()
-
-    second.emit('input-event', {}, { type: 'mouseMove' })
-    second.emit('input-event', {}, { type: 'keyDown' })
-    expect(send).not.toHaveBeenCalled()
-
-    second.emit('input-event', {}, { type: 'mouseDown' })
-    expect(send).toHaveBeenCalledExactlyOnceWith('webview:pointer-down')
-  })
-
   it('ignores loading and navigation events from a superseded webview', async () => {
     const first = new FakeContents()
     const second = new FakeContents()

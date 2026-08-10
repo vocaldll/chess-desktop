@@ -13,7 +13,6 @@
 
   let open = $state(false)
   let level = $state(settings.current.volume)
-  let root = $state<HTMLElement | null>(null)
 
   const muted = $derived(settings.current.soundMuted)
   const silent = $derived(muted || level === MIN_VOLUME)
@@ -33,28 +32,15 @@
       return
     }
 
-    const onPointerDown = (event: PointerEvent) => {
-      if (root && !root.contains(event.target as Node)) {
-        open = false
-      }
-    }
-
     const onKeydown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         open = false
       }
     }
 
-    const unsubscribePagePointer = window.api.webview.onPointerDown(() => {
-      open = false
-    })
-
-    document.addEventListener('pointerdown', onPointerDown, true)
     document.addEventListener('keydown', onKeydown)
 
     return () => {
-      unsubscribePagePointer()
-      document.removeEventListener('pointerdown', onPointerDown, true)
       document.removeEventListener('keydown', onKeydown)
     }
   })
@@ -76,7 +62,7 @@
   }
 </script>
 
-<div class="volume" bind:this={root}>
+<div class="volume">
   <button
     class="btn"
     title="Volume"
@@ -89,6 +75,8 @@
   </button>
 
   {#if open}
+    <button class="dismiss" aria-label="Close volume" onclick={() => (open = false)}></button>
+
     <div class="popover">
       <button
         class="mute"
@@ -151,6 +139,17 @@
   .btn:focus-visible {
     outline: 2px solid var(--cd-accent);
     outline-offset: -2px;
+  }
+
+  .dismiss {
+    position: fixed;
+    inset: 0;
+    z-index: 19;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: default;
+    -webkit-app-region: no-drag;
   }
 
   .popover {
