@@ -36,6 +36,9 @@
   const discordBetaNotice =
     'Discord status detection is still being tested and may sometimes be inaccurate.'
 
+  const opponentBetaNotice =
+    'Opponent detection is still being tested and some screens may still show their name.'
+
   const title = $derived(showShortcuts ? 'Keyboard shortcuts' : 'Settings')
   const hasShortcutOverrides = $derived(
     Object.keys(settings.current.shortcutOverrides).length > 0
@@ -439,7 +442,14 @@
 
             <div class="row">
               <div class="info">
-                <div class="label">Hide opponent</div>
+                <div class="label">
+                  Hide opponent
+                  <span
+                    class="beta"
+                    title={opponentBetaNotice}
+                    aria-label={`Beta: ${opponentBetaNotice}`}
+                  >BETA</span>
+                </div>
                 <div class="description">Anonymize your opponent's name, avatar, and rating</div>
               </div>
               <Toggle
