@@ -30,16 +30,20 @@ interface SiteAnonymity {
   readSelf: string
   readSeat: string
   markLinks?: string
+  watchSelector: string
+  watchClasses: readonly string[]
 }
 
+const CHESSCOM_SELF_SOURCES = [
+  '#nav-user-dropdown a[href*="/member/"]',
+  '.nav-user-username',
+  'nav.sidebar-container a[href*="/member/"]',
+  'nav a[href*="/member/"]',
+  'header a[href*="/member/"]'
+] as const
+
 const CHESSCOM_READ_SELF = `
-      const SELF_SOURCES = [
-        '#nav-user-dropdown a[href*="/member/"]',
-        '.nav-user-username',
-        'nav.sidebar-container a[href*="/member/"]',
-        'nav a[href*="/member/"]',
-        'header a[href*="/member/"]'
-      ]
+      const SELF_SOURCES = ${JSON.stringify(CHESSCOM_SELF_SOURCES)}
 
       const fromGlobal = window.chesscom && window.chesscom.user && window.chesscom.user.username
 
@@ -193,7 +197,13 @@ const ANONYMITY: Record<SiteId, SiteAnonymity> = {
     linkRules: CHESSCOM_LINK_RULES,
     readSelf: CHESSCOM_READ_SELF,
     readSeat: CHESSCOM_READ_SEAT,
-    markLinks: CHESSCOM_MARK_LINKS
+    markLinks: CHESSCOM_MARK_LINKS,
+    watchSelector: [
+      ...CHESSCOM_SELF_SOURCES,
+      CHESSCOM_USERNAME,
+      `.chat-message-component ${CHESSCOM_CHAT_AUTHOR}`
+    ].join(', '),
+    watchClasses: ['player-top', 'player-bottom']
   },
   lichess: {
     seatPrefix: '.ruser-',
@@ -208,7 +218,9 @@ const ANONYMITY: Record<SiteId, SiteAnonymity> = {
     linkRules: LICHESS_LINK_RULES,
     readSelf: LICHESS_READ_SELF,
     readSeat: LICHESS_READ_SEAT,
-    markLinks: LICHESS_MARK_LINKS
+    markLinks: LICHESS_MARK_LINKS,
+    watchSelector: 'a.user-link',
+    watchClasses: ['ruser-top', 'ruser-bottom']
   }
 }
 
@@ -233,30 +245,31 @@ function buildCSS({ seatPrefix, rules, linkRules = [] }: SiteAnonymity): string 
   return [...seated, ...linked].join('\n\n')
 }
 
-function buildScript({ readSelf, readSeat, markLinks = '' }: SiteAnonymity): string {
+function buildScript({
+  readSelf,
+  readSeat,
+  markLinks = '',
+  watchSelector,
+  watchClasses
+}: SiteAnonymity): string {
   return `
 (() => {
   const MARKER = ${JSON.stringify(SELF_MARKER)}
+  const WATCH_SELECTOR = ${JSON.stringify(watchSelector)}
+  const WATCH_CLASSES = ${JSON.stringify(watchClasses)}
 
   if (!window.__chessDesktopAnonymity) {
-    let cachedSelf = ''
     let observer = null
     let frame = 0
 
     const normalize = (value) => String(value == null ? '' : value).trim().toLowerCase()
 
     const readSelf = () => {
-      if (cachedSelf) {
-        return cachedSelf
-      }
-
       try {
-        cachedSelf = normalize((() => {${readSelf}      })())
+        return normalize((() => {${readSelf}      })())
       } catch {
-        cachedSelf = ''
+        return ''
       }
-
-      return cachedSelf
     }
 
     const seatName = (side) => {
@@ -300,11 +313,46 @@ function buildScript({ readSelf, readSeat, markLinks = '' }: SiteAnonymity): str
       })
     }
 
+    const relevantMutation = (mutation) => {
+      if (mutation.type === 'childList') {
+        return true
+      }
+
+      const target =
+        mutation.target.nodeType === Node.TEXT_NODE
+          ? mutation.target.parentElement
+          : mutation.target
+
+      if (!(target instanceof Element)) {
+        return false
+      }
+
+      if (mutation.attributeName === 'class') {
+        const classNames = (
+          (mutation.oldValue || '') +
+          ' ' +
+          (target.getAttribute('class') || '')
+        ).split(/\\s+/)
+        return WATCH_CLASSES.some((className) => classNames.includes(className))
+      }
+
+      if (mutation.attributeName === 'data-user') {
+        return target === document.body
+      }
+
+      return Boolean(target.closest(WATCH_SELECTOR))
+    }
+
     window.__chessDesktopAnonymity = (enabled) => {
       if (!enabled) {
         if (observer) {
           observer.disconnect()
           observer = null
+        }
+
+        if (frame) {
+          cancelAnimationFrame(frame)
+          frame = 0
         }
 
         markLinks('', '')
@@ -315,8 +363,19 @@ function buildScript({ readSelf, readSeat, markLinks = '' }: SiteAnonymity): str
       update()
 
       if (!observer) {
-        observer = new MutationObserver(schedule)
-        observer.observe(document.documentElement, { subtree: true, childList: true })
+        observer = new MutationObserver((mutations) => {
+          if (mutations.some(relevantMutation)) {
+            schedule()
+          }
+        })
+        observer.observe(document.documentElement, {
+          subtree: true,
+          childList: true,
+          characterData: true,
+          attributes: true,
+          attributeFilter: ['class', 'data-user', 'href'],
+          attributeOldValue: true
+        })
       }
     }
   }

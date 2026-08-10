@@ -299,12 +299,33 @@ describe('Chess.com self detection', () => {
     const top = document.querySelector('.player-top [data-test-element]')
     const bottom = document.querySelector('.player-bottom [data-test-element]')
 
-    if (!top || !bottom) {
+    const topName = top?.firstChild
+    const bottomName = bottom?.firstChild
+
+    if (!topName || !bottomName) {
       throw new Error('missing taglines')
     }
 
-    top.textContent = 'TestSelf'
-    bottom.textContent = 'TestRival'
+    topName.nodeValue = 'TestSelf'
+    bottomName.nodeValue = 'TestRival'
+
+    await vi.waitFor(() => expect(selfMarker(dom)).toBe('top'))
+  })
+
+  it('re-resolves the seat after existing seat classes swap', async () => {
+    const dom = render(chesscomPage('TestRival', 'TestSelf'), 'chesscom')
+    expect(selfMarker(dom)).toBe('bottom')
+
+    const { document } = dom.window
+    const top = document.querySelector('.player-top')
+    const bottom = document.querySelector('.player-bottom')
+
+    if (!top || !bottom) {
+      throw new Error('missing players')
+    }
+
+    top.classList.replace('player-top', 'player-bottom')
+    bottom.classList.replace('player-bottom', 'player-top')
 
     await vi.waitFor(() => expect(selfMarker(dom)).toBe('top'))
   })
@@ -339,6 +360,33 @@ describe('Lichess self detection', () => {
     expect(link?.getAttribute('href')).toBe('/@/TestSelf')
     expect(link?.textContent).toContain('IM')
     expect(selfMarker(dom)).toBe('bottom')
+  })
+
+  it('re-resolves the seat after a rematch updates existing profile links', async () => {
+    const dom = render(lichessPage('TestRival', 'TestSelf'), 'lichess')
+    expect(selfMarker(dom)).toBe('bottom')
+
+    const { document } = dom.window
+    const top = document.querySelector('.ruser-top a.user-link')
+    const bottom = document.querySelector('.ruser-bottom a.user-link')
+
+    if (!top || !bottom) {
+      throw new Error('missing player links')
+    }
+
+    top.setAttribute('href', '/@/TestSelf')
+    bottom.setAttribute('href', '/@/TestRival')
+
+    await vi.waitFor(() => expect(selfMarker(dom)).toBe('top'))
+  })
+
+  it('re-resolves the seat after the signed-in user changes', async () => {
+    const dom = render(lichessPage('TestRival', 'TestSelf'), 'lichess')
+    expect(selfMarker(dom)).toBe('bottom')
+
+    dom.window.document.body.dataset.user = 'TestRival'
+
+    await vi.waitFor(() => expect(selfMarker(dom)).toBe('top'))
   })
 
   it('leaves both anonymized when the visitor is logged out', () => {
