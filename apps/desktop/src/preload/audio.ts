@@ -14,31 +14,33 @@ const MASTER_GAIN = `
 
   const NativeContext = window.AudioContext || window.webkitAudioContext
 
-  if (NativeContext) {
-    const base = window.BaseAudioContext
-      ? window.BaseAudioContext.prototype
-      : Object.getPrototypeOf(NativeContext.prototype)
-    const nativeDestination = Object.getOwnPropertyDescriptor(base, 'destination').get
+  try {
+    if (NativeContext) {
+      const base = window.BaseAudioContext
+        ? window.BaseAudioContext.prototype
+        : Object.getPrototypeOf(NativeContext.prototype)
+      const nativeDestination = Object.getOwnPropertyDescriptor(base, 'destination').get
 
-    class ManagedContext extends NativeContext {
-      constructor(...args) {
-        super(...args)
+      class ManagedContext extends NativeContext {
+        constructor(...args) {
+          super(...args)
 
-        const gain = this.createGain()
-        gain.gain.value = master
-        gain.connect(nativeDestination.call(this))
-        gains.add(gain)
+          const gain = this.createGain()
+          gain.gain.value = master
+          gain.connect(nativeDestination.call(this))
+          gains.add(gain)
 
-        Object.defineProperty(this, 'destination', {
-          configurable: true,
-          get: () => gain
-        })
+          Object.defineProperty(this, 'destination', {
+            configurable: true,
+            get: () => gain
+          })
+        }
       }
-    }
 
-    window.AudioContext = ManagedContext
-    window.webkitAudioContext = ManagedContext
-  }
+      window.AudioContext = ManagedContext
+      window.webkitAudioContext = ManagedContext
+    }
+  } catch {}
 
   const nativeVolume = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'volume')
 
