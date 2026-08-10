@@ -20,6 +20,6 @@ export default defineProject({
     name: 'desktop-renderer',
     environment: 'jsdom',
     setupFiles: ['test/setup.ts'],
-    include: ['src/renderer/**/*.test.ts', 'src/preload/webview.test.ts']
+    include: ['src/renderer/**/*.test.ts', 'src/preload/{numbered-arrows,webview}.test.ts']
   }
 })

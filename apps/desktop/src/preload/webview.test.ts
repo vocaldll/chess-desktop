@@ -1,12 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const installMasterGain = vi.hoisted(() => vi.fn())
+const installNumberedArrows = vi.hoisted(() => vi.fn())
 const electron = vi.hoisted(() => ({
   on: vi.fn(),
   sendToHost: vi.fn()
 }))
 
 vi.mock('./audio', () => ({ installMasterGain }))
+vi.mock('./numbered-arrows', () => ({ installNumberedArrows }))
 vi.mock('electron', () => ({
   ipcRenderer: {
     on: electron.on,
@@ -26,6 +28,10 @@ describe('guest webview preload', () => {
 
   it('installs master volume handling', () => {
     expect(installMasterGain).toHaveBeenCalledOnce()
+  })
+
+  it('installs numbered arrow handling', () => {
+    expect(installNumberedArrows).toHaveBeenCalledOnce()
   })
 
   it.each([

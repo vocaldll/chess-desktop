@@ -5,6 +5,7 @@ import { applyVolume } from './audio'
 import { applyChatVisibility } from './chat-visibility'
 import { applyPresenceSettings } from './discord'
 import { applyReviewOnLichess } from './lichess-review'
+import { applyNumberedArrows } from './numbered-arrows'
 import { applyPlayerAnonymity } from './player-anonymity'
 import { getSiteWebContents } from './webview'
 
@@ -17,6 +18,7 @@ export function applySettings(window: BrowserWindow | null, settings: Settings):
   applyVolume(contents, settings.volume)
   applyChatVisibility(contents, settings.activeSite, settings.hideChat)
   applyPlayerAnonymity(contents, settings.activeSite, settings.hideOpponent, settings.hideRatings)
+  applyNumberedArrows(contents, settings.activeSite, settings.numberedArrows)
   applyReviewOnLichess(contents, settings.activeSite, settings.reviewOnLichess)
   applyPresenceSettings(settings)
 }

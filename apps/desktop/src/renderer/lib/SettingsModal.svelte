@@ -482,6 +482,18 @@
                 onchange={(value) => settings.set('hideChat', value)}
               />
             </div>
+
+            <div class="row">
+              <div class="info">
+                <div class="label">Number drawn arrows</div>
+                <div class="description">Show the order of right-click arrows on the board</div>
+              </div>
+              <Toggle
+                label="Number drawn arrows"
+                checked={settings.current.numberedArrows}
+                onchange={(value) => settings.set('numberedArrows', value)}
+              />
+            </div>
           </section>
 
           <section>

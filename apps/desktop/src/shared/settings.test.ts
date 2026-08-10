@@ -6,6 +6,10 @@ describe('setting keys and values', () => {
     expect(defaultSettings.reviewOnLichess).toBe(true)
   })
 
+  it('disables numbered arrows by default', () => {
+    expect(defaultSettings.numberedArrows).toBe(false)
+  })
+
   it.each(Object.keys(defaultSettings))('recognizes %s', (key) => {
     expect(isSettingKey(key)).toBe(true)
   })
@@ -35,6 +39,8 @@ describe('setting keys and values', () => {
     expect(isValidSettingValue('hideOpponent', 'yes')).toBe(false)
     expect(isValidSettingValue('hideRatings', true)).toBe(true)
     expect(isValidSettingValue('hideRatings', 'yes')).toBe(false)
+    expect(isValidSettingValue('numberedArrows', true)).toBe(true)
+    expect(isValidSettingValue('numberedArrows', 'yes')).toBe(false)
     expect(isValidSettingValue('reviewOnLichess', true)).toBe(true)
     expect(isValidSettingValue('reviewOnLichess', 'yes')).toBe(false)
     expect(isValidSettingValue('soundMuted', 1)).toBe(false)
@@ -56,6 +62,7 @@ describe('settings coercion', () => {
       hideChat: true,
       hideOpponent: true,
       hideRatings: true,
+      numberedArrows: true,
       reviewOnLichess: false,
       notificationsEnabled: false,
       discordRpcEnabled: true,

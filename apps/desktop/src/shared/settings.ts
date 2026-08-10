@@ -11,6 +11,7 @@ export interface Settings {
   hideChat: boolean
   hideOpponent: boolean
   hideRatings: boolean
+  numberedArrows: boolean
   reviewOnLichess: boolean
   notificationsEnabled: boolean
   discordRpcEnabled: boolean
@@ -27,6 +28,7 @@ export const defaultSettings: Settings = {
   hideChat: false,
   hideOpponent: false,
   hideRatings: false,
+  numberedArrows: false,
   reviewOnLichess: true,
   notificationsEnabled: true,
   discordRpcEnabled: false,

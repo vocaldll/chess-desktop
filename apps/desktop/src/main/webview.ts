@@ -12,6 +12,7 @@ import { probeGameRole } from './game-role'
 import { updatePlayingState } from './keep-awake'
 import { applyReviewOnLichess } from './lichess-review'
 import { isLichessReview } from './lichess-review-state'
+import { applyNumberedArrows } from './numbered-arrows'
 import { applyPlayerAnonymity } from './player-anonymity'
 import { getSettings, setLastSiteUrl } from './store'
 
@@ -226,6 +227,7 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
       settings.hideRatings,
       true
     )
+    applyNumberedArrows(contents, settings.activeSite, settings.numberedArrows)
     applyReviewOnLichess(contents, settings.activeSite, settings.reviewOnLichess, true)
     rejectCookieBanners(contents)
     trackPresence(contents.getURL())

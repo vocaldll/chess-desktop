@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   applyVolume: vi.fn(),
   applyChatVisibility: vi.fn(),
   applyPlayerAnonymity: vi.fn(),
+  applyNumberedArrows: vi.fn(),
   applyReviewOnLichess: vi.fn(),
   applyPresenceSettings: vi.fn(),
   getSiteWebContents: vi.fn()
@@ -14,6 +15,7 @@ vi.mock('./audio', () => ({ applyVolume: mocks.applyVolume }))
 vi.mock('./chat-visibility', () => ({ applyChatVisibility: mocks.applyChatVisibility }))
 vi.mock('./discord', () => ({ applyPresenceSettings: mocks.applyPresenceSettings }))
 vi.mock('./player-anonymity', () => ({ applyPlayerAnonymity: mocks.applyPlayerAnonymity }))
+vi.mock('./numbered-arrows', () => ({ applyNumberedArrows: mocks.applyNumberedArrows }))
 vi.mock('./lichess-review', () => ({ applyReviewOnLichess: mocks.applyReviewOnLichess }))
 vi.mock('./webview', () => ({ getSiteWebContents: mocks.getSiteWebContents }))
 
@@ -35,6 +37,7 @@ describe('applySettings', () => {
       hideChat: true,
       hideOpponent: true,
       hideRatings: true,
+      numberedArrows: true,
       reviewOnLichess: false,
       volume: 35,
       zoom: { chesscom: 80, lichess: 125 }
@@ -49,6 +52,7 @@ describe('applySettings', () => {
     expect(mocks.applyVolume).toHaveBeenCalledWith(contents, 35)
     expect(mocks.applyChatVisibility).toHaveBeenCalledWith(contents, 'lichess', true)
     expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(contents, 'lichess', true, true)
+    expect(mocks.applyNumberedArrows).toHaveBeenCalledWith(contents, 'lichess', true)
     expect(mocks.applyReviewOnLichess).toHaveBeenCalledWith(contents, 'lichess', false)
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(settings)
   })
@@ -69,6 +73,11 @@ describe('applySettings', () => {
       defaultSettings.activeSite,
       defaultSettings.hideOpponent,
       defaultSettings.hideRatings
+    )
+    expect(mocks.applyNumberedArrows).toHaveBeenCalledWith(
+      null,
+      defaultSettings.activeSite,
+      defaultSettings.numberedArrows
     )
     expect(mocks.applyReviewOnLichess).toHaveBeenCalledWith(
       null,
