@@ -1,6 +1,6 @@
 import { SITES, type SiteId } from './sites'
 
-export type GameRole = 'unknown' | 'playing' | 'spectating' | 'finished' | 'aborted'
+export type GameRole = 'unknown' | 'playing' | 'spectating' | 'finished' | 'aborted' | 'reviewing'
 
 export interface Presence {
   details: string
@@ -119,6 +119,7 @@ const LIVE_GAME_LABELS: Record<GameRole, string> = {
   spectating: WATCHING_GAME,
   finished: REVIEWING,
   aborted: BROWSING,
+  reviewing: REVIEWING,
   unknown: PLAYING
 }
 
@@ -127,6 +128,7 @@ const ARCHIVED_GAME_LABELS: Record<GameRole, string> = {
   spectating: REVIEWING,
   finished: REVIEWING,
   aborted: REVIEWING,
+  reviewing: REVIEWING,
   unknown: REVIEWING
 }
 
@@ -135,6 +137,7 @@ const LICHESS_GAME_LABELS: Record<GameRole, string> = {
   spectating: WATCHING_GAME,
   finished: REVIEWING,
   aborted: BROWSING,
+  reviewing: REVIEWING,
   unknown: WATCHING_GAME
 }
 
@@ -143,6 +146,7 @@ const LICHESS_PLAYER_LABELS: Record<GameRole, string> = {
   spectating: REVIEWING,
   finished: REVIEWING,
   aborted: BROWSING,
+  reviewing: REVIEWING,
   unknown: PLAYING
 }
 
@@ -151,6 +155,7 @@ const SOLO_PLAY_LABELS: Record<GameRole, string> = {
   spectating: LOOKING,
   finished: REVIEWING,
   aborted: LOOKING,
+  reviewing: REVIEWING,
   unknown: LOOKING
 }
 
@@ -238,6 +243,10 @@ function isLichessPlayerURL(segments: string[]): boolean {
 
 function lichessActivity(segments: string[], role: GameRole): string {
   const [first, second] = segments
+
+  if (role === 'reviewing') {
+    return REVIEWING
+  }
 
   if (first === undefined) {
     return BROWSING

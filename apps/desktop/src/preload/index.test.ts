@@ -36,6 +36,7 @@ describe('preload API', () => {
     expect(Object.keys(api).sort()).toEqual([
       'audio',
       'links',
+      'reviewOnLichess',
       'settings',
       'shortcuts',
       'updates',
@@ -58,6 +59,7 @@ describe('preload API', () => {
     await api.settings.getAll()
     await api.settings.set('soundMuted', true)
     await api.webview.getLastSiteUrls()
+    await api.reviewOnLichess.start('[Event "Live Chess"]')
     await api.updates.getInfo()
     await api.updates.check()
 
@@ -75,6 +77,7 @@ describe('preload API', () => {
       [IPC.settings.getAll],
       [IPC.settings.set, 'soundMuted', true],
       [IPC.webview.getLastSiteUrls],
+      [IPC.reviewOnLichess.start, '[Event "Live Chess"]'],
       [IPC.updates.info],
       [IPC.updates.check]
     ])

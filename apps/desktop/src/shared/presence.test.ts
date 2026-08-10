@@ -77,7 +77,8 @@ describe('presence descriptions', () => {
     ['lichess', 'https://lichess.org/Ab12Cd34Ef56', 'aborted', 'Browsing'],
     ['lichess', 'https://lichess.org/Ab12Cd34', 'aborted', 'Browsing'],
     ['lichess', 'https://lichess.org/Ab12Cd34', 'spectating', 'Watching a game'],
-    ['lichess', 'https://lichess.org/Ab12Cd34', 'finished', 'Reviewing a game']
+    ['lichess', 'https://lichess.org/Ab12Cd34', 'finished', 'Reviewing a game'],
+    ['lichess', 'https://lichess.org/paste', 'reviewing', 'Reviewing a game']
   ] as const)(
     'describes %s URL %s as %s',
     (siteId: SiteId, url: string, role: GameRole, expected: string) => {

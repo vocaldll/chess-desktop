@@ -27,6 +27,9 @@ export const IPC = {
     loadStop: 'webview:load-stop',
     loadError: 'webview:load-error'
   },
+  reviewOnLichess: {
+    start: 'review-on-lichess:start'
+  },
   updates: {
     info: 'updates:info',
     check: 'updates:check',

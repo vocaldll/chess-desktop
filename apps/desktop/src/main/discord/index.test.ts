@@ -96,6 +96,30 @@ describe('Discord Rich Presence lifecycle', () => {
     presence.shutdownPresence()
   })
 
+  it('publishes imported Lichess games directly as reviews', async () => {
+    const presence = await freshPresence()
+    presence.applyPresenceSettings(enabledSettings())
+    connections[0].handlers.onReady()
+    connections[0].send.mockClear()
+
+    presence.updatePresenceLocation(
+      'lichess',
+      'https://lichess.org/Ab12Cd34?chessDesktopReview=1',
+      'reviewing'
+    )
+    presence.applyPresenceSettings({
+      ...enabledSettings(),
+      activeSite: 'lichess'
+    })
+
+    await vi.advanceTimersByTimeAsync(4_000)
+    expect(connections[0].send.mock.calls[0][0]).toMatchObject({
+      args: { activity: { details: 'Reviewing a game' } }
+    })
+
+    presence.shutdownPresence()
+  })
+
   it('reconnects after a remote close while still enabled', async () => {
     const presence = await freshPresence()
     presence.applyPresenceSettings(enabledSettings())

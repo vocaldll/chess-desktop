@@ -53,6 +53,9 @@ const api = {
     onLoadError: (listener: (error: WebviewLoadError) => void): Unsubscribe =>
       subscribe(IPC.webview.loadError, listener)
   },
+  reviewOnLichess: {
+    start: (pgn: string): Promise<string> => ipcRenderer.invoke(IPC.reviewOnLichess.start, pgn)
+  },
   updates: {
     getInfo: (): Promise<AppUpdateInfo> => ipcRenderer.invoke(IPC.updates.info),
     check: (): Promise<AppUpdateCheckResult> => ipcRenderer.invoke(IPC.updates.check),

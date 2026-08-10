@@ -2,6 +2,10 @@ import { describe, expect, it } from 'vitest'
 import { coerceSettings, defaultSettings, isSettingKey, isValidSettingValue } from './settings'
 
 describe('setting keys and values', () => {
+  it('enables Lichess reviews by default', () => {
+    expect(defaultSettings.reviewOnLichess).toBe(true)
+  })
+
   it.each(Object.keys(defaultSettings))('recognizes %s', (key) => {
     expect(isSettingKey(key)).toBe(true)
   })
@@ -31,6 +35,8 @@ describe('setting keys and values', () => {
     expect(isValidSettingValue('hideOpponent', 'yes')).toBe(false)
     expect(isValidSettingValue('hideRatings', true)).toBe(true)
     expect(isValidSettingValue('hideRatings', 'yes')).toBe(false)
+    expect(isValidSettingValue('reviewOnLichess', true)).toBe(true)
+    expect(isValidSettingValue('reviewOnLichess', 'yes')).toBe(false)
     expect(isValidSettingValue('soundMuted', 1)).toBe(false)
     expect(isValidSettingValue('notificationsEnabled', 'false')).toBe(false)
   })
@@ -50,6 +56,7 @@ describe('settings coercion', () => {
       hideChat: true,
       hideOpponent: true,
       hideRatings: true,
+      reviewOnLichess: false,
       notificationsEnabled: false,
       discordRpcEnabled: true,
       onboardingCompleted: true,

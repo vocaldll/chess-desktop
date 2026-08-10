@@ -489,6 +489,20 @@
 
             <div class="row">
               <div class="info">
+                <div class="label">Review on Lichess</div>
+                <div class="description">
+                  Add a button to publicly import finished Chess.com games for free analysis
+                </div>
+              </div>
+              <Toggle
+                label="Review on Lichess"
+                checked={settings.current.reviewOnLichess}
+                onchange={(value) => settings.set('reviewOnLichess', value)}
+              />
+            </div>
+
+            <div class="row">
+              <div class="info">
                 <div class="label">
                   Discord Rich Presence
                   <span

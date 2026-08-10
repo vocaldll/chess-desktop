@@ -1,11 +1,15 @@
 <script lang="ts">
   import { SITES } from '$shared/sites'
+  import {
+    isReviewPgn,
+    REVIEW_ON_LICHESS_CHANNEL,
+    REVIEW_ON_LICHESS_FAILED_CHANNEL
+  } from '$shared/lichess-review'
   import { browser } from './browser.svelte'
   import { settings } from './settings.svelte'
-  import type { SiteWebviewElement } from './webview-element'
+  import type { GuestIpcMessageEvent, SiteWebviewElement } from './webview-element'
 
   let element = $state<HTMLElement | null>(null)
-
   const site = $derived(SITES[settings.current.activeSite])
 
   $effect(() => {
@@ -22,15 +26,45 @@
     browser.attach(webview)
 
     const sync = () => browser.syncHistory(siteId)
-    const events = ['dom-ready', 'did-navigate', 'did-navigate-in-page']
-    for (const event of events) {
-      webview.addEventListener(event, sync)
+    const onDomReady = () => sync()
+    const onGuestMessage = (event: Event) => {
+      const message = event as GuestIpcMessageEvent
+      const pgn = message.args[0]
+
+      if (
+        siteId !== 'chesscom' ||
+        message.channel !== REVIEW_ON_LICHESS_CHANNEL ||
+        !isReviewPgn(pgn)
+      ) {
+        return
+      }
+
+      void (async () => {
+        try {
+          const url = await window.api.reviewOnLichess.start(pgn)
+          browser.setRememberedUrl('lichess', url)
+          await settings.set('activeSite', 'lichess')
+        } catch {
+          if (webview.isConnected) {
+            webview.send(REVIEW_ON_LICHESS_FAILED_CHANNEL)
+          }
+        }
+      })()
     }
 
+    const events = ['dom-ready', 'did-navigate', 'did-navigate-in-page']
+    webview.addEventListener('dom-ready', onDomReady)
+    for (const event of events.slice(1)) {
+      webview.addEventListener(event, sync)
+    }
+    webview.addEventListener('ipc-message', onGuestMessage)
+
     return () => {
-      for (const event of events) {
+      webview.removeEventListener('dom-ready', onDomReady)
+      for (const event of events.slice(1)) {
         webview.removeEventListener(event, sync)
       }
+      webview.removeEventListener('ipc-message', onGuestMessage)
       browser.detach()
     }
   })

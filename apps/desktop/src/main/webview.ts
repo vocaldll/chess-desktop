@@ -1,6 +1,7 @@
 import { join } from 'node:path'
 import { app, type BrowserWindow, shell, type WebContents } from 'electron'
 import { IPC, type WebviewLoadError } from '../shared/ipc-channels'
+import { isLichessReviewUrl, lichessGameKey } from '../shared/lichess-review'
 import { type GameRole, isPlayingGame, needsGameRole } from '../shared/presence'
 import { isOpenableExternally, isSiteURL, SITES, type SiteId } from '../shared/sites'
 import { toZoomFactor } from '../shared/zoom'
@@ -10,6 +11,7 @@ import { rejectCookieBanners } from './consent'
 import { updatePresenceLocation } from './discord'
 import { probeGameRole } from './game-role'
 import { updatePlayingState } from './keep-awake'
+import { applyReviewOnLichess } from './lichess-review'
 import { applyPlayerAnonymity } from './player-anonymity'
 import { getSettings, setLastSiteUrl } from './store'
 
@@ -25,6 +27,7 @@ let roleValue: GameRole = 'unknown'
 let nonPlayerStreak = 0
 let unknownStreak = 0
 let rolePublished = false
+let lichessReviewGame = ''
 
 export function getSiteWebContents(): WebContents | null {
   return siteContents && !siteContents.isDestroyed() ? siteContents : null
@@ -107,6 +110,23 @@ function trackPresence(url: string): void {
   }
 
   setLastSiteUrl(activeSite, url)
+
+  if (activeSite === 'lichess') {
+    const game = lichessGameKey(url)
+    if (game && isLichessReviewUrl(url)) {
+      lichessReviewGame = game
+    }
+
+    if (game && game === lichessReviewGame) {
+      stopRolePolling()
+      updatePresenceLocation(activeSite, url, 'reviewing')
+      return
+    }
+
+    lichessReviewGame = ''
+  } else {
+    lichessReviewGame = ''
+  }
 
   if (!needsGameRole(activeSite, url)) {
     stopRolePolling()
@@ -218,6 +238,7 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
       settings.hideRatings,
       true
     )
+    applyReviewOnLichess(contents, settings.activeSite, settings.reviewOnLichess, true)
     rejectCookieBanners(contents)
     trackPresence(contents.getURL())
   })

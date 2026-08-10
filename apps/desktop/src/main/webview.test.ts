@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   applyVolume: vi.fn(),
   applyChatVisibility: vi.fn(),
   applyPlayerAnonymity: vi.fn(),
+  applyReviewOnLichess: vi.fn(),
   rejectCookieBanners: vi.fn(),
   updatePresenceLocation: vi.fn(),
   probeGameRole: vi.fn(),
@@ -32,6 +33,7 @@ vi.mock('./discord', () => ({ updatePresenceLocation: mocks.updatePresenceLocati
 vi.mock('./game-role', () => ({ probeGameRole: mocks.probeGameRole }))
 vi.mock('./keep-awake', () => ({ updatePlayingState: mocks.updatePlayingState }))
 vi.mock('./player-anonymity', () => ({ applyPlayerAnonymity: mocks.applyPlayerAnonymity }))
+vi.mock('./lichess-review', () => ({ applyReviewOnLichess: mocks.applyReviewOnLichess }))
 
 type Handler = (...args: unknown[]) => void
 
@@ -102,6 +104,7 @@ describe('webview event scoping', () => {
       hideChat: false,
       hideOpponent: true,
       hideRatings: true,
+      reviewOnLichess: true,
       volume: 100,
       zoom: { chesscom: 100, lichess: 100 }
     })
@@ -211,6 +214,7 @@ describe('webview event scoping', () => {
     expect(mocks.applyVolume).toHaveBeenCalledWith(contents, 100)
     expect(mocks.applyChatVisibility).toHaveBeenCalledWith(contents, 'chesscom', false, true)
     expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(contents, 'chesscom', true, true, true)
+    expect(mocks.applyReviewOnLichess).toHaveBeenCalledWith(contents, 'chesscom', true, true)
     expect(mocks.rejectCookieBanners).toHaveBeenCalledWith(contents)
     expect(mocks.setLastSiteUrl).toHaveBeenCalledWith('chesscom', contents.url)
   })
@@ -249,5 +253,26 @@ describe('webview event scoping', () => {
 
     contents.destroyed = true
     contents.emit('destroyed')
+  })
+
+  it('keeps imported Lichess boards in the reviewing state without probing', async () => {
+    const contents = new FakeContents()
+    contents.url = 'https://lichess.org/Ab12Cd34?chessDesktopReview=1'
+    mocks.getSettings.mockReturnValue({
+      ...mocks.getSettings(),
+      activeSite: 'lichess'
+    })
+    await configure(contents)
+
+    contents.emit('did-navigate', {}, contents.url)
+    contents.url = 'https://lichess.org/Ab12Cd34'
+    contents.emit('did-navigate-in-page', {}, contents.url, true)
+
+    expect(mocks.updatePresenceLocation).toHaveBeenLastCalledWith(
+      'lichess',
+      contents.url,
+      'reviewing'
+    )
+    expect(mocks.probeGameRole).not.toHaveBeenCalled()
   })
 })

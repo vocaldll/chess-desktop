@@ -24,6 +24,10 @@ class Browser {
     return this.#lastUrls.get(siteId) ?? SITES[siteId].startUrl
   }
 
+  setRememberedUrl(siteId: SiteId, url: string): void {
+    this.#lastUrls.set(siteId, url)
+  }
+
   enterSite(siteId: SiteId): void {
     this.url = this.rememberedUrl(siteId)
     this.canGoBack = false
