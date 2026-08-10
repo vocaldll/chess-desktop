@@ -24,6 +24,7 @@
     "@testing-library/svelte": "^5.4.2",
     "@testing-library/user-event": "^14.6.3",
     "@tsconfig/svelte": "5.0.8",
+    "@types/jsdom": "^30.0.0",
     "electron": "43.3.0",
     "electron-builder": "26.15.3",
     "electron-vite": "5.0.0",
