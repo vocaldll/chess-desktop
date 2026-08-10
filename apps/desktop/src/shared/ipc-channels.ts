@@ -25,7 +25,8 @@ export const IPC = {
     getLastSiteUrls: 'webview:get-last-site-urls',
     loadStart: 'webview:load-start',
     loadStop: 'webview:load-stop',
-    loadError: 'webview:load-error'
+    loadError: 'webview:load-error',
+    pointerDown: 'webview:pointer-down'
   },
   reviewOnLichess: {
     start: 'review-on-lichess:start'

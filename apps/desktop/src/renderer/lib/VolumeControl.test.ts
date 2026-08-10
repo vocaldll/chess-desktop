@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/svelte'
+import { act, fireEvent, render, screen } from '@testing-library/svelte'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { defaultSettings } from '$shared/settings'
@@ -6,13 +6,19 @@ import { settings } from './settings.svelte'
 import VolumeControl from './VolumeControl.svelte'
 
 const setVolume = vi.fn()
+const onPointerDown = vi.fn()
 
 describe('VolumeControl', () => {
   beforeEach(() => {
     settings.current = { ...defaultSettings, zoom: { ...defaultSettings.zoom } }
     vi.restoreAllMocks()
     setVolume.mockReset()
-    window.api = { audio: { setVolume } } as unknown as typeof window.api
+    onPointerDown.mockReset()
+    onPointerDown.mockReturnValue(vi.fn())
+    window.api = {
+      audio: { setVolume },
+      webview: { onPointerDown }
+    } as unknown as typeof window.api
   })
 
   it('previews and persists volume changes', async () => {
@@ -53,5 +59,23 @@ describe('VolumeControl', () => {
 
     await user.keyboard('{Escape}')
     expect(screen.queryByRole('slider', { name: 'Volume level' })).not.toBeInTheDocument()
+  })
+
+  it('closes the popover when the page is clicked', async () => {
+    const user = userEvent.setup()
+    const unsubscribe = vi.fn()
+    onPointerDown.mockReturnValue(unsubscribe)
+    render(VolumeControl)
+
+    await user.click(screen.getByRole('button', { name: 'Volume' }))
+    expect(screen.getByRole('slider', { name: 'Volume level' })).toBeInTheDocument()
+
+    const notifyPagePointer = onPointerDown.mock.calls[0][0] as () => void
+    await act(() => {
+      notifyPagePointer()
+    })
+
+    expect(screen.queryByRole('slider', { name: 'Volume level' })).not.toBeInTheDocument()
+    expect(unsubscribe).toHaveBeenCalled()
   })
 })

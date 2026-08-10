@@ -45,10 +45,15 @@
       }
     }
 
+    const unsubscribePagePointer = window.api.webview.onPointerDown(() => {
+      open = false
+    })
+
     document.addEventListener('pointerdown', onPointerDown, true)
     document.addEventListener('keydown', onKeydown)
 
     return () => {
+      unsubscribePagePointer()
       document.removeEventListener('pointerdown', onPointerDown, true)
       document.removeEventListener('keydown', onKeydown)
     }

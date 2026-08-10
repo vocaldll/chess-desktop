@@ -51,7 +51,9 @@ const api = {
     onLoadStart: (listener: () => void): Unsubscribe => subscribe(IPC.webview.loadStart, listener),
     onLoadStop: (listener: () => void): Unsubscribe => subscribe(IPC.webview.loadStop, listener),
     onLoadError: (listener: (error: WebviewLoadError) => void): Unsubscribe =>
-      subscribe(IPC.webview.loadError, listener)
+      subscribe(IPC.webview.loadError, listener),
+    onPointerDown: (listener: () => void): Unsubscribe =>
+      subscribe(IPC.webview.pointerDown, listener)
   },
   reviewOnLichess: {
     start: (pgn: string): Promise<string> => ipcRenderer.invoke(IPC.reviewOnLichess.start, pgn)

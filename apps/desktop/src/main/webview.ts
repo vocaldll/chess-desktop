@@ -245,6 +245,12 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
     }
   })
 
+  contents.on('input-event', (_event, input) => {
+    if (input.type === 'mouseDown' && isCurrentSiteContents(contents)) {
+      getWindow()?.webContents.send(IPC.webview.pointerDown)
+    }
+  })
+
   contents.on('did-start-loading', () => {
     if (isCurrentSiteContents(contents)) {
       getWindow()?.webContents.send(IPC.webview.loadStart)
