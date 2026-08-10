@@ -1,7 +1,8 @@
 export const REVIEW_ON_LICHESS_CHANNEL = 'review-on-lichess'
+export const REVIEW_ON_LICHESS_CONTINUE_CHANNEL = 'review-on-lichess-continue'
 export const REVIEW_ON_LICHESS_FAILED_CHANNEL = 'review-on-lichess-failed'
+export const REVIEW_ON_LICHESS_NAVIGATE_CHANNEL = 'review-on-lichess-navigate'
 export const REVIEW_ON_LICHESS_MARKER = 'data-chess-desktop-review-on-lichess'
-export const CHESSCOM_REVIEW_PENDING_PARAM = 'chessDesktopReview'
 export const LICHESS_IMPORT_URL = 'https://lichess.org/paste'
 
 const MAX_PGN_LENGTH = 1_000_000
@@ -14,6 +15,16 @@ export function isReviewPgn(value: unknown): value is string {
     /^\s*\[Event\s+"[^"]*"\]/.test(value) &&
     /\[Result\s+"(?:1-0|0-1|1\/2-1\/2|\*)"\]/.test(value)
   )
+}
+
+export function chesscomGameKey(value: string): string | null {
+  try {
+    const url = new URL(value, 'https://www.chess.com')
+    const match = url.pathname.match(/^\/(?:analysis\/)?game\/([a-z-]+)\/(\d+)/)
+    return match ? `${match[1]}/${match[2]}` : null
+  } catch {
+    return null
+  }
 }
 
 export function lichessGameKey(value: string): string | null {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isReviewPgn, lichessGameKey } from './lichess-review'
+import { chesscomGameKey, isReviewPgn, lichessGameKey } from './lichess-review'
 
 const pgn = `[Event "Live Chess"]
 [Site "Chess.com"]
@@ -19,5 +19,11 @@ describe('Lichess review handoff', () => {
     expect(lichessGameKey('https://lichess.org/Ab12Cd34')).toBe('Ab12Cd34')
     expect(lichessGameKey('https://lichess.org/Ab12Cd34Ef56/black')).toBe('Ab12Cd34')
     expect(lichessGameKey('https://lichess.org/paste')).toBeNull()
+  })
+
+  it('matches Chess.com analysis and game URLs without a handoff parameter', () => {
+    expect(chesscomGameKey('https://www.chess.com/analysis/game/live/123')).toBe('live/123')
+    expect(chesscomGameKey('https://www.chess.com/game/live/123')).toBe('live/123')
+    expect(chesscomGameKey('https://www.chess.com/home')).toBeNull()
   })
 })

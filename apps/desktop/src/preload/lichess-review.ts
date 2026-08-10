@@ -1,10 +1,12 @@
 import { ipcRenderer } from 'electron'
 import {
-  CHESSCOM_REVIEW_PENDING_PARAM,
+  chesscomGameKey,
   isReviewPgn,
   REVIEW_ON_LICHESS_CHANNEL,
+  REVIEW_ON_LICHESS_CONTINUE_CHANNEL,
   REVIEW_ON_LICHESS_FAILED_CHANNEL,
-  REVIEW_ON_LICHESS_MARKER
+  REVIEW_ON_LICHESS_MARKER,
+  REVIEW_ON_LICHESS_NAVIGATE_CHANNEL
 } from '../shared/lichess-review'
 
 const ELEMENT_TIMEOUT = 8_000
@@ -50,30 +52,6 @@ function waitForElement<T extends Element>(selector: string): Promise<T | null> 
   })
 }
 
-function gameKey(value: string): string | null {
-  try {
-    const url = new URL(value, location.href)
-    const match = url.pathname.match(/^\/game\/([a-z-]+)\/(\d+)/)
-    return match ? `${match[1]}/${match[2]}` : null
-  } catch {
-    return null
-  }
-}
-
-function cleanPendingReviewUrl(): void {
-  try {
-    const url = new URL(location.href)
-    if (!url.searchParams.has(CHESSCOM_REVIEW_PENDING_PARAM)) {
-      return
-    }
-
-    url.searchParams.delete(CHESSCOM_REVIEW_PENDING_PARAM)
-    history.replaceState(history.state, '', url)
-  } catch {
-    return
-  }
-}
-
 async function readCurrentGamePgn(): Promise<string | null> {
   const existingModal = document.querySelector('#share-modal dialog[open]')
   const shareButton = await waitForElement<HTMLButtonElement>('button[aria-label="Share"]')
@@ -110,7 +88,6 @@ async function sendCurrentGameToLichess(button?: HTMLButtonElement): Promise<voi
   }
 
   const pgn = await readCurrentGamePgn()
-  cleanPendingReviewUrl()
 
   if (pgn) {
     ipcRenderer.sendToHost(REVIEW_ON_LICHESS_CHANNEL, pgn)
@@ -136,44 +113,23 @@ function onReviewClick(event: MouseEvent): void {
   event.stopImmediatePropagation()
 
   const gameUrl = button.getAttribute('data-chess-desktop-game-url')
-  const requestedGame = gameUrl ? gameKey(gameUrl) : null
+  const requestedGame = gameUrl ? chesscomGameKey(gameUrl) : null
   if (!gameUrl || !requestedGame) {
     return
   }
 
-  if (gameKey(location.href) === requestedGame) {
+  if (chesscomGameKey(location.href) === requestedGame) {
     void sendCurrentGameToLichess(button)
     return
   }
 
-  const targetUrl = new URL(gameUrl)
-  targetUrl.searchParams.set(CHESSCOM_REVIEW_PENDING_PARAM, '1')
-  location.assign(targetUrl.toString())
-}
-
-function continuePendingChesscomReview(): void {
-  let url: URL
-  try {
-    url = new URL(location.href)
-  } catch {
-    return
-  }
-
-  if (
-    (url.hostname === 'chess.com' || url.hostname.endsWith('.chess.com')) &&
-    url.searchParams.get(CHESSCOM_REVIEW_PENDING_PARAM) === '1'
-  ) {
-    void sendCurrentGameToLichess()
-  }
+  ipcRenderer.sendToHost(REVIEW_ON_LICHESS_NAVIGATE_CHANNEL, gameUrl)
 }
 
 export function installLichessReviewBridge(): void {
   document.addEventListener('click', onReviewClick, true)
+  ipcRenderer.on(REVIEW_ON_LICHESS_CONTINUE_CHANNEL, () => {
+    void sendCurrentGameToLichess()
+  })
   ipcRenderer.on(REVIEW_ON_LICHESS_FAILED_CHANNEL, restorePendingReviewButton)
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', continuePendingChesscomReview, { once: true })
-  } else {
-    continuePendingChesscomReview()
-  }
 }

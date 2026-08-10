@@ -76,6 +76,21 @@ describe('guest webview preload', () => {
     })
   })
 
+  it('requests an internal navigation for a different Chess.com game', () => {
+    history.replaceState({}, '', '/analysis/game/live/123')
+    document.body.innerHTML = `
+      <button data-chess-desktop-review-on-lichess
+        data-chess-desktop-game-url="https://www.chess.com/game/live/456">Review on Lichess</button>
+    `
+
+    document.querySelector<HTMLButtonElement>('[data-chess-desktop-review-on-lichess]')?.click()
+
+    expect(electron.sendToHost).toHaveBeenCalledWith(
+      'review-on-lichess-navigate',
+      'https://www.chess.com/game/live/456'
+    )
+  })
+
   it('restores the review button when the hidden import fails', async () => {
     history.replaceState({}, '', '/game/live/123')
     const pgn = '[Event "Live Chess"]\n[Result "1-0"]\n\n1. e4 e5 1-0'

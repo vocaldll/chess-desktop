@@ -1,9 +1,12 @@
 <script lang="ts">
-  import { SITES } from '$shared/sites'
+  import { isSiteURL, SITES } from '$shared/sites'
   import {
+    chesscomGameKey,
     isReviewPgn,
     REVIEW_ON_LICHESS_CHANNEL,
-    REVIEW_ON_LICHESS_FAILED_CHANNEL
+    REVIEW_ON_LICHESS_CONTINUE_CHANNEL,
+    REVIEW_ON_LICHESS_FAILED_CHANNEL,
+    REVIEW_ON_LICHESS_NAVIGATE_CHANNEL
   } from '$shared/lichess-review'
   import { browser } from './browser.svelte'
   import { settings } from './settings.svelte'
@@ -23,25 +26,56 @@
 
     const siteId = site.id
     const webview = element as unknown as SiteWebviewElement
+    let pendingReviewGame = ''
     browser.attach(webview)
 
     const sync = () => browser.syncHistory(siteId)
-    const onDomReady = () => sync()
+    const onDomReady = () => {
+      sync()
+
+      const currentGame = chesscomGameKey(webview.getURL())
+      if (!pendingReviewGame || !currentGame) {
+        return
+      }
+
+      if (currentGame === pendingReviewGame) {
+        pendingReviewGame = ''
+        webview.send(REVIEW_ON_LICHESS_CONTINUE_CHANNEL)
+      } else {
+        pendingReviewGame = ''
+      }
+    }
     const onGuestMessage = (event: Event) => {
       const message = event as GuestIpcMessageEvent
-      const pgn = message.args[0]
+      const payload = message.args[0]
 
-      if (
-        siteId !== 'chesscom' ||
-        message.channel !== REVIEW_ON_LICHESS_CHANNEL ||
-        !isReviewPgn(pgn)
-      ) {
+      if (siteId !== 'chesscom') {
+        return
+      }
+
+      if (message.channel === REVIEW_ON_LICHESS_NAVIGATE_CHANNEL) {
+        const game = typeof payload === 'string' ? chesscomGameKey(payload) : null
+        if (!game || typeof payload !== 'string' || !isSiteURL('chesscom', payload)) {
+          return
+        }
+
+        pendingReviewGame = game
+        void webview.loadURL(payload).catch(() => {
+          pendingReviewGame = ''
+          if (webview.isConnected) {
+            webview.send(REVIEW_ON_LICHESS_FAILED_CHANNEL)
+          }
+        })
+        return
+      }
+
+      if (message.channel !== REVIEW_ON_LICHESS_CHANNEL || !isReviewPgn(payload)) {
         return
       }
 
       void (async () => {
         try {
-          const url = await window.api.reviewOnLichess.start(pgn)
+          const url = await window.api.reviewOnLichess.start(payload)
           browser.setRememberedUrl('lichess', url)
           await settings.set('activeSite', 'lichess')
         } catch {
