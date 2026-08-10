@@ -439,18 +439,6 @@
 
             <div class="row">
               <div class="info">
-                <div class="label">Hide chat</div>
-                <div class="description">Hide chat across Chess.com and Lichess</div>
-              </div>
-              <Toggle
-                label="Hide chat"
-                checked={settings.current.hideChat}
-                onchange={(value) => settings.set('hideChat', value)}
-              />
-            </div>
-
-            <div class="row">
-              <div class="info">
                 <div class="label">Hide opponent</div>
                 <div class="description">Anonymize your opponent's name, avatar, and rating</div>
               </div>
@@ -458,6 +446,18 @@
                 label="Hide opponent"
                 checked={settings.current.hideOpponent}
                 onchange={(value) => settings.set('hideOpponent', value)}
+              />
+            </div>
+
+            <div class="row">
+              <div class="info">
+                <div class="label">Hide chat</div>
+                <div class="description">Hide chat across Chess.com and Lichess</div>
+              </div>
+              <Toggle
+                label="Hide chat"
+                checked={settings.current.hideChat}
+                onchange={(value) => settings.set('hideChat', value)}
               />
             </div>
           </section>
