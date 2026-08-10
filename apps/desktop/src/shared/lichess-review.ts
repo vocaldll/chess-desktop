@@ -1,7 +1,7 @@
 export const REVIEW_ON_LICHESS_CHANNEL = 'review-on-lichess'
 export const REVIEW_ON_LICHESS_FAILED_CHANNEL = 'review-on-lichess-failed'
 export const REVIEW_ON_LICHESS_MARKER = 'data-chess-desktop-review-on-lichess'
-export const REVIEW_ON_LICHESS_PENDING_PARAM = 'chessDesktopReview'
+export const CHESSCOM_REVIEW_PENDING_PARAM = 'chessDesktopReview'
 export const LICHESS_IMPORT_URL = 'https://lichess.org/paste'
 
 const MAX_PGN_LENGTH = 1_000_000
@@ -16,18 +16,6 @@ export function isReviewPgn(value: unknown): value is string {
   )
 }
 
-export function isLichessReviewUrl(value: string): boolean {
-  try {
-    const url = new URL(value)
-    return (
-      url.hostname === 'lichess.org' &&
-      url.searchParams.get(REVIEW_ON_LICHESS_PENDING_PARAM) === '1'
-    )
-  } catch {
-    return false
-  }
-}
-
 export function lichessGameKey(value: string): string | null {
   try {
     const url = new URL(value)
@@ -40,10 +28,4 @@ export function lichessGameKey(value: string): string | null {
   } catch {
     return null
   }
-}
-
-export function markLichessReviewUrl(value: string): string {
-  const url = new URL(value)
-  url.searchParams.set(REVIEW_ON_LICHESS_PENDING_PARAM, '1')
-  return url.toString()
 }

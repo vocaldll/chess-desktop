@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  isLichessReviewUrl,
-  isReviewPgn,
-  lichessGameKey,
-  markLichessReviewUrl
-} from './lichess-review'
+import { isReviewPgn, lichessGameKey } from './lichess-review'
 
 const pgn = `[Event "Live Chess"]
 [Site "Chess.com"]
@@ -18,13 +13,6 @@ describe('Lichess review handoff', () => {
     expect(isReviewPgn('[Event "Live Chess"]\n\n1. e4')).toBe(false)
     expect(isReviewPgn('not a PGN')).toBe(false)
     expect(isReviewPgn(null)).toBe(false)
-  })
-
-  it('marks and recognizes Lichess review URLs', () => {
-    const marked = markLichessReviewUrl('https://lichess.org/Ab12Cd34')
-    expect(isLichessReviewUrl(marked)).toBe(true)
-    expect(isLichessReviewUrl('https://lichess.org/Ab12Cd34')).toBe(false)
-    expect(isLichessReviewUrl('https://example.com/Ab12Cd34?chessDesktopReview=1')).toBe(false)
   })
 
   it('extracts the stable game key from Lichess board URLs', () => {

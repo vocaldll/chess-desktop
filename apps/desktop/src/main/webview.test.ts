@@ -257,16 +257,16 @@ describe('webview event scoping', () => {
 
   it('keeps imported Lichess boards in the reviewing state without probing', async () => {
     const contents = new FakeContents()
-    contents.url = 'https://lichess.org/Ab12Cd34?chessDesktopReview=1'
+    contents.url = 'https://lichess.org/Ab12Cd34'
     mocks.getSettings.mockReturnValue({
       ...mocks.getSettings(),
       activeSite: 'lichess'
     })
     await configure(contents)
+    const { rememberLichessReview } = await import('./lichess-review-state')
+    rememberLichessReview(contents.url)
 
     contents.emit('did-navigate', {}, contents.url)
-    contents.url = 'https://lichess.org/Ab12Cd34'
-    contents.emit('did-navigate-in-page', {}, contents.url, true)
 
     expect(mocks.updatePresenceLocation).toHaveBeenLastCalledWith(
       'lichess',

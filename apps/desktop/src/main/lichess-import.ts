@@ -1,5 +1,5 @@
 import { BrowserWindow } from 'electron'
-import { LICHESS_IMPORT_URL, lichessGameKey, markLichessReviewUrl } from '../shared/lichess-review'
+import { LICHESS_IMPORT_URL, lichessGameKey } from '../shared/lichess-review'
 import { isSiteURL, SITES } from '../shared/sites'
 
 const IMPORT_TIMEOUT = 20_000
@@ -57,7 +57,7 @@ export function importGameOnLichess(pgn: string): Promise<string> {
       if (error || !url) {
         reject(error ?? new Error('Lichess import failed'))
       } else {
-        resolve(markLichessReviewUrl(url))
+        resolve(url)
       }
     }
 

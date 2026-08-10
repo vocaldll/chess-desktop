@@ -1,11 +1,10 @@
 import { ipcRenderer } from 'electron'
 import {
-  isLichessReviewUrl,
+  CHESSCOM_REVIEW_PENDING_PARAM,
   isReviewPgn,
   REVIEW_ON_LICHESS_CHANNEL,
   REVIEW_ON_LICHESS_FAILED_CHANNEL,
-  REVIEW_ON_LICHESS_MARKER,
-  REVIEW_ON_LICHESS_PENDING_PARAM
+  REVIEW_ON_LICHESS_MARKER
 } from '../shared/lichess-review'
 
 const ELEMENT_TIMEOUT = 8_000
@@ -64,11 +63,11 @@ function gameKey(value: string): string | null {
 function cleanPendingReviewUrl(): void {
   try {
     const url = new URL(location.href)
-    if (!url.searchParams.has(REVIEW_ON_LICHESS_PENDING_PARAM)) {
+    if (!url.searchParams.has(CHESSCOM_REVIEW_PENDING_PARAM)) {
       return
     }
 
-    url.searchParams.delete(REVIEW_ON_LICHESS_PENDING_PARAM)
+    url.searchParams.delete(CHESSCOM_REVIEW_PENDING_PARAM)
     history.replaceState(history.state, '', url)
   } catch {
     return
@@ -148,7 +147,7 @@ function onReviewClick(event: MouseEvent): void {
   }
 
   const targetUrl = new URL(gameUrl)
-  targetUrl.searchParams.set(REVIEW_ON_LICHESS_PENDING_PARAM, '1')
+  targetUrl.searchParams.set(CHESSCOM_REVIEW_PENDING_PARAM, '1')
   location.assign(targetUrl.toString())
 }
 
@@ -162,11 +161,9 @@ function continuePendingChesscomReview(): void {
 
   if (
     (url.hostname === 'chess.com' || url.hostname.endsWith('.chess.com')) &&
-    url.searchParams.get(REVIEW_ON_LICHESS_PENDING_PARAM) === '1'
+    url.searchParams.get(CHESSCOM_REVIEW_PENDING_PARAM) === '1'
   ) {
     void sendCurrentGameToLichess()
-  } else if (isLichessReviewUrl(url.toString())) {
-    cleanPendingReviewUrl()
   }
 }
 

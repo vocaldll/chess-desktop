@@ -102,11 +102,7 @@ describe('Discord Rich Presence lifecycle', () => {
     connections[0].handlers.onReady()
     connections[0].send.mockClear()
 
-    presence.updatePresenceLocation(
-      'lichess',
-      'https://lichess.org/Ab12Cd34?chessDesktopReview=1',
-      'reviewing'
-    )
+    presence.updatePresenceLocation('lichess', 'https://lichess.org/Ab12Cd34', 'reviewing')
     presence.applyPresenceSettings({
       ...enabledSettings(),
       activeSite: 'lichess'
