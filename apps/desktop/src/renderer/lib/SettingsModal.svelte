@@ -474,7 +474,7 @@
             <div class="row">
               <div class="info">
                 <div class="label">Hide chat</div>
-                <div class="description">Hide chat across Chess.com and Lichess</div>
+                <div class="description">Hide chat across both sites</div>
               </div>
               <Toggle
                 label="Hide chat"
