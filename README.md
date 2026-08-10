@@ -25,6 +25,10 @@ Free, open source, for Windows and Linux.
 
 - **Chess.com and Lichess in one app**: switch between them instantly, stay signed in to both
 - **Picks up where you left off**: remembers the last page on each site, window size, and position
+- **Fewer distractions**: hide chat and both players' ratings
+- **Hide your opponent**: anonymizes their name, avatar, rating, and chat messages
+- **Numbered arrows**: right-click arrows are numbered in the order you drew them
+- **Review on Lichess**: one click imports a finished Chess.com game and starts a free computer analysis
 - **Desktop controls**: always-on-top mode, keep-awake during games, volume control from the title bar
 - **Feels like your browser**: familiar mouse navigation and customizable keyboard shortcuts
 - **Discord Rich Presence**: shows your current Chess Desktop activity on your profile
