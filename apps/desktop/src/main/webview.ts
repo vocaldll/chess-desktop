@@ -211,7 +211,13 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
     contents.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
     applyVolume(contents, settings.volume)
     applyChatVisibility(contents, settings.activeSite, settings.hideChat, true)
-    applyPlayerAnonymity(contents, settings.activeSite, settings.hideOpponent, true)
+    applyPlayerAnonymity(
+      contents,
+      settings.activeSite,
+      settings.hideOpponent,
+      settings.hideRatings,
+      true
+    )
     rejectCookieBanners(contents)
     trackPresence(contents.getURL())
   })

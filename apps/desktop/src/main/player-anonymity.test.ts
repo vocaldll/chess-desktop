@@ -48,16 +48,31 @@ function chesscomChatLine(username: string, message: string): string {
   </div>`
 }
 
+function chesscomGameMessages(opponent = 'TestRival', self = 'TestSelf', winner = self): string {
+  const winnerRating = winner === opponent ? 1927 : 1952
+  return `<div class="game-start-message-component"><strong>New Game</strong>
+    <a class="user-username username" href="/member/${opponent}">${opponent}</a> (1927) vs.
+    <a class="user-username username" href="/member/${self}">${self}</a> (1944) (10 min)
+    win +8 / draw +0 / lose -8</div>
+  <div class="game-over-message-component"><strong>Game Over</strong>
+    <a class="user-username username" href="/member/${winner}">${winner}</a> (${winnerRating}) won by resignation (10 min Rated)
+    Your new Rapid rating is <strong>1952</strong> (+8).</div>
+  <div class="game-rate-sport-message-component"><span>Was
+    <a class="user-username username" href="/member/${opponent}">${opponent}</a> a good sport?
+  </span></div>`
+}
+
 function chesscomPage(
   top: string,
   bottom: string,
   self: string | null = 'TestSelf',
-  chatters: readonly string[] = []
+  chatters: readonly string[] = [],
+  messages = ''
 ): string {
   const chat = `<div class="resizable-chat-area-component">${chatters
     .map((name) => chesscomChatLine(name, 'hi'))
     .join('')}</div>`
-  const body = `${nav(self)}${player('top', top)}${player('bottom', bottom)}${chat}`
+  const body = `${nav(self)}${player('top', top)}${player('bottom', bottom)}${chat}${messages}`
   return `<!doctype html><html><head></head><body class="board-layout with-players">${body}</body></html>`
 }
 
@@ -119,22 +134,37 @@ function anonymizedLinks(dom: JSDOM, scope: string): string[] {
   ].map((node) => node.getAttribute('href') ?? '')
 }
 
-function scriptFor(siteId: SiteId, hidden: boolean): string {
+function scriptFor(siteId: SiteId, opponentHidden: boolean, ratingsHidden = false): string {
   const webContents = contents()
-  applyPlayerAnonymity(webContents as never, siteId, hidden)
+  applyPlayerAnonymity(webContents as never, siteId, opponentHidden, ratingsHidden)
   return webContents.executeJavaScript.mock.calls[0][0] as string
 }
 
 function cssFor(siteId: SiteId): string {
   const webContents = contents()
-  applyPlayerAnonymity(webContents as never, siteId, true)
+  applyPlayerAnonymity(webContents as never, siteId, true, false)
   return webContents.insertCSS.mock.calls[0][0] as string
 }
 
-function render(html: string, siteId: SiteId): JSDOM {
+function ratingCSSFor(siteId: SiteId): string {
+  const webContents = contents()
+  applyPlayerAnonymity(webContents as never, siteId, false, true)
+  return webContents.insertCSS.mock.calls[0][0] as string
+}
+
+function renderWithSettings(
+  html: string,
+  siteId: SiteId,
+  opponentHidden: boolean,
+  ratingsHidden: boolean
+): JSDOM {
   const dom = new JSDOM(html, { runScripts: 'outside-only', pretendToBeVisual: true })
-  dom.window.eval(scriptFor(siteId, true))
+  dom.window.eval(scriptFor(siteId, opponentHidden, ratingsHidden))
   return dom
+}
+
+function render(html: string, siteId: SiteId): JSDOM {
+  return renderWithSettings(html, siteId, true, false)
 }
 
 function selfMarker(dom: JSDOM): string | null {
@@ -166,7 +196,7 @@ describe('player anonymity styling', () => {
   it.each(['chesscom', 'lichess'] as const)('inserts the %s override', async (siteId) => {
     const webContents = contents()
 
-    applyPlayerAnonymity(webContents as never, siteId, true)
+    applyPlayerAnonymity(webContents as never, siteId, true, false)
 
     await vi.waitFor(() => expect(webContents.insertCSS).toHaveBeenCalledOnce())
     expect(webContents.executeJavaScript).toHaveBeenCalledOnce()
@@ -193,6 +223,35 @@ describe('player anonymity styling', () => {
       expect(cssFor('lichess')).toContain(fragment)
     }
   )
+
+  it('hides both Chess.com ratings without anonymizing either player', () => {
+    const css = ratingCSSFor('chesscom')
+
+    expect(css).toContain('.player-top [class*="cc-user-rating"]')
+    expect(css).toContain('.player-bottom .rating-score-component')
+    expect(css).toContain('.game-over-stat-card-rating')
+    expect(css).not.toContain('user-tagline-username')
+    expect(css).not.toContain("content: 'Opponent'")
+  })
+
+  it('hides both Lichess ratings without anonymizing either player', () => {
+    const css = ratingCSSFor('lichess')
+
+    expect(css).toContain('.ruser-top rating')
+    expect(css).toContain('.ruser-bottom rating')
+    expect(css).toContain('.game__meta a.user-link .rating')
+    expect(css).toContain('.crosstable a.user-link .rating')
+    expect(css).not.toContain('font-size: 0')
+    expect(css).not.toContain("content: 'Opponent'")
+  })
+
+  it('keeps opponent detection disabled when only ratings are hidden', () => {
+    const webContents = contents()
+
+    applyPlayerAnonymity(webContents as never, 'lichess', false, true)
+
+    expect(webContents.executeJavaScript.mock.calls[0][0]).toContain('(false, true)')
+  })
 
   it('anonymizes both Chess.com players while the self marker is unset', () => {
     const dom = new JSDOM(chesscomPage('TestRival', 'TestSelf'))
@@ -223,25 +282,36 @@ describe('player anonymity styling', () => {
   it('removes the inserted override when the opponent is shown', async () => {
     const webContents = contents()
 
-    applyPlayerAnonymity(webContents as never, 'chesscom', true)
+    applyPlayerAnonymity(webContents as never, 'chesscom', true, false)
     await vi.waitFor(() => expect(webContents.insertCSS).toHaveBeenCalledOnce())
 
-    applyPlayerAnonymity(webContents as never, 'chesscom', false)
+    applyPlayerAnonymity(webContents as never, 'chesscom', false, false)
 
     expect(webContents.removeInsertedCSS).toHaveBeenCalledWith('style-key')
-    expect(webContents.executeJavaScript.mock.calls[1][0]).toContain('(false)')
+    expect(webContents.executeJavaScript.mock.calls[1][0]).toContain('(false, false)')
+  })
+
+  it('removes the inserted override when ratings are shown again', async () => {
+    const webContents = contents()
+
+    applyPlayerAnonymity(webContents as never, 'chesscom', false, true)
+    await vi.waitFor(() => expect(webContents.insertCSS).toHaveBeenCalledOnce())
+
+    applyPlayerAnonymity(webContents as never, 'chesscom', false, false)
+
+    expect(webContents.removeInsertedCSS).toHaveBeenCalledWith('style-key')
   })
 
   it('does not reinsert an unchanged override unless refreshed', async () => {
     const webContents = contents()
 
-    applyPlayerAnonymity(webContents as never, 'chesscom', true)
+    applyPlayerAnonymity(webContents as never, 'chesscom', true, false)
     await vi.waitFor(() => expect(webContents.insertCSS).toHaveBeenCalledOnce())
 
-    applyPlayerAnonymity(webContents as never, 'chesscom', true)
+    applyPlayerAnonymity(webContents as never, 'chesscom', true, false)
     expect(webContents.insertCSS).toHaveBeenCalledOnce()
 
-    applyPlayerAnonymity(webContents as never, 'chesscom', true, true)
+    applyPlayerAnonymity(webContents as never, 'chesscom', true, false, true)
     expect(webContents.insertCSS).toHaveBeenCalledTimes(2)
   })
 
@@ -249,7 +319,7 @@ describe('player anonymity styling', () => {
     const webContents = contents()
     webContents.isDestroyed.mockReturnValue(true)
 
-    applyPlayerAnonymity(webContents as never, 'chesscom', true)
+    applyPlayerAnonymity(webContents as never, 'chesscom', true, false)
 
     expect(webContents.insertCSS).not.toHaveBeenCalled()
     expect(webContents.executeJavaScript).not.toHaveBeenCalled()
@@ -501,6 +571,94 @@ describe('Chess.com chat authorship', () => {
     expect(css).toContain('.user-tagline-chat-component[data-chess-desktop-them]')
     expect(css).toContain("content: 'Opponent:';")
     expect(css).toContain('.user-tagline-chat-flair')
+  })
+})
+
+describe('Chess.com game messages', () => {
+  function page(): string {
+    return chesscomPage('TestRival', 'TestSelf', 'TestSelf', [], chesscomGameMessages())
+  }
+
+  it('removes every rating and rating change when ratings are hidden', () => {
+    const dom = renderWithSettings(page(), 'chesscom', false, true)
+    const start = dom.window.document.querySelector('.game-start-message-component')
+    const over = dom.window.document.querySelector('.game-over-message-component')
+    const sport = dom.window.document.querySelector('.game-rate-sport-message-component')
+
+    expect(start?.textContent).toContain('TestRival')
+    expect(start?.textContent).toContain('TestSelf')
+    expect(start?.textContent).toContain('(10 min)')
+    expect(start?.textContent).not.toMatch(/1927|1944|win \+8|lose -8/)
+    expect(over?.textContent).toContain('won by resignation (10 min Rated)')
+    expect(over?.textContent).not.toMatch(/1952|Your new Rapid rating|\(\+8\)/)
+    expect(sport?.textContent).toContain('TestRival')
+  })
+
+  it('removes opponent rating details and tags their name when the opponent is hidden', () => {
+    const dom = render(page(), 'chesscom')
+    const { document } = dom.window
+    const start = document.querySelector('.game-start-message-component')
+    const over = document.querySelector('.game-over-message-component')
+    const tagged = [
+      ...document.querySelectorAll(
+        '.game-start-message-component a[data-chess-desktop-them], .game-over-message-component a[data-chess-desktop-them], .game-rate-sport-message-component a[data-chess-desktop-them]'
+      )
+    ].map((node) => node.textContent)
+
+    expect(tagged).toEqual(['TestRival', 'TestRival'])
+    expect(start?.textContent).not.toContain('1927')
+    expect(start?.textContent).not.toContain('win +8')
+    expect(start?.textContent).toContain('1944')
+    expect(over?.textContent).toContain('Your new Rapid rating is 1952 (+8).')
+  })
+
+  it('styles tagged message links as Opponent', () => {
+    const css = cssFor('chesscom')
+
+    expect(css).toContain('.game-start-message-component a.user-username[data-chess-desktop-them]')
+    expect(css).toContain(
+      '.game-rate-sport-message-component a.user-username[data-chess-desktop-them]::after'
+    )
+    expect(css).toContain("content: 'Opponent';")
+  })
+
+  it('redacts an opponent who appears as the game-over winner', () => {
+    const messages = chesscomGameMessages('TestRival', 'TestSelf', 'TestRival')
+    const dom = render(chesscomPage('TestRival', 'TestSelf', 'TestSelf', [], messages), 'chesscom')
+    const over = dom.window.document.querySelector('.game-over-message-component')
+
+    expect(over?.querySelector('a[data-chess-desktop-them]')?.textContent).toBe('TestRival')
+    expect(over?.textContent).not.toContain('1927')
+  })
+
+  it('restores message text and links when both settings are turned off', () => {
+    const dom = renderWithSettings(page(), 'chesscom', true, true)
+    const { document } = dom.window
+
+    dom.window.eval(scriptFor('chesscom', false, false))
+
+    expect(document.querySelector('.game-start-message-component')?.textContent).toContain(
+      'TestRival (1927)'
+    )
+    expect(document.querySelector('.game-start-message-component')?.textContent).toContain(
+      'win +8 / draw +0 / lose -8'
+    )
+    expect(document.querySelector('.game-over-message-component')?.textContent).toContain(
+      'Your new Rapid rating is 1952 (+8).'
+    )
+    expect(document.querySelectorAll('[data-chess-desktop-them]')).toHaveLength(0)
+  })
+
+  it('redacts messages inserted after ratings are hidden', async () => {
+    const dom = renderWithSettings(chesscomPage('TestRival', 'TestSelf'), 'chesscom', false, true)
+    dom.window.document.body.insertAdjacentHTML('beforeend', chesscomGameMessages())
+
+    await vi.waitFor(() => {
+      const messages = dom.window.document.querySelectorAll(
+        '.game-start-message-component, .game-over-message-component'
+      )
+      expect([...messages].map((node) => node.textContent).join(' ')).not.toMatch(/1927|1944|1952/)
+    })
   })
 })
 

@@ -15,6 +15,6 @@ export function applySettings(window: BrowserWindow | null, settings: Settings):
   contents?.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
   applyVolume(contents, settings.volume)
   applyChatVisibility(contents, settings.activeSite, settings.hideChat)
-  applyPlayerAnonymity(contents, settings.activeSite, settings.hideOpponent)
+  applyPlayerAnonymity(contents, settings.activeSite, settings.hideOpponent, settings.hideRatings)
   applyPresenceSettings(settings)
 }

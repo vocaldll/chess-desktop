@@ -4,7 +4,8 @@ import type { SiteId } from '../shared/sites'
 const SELF_MARKER = 'data-chess-desktop-self'
 const SELF_LINK_MARKER = 'data-chess-desktop-me'
 const OPPONENT_LINK_MARKER = 'data-chess-desktop-them'
-const ENABLED_TOKEN = '__ENABLED__'
+const OPPONENT_HIDDEN_TOKEN = '__OPPONENT_HIDDEN__'
+const RATINGS_HIDDEN_TOKEN = '__RATINGS_HIDDEN__'
 const SIDES = ['top', 'bottom'] as const
 
 const PLACEHOLDER_AVATAR = 'https://www.chess.com/bundles/web/images/black_400.png'
@@ -25,6 +26,8 @@ interface OpponentRule {
 
 interface SiteAnonymity {
   seatPrefix: string
+  ratingSelectors: readonly string[]
+  additionalRatingSelectors: readonly string[]
   rules: readonly OpponentRule[]
   linkRules?: readonly OpponentRule[]
   readSelf: string
@@ -83,6 +86,14 @@ const CHESSCOM_READ_SEAT = `
 
 const CHESSCOM_CHAT_AUTHOR = '.user-username-component'
 const CHESSCOM_CHAT_TAGLINE = `.user-tagline-chat-component[${OPPONENT_LINK_MARKER}]`
+const CHESSCOM_GAME_MESSAGES = [
+  '.game-start-message-component',
+  '.game-over-message-component',
+  '.game-rate-sport-message-component'
+] as const
+const CHESSCOM_MESSAGE_OPPONENT = CHESSCOM_GAME_MESSAGES.map(
+  (selector) => `${selector} a.user-username[${OPPONENT_LINK_MARKER}]`
+)
 
 const CHESSCOM_MARK_LINKS = `
         for (const node of document.querySelectorAll('.chat-message-component ${CHESSCOM_CHAT_AUTHOR}')) {
@@ -93,6 +104,83 @@ const CHESSCOM_MARK_LINKS = `
             tagline.setAttribute(${JSON.stringify(OPPONENT_LINK_MARKER)}, '')
           } else {
             tagline.removeAttribute(${JSON.stringify(OPPONENT_LINK_MARKER)})
+          }
+        }
+
+        const messageSelector = ${JSON.stringify(CHESSCOM_GAME_MESSAGES.join(', '))}
+        const messageUserSelector = ${JSON.stringify(
+          CHESSCOM_GAME_MESSAGES.map((selector) => `${selector} a.user-username`).join(', ')
+        )}
+
+        for (const node of document.querySelectorAll(messageUserSelector)) {
+          const path = (node.getAttribute('href') || '').split('/member/')[1]
+          const name = normalize(path ? decodeURIComponent(path.split(/[/?#]/)[0]) : node.textContent)
+
+          if (them && name === them) {
+            node.setAttribute(${JSON.stringify(OPPONENT_LINK_MARKER)}, '')
+          } else {
+            node.removeAttribute(${JSON.stringify(OPPONENT_LINK_MARKER)})
+          }
+        }
+
+        for (const message of document.querySelectorAll(messageSelector)) {
+          const textNodes = []
+          const walker = document.createTreeWalker(message, NodeFilter.SHOW_TEXT)
+          let textNode = walker.nextNode()
+
+          while (textNode) {
+            textNodes.push(textNode)
+            textNode = walker.nextNode()
+          }
+
+          for (const node of textNodes) {
+            if (!opponentHidden && !ratingsHidden) {
+              restoreText(node)
+              continue
+            }
+
+            const previous = node.previousSibling
+            const followsOpponent =
+              previous instanceof Element &&
+              previous.matches('a.user-username[${OPPONENT_LINK_MARKER}]')
+            const ratingResult =
+              ratingsHidden &&
+              message.matches('.game-over-message-component') &&
+              node.parentElement &&
+              node.parentElement.matches('strong') &&
+              node.parentElement.previousSibling &&
+              /Your new\\s+.*?\\s+rating is\\s*$/i.test(
+                sourceText(node.parentElement.previousSibling)
+              )
+
+            writeText(node, (source) => {
+              if (ratingResult) {
+                return ''
+              }
+
+              let value = source
+
+              if (ratingsHidden) {
+                value = value.replace(/\\s*\\(\\d{2,4}\\??\\)/g, '')
+              } else if (opponentHidden && followsOpponent) {
+                value = value.replace(/^\\s*\\(\\d{2,4}\\??\\)/, '')
+              }
+
+              if (opponentHidden || ratingsHidden) {
+                value = value.replace(
+                  /\\s*win\\s+[+-]?\\d+\\s*\\/\\s*draw\\s+[+-]?\\d+\\s*\\/\\s*lose\\s+[+-]?\\d+/gi,
+                  ''
+                )
+              }
+
+              if (ratingsHidden && message.matches('.game-over-message-component')) {
+                value = value
+                  .replace(/Your new\\s+.*?\\s+rating is\\s*/gi, '')
+                  .replace(/^\\s*\\([+-]\\d+\\)\\.?/, '')
+              }
+
+              return value
+            })
           }
         }
 `
@@ -112,6 +200,14 @@ const CHESSCOM_LINK_RULES: readonly OpponentRule[] = [
   {
     selectors: [`${CHESSCOM_CHAT_TAGLINE} ${CHESSCOM_CHAT_AUTHOR}::after`],
     body: "content: 'Opponent:'; font-size: 14px;"
+  },
+  {
+    selectors: CHESSCOM_MESSAGE_OPPONENT,
+    body: 'font-size: 0 !important;'
+  },
+  {
+    selectors: CHESSCOM_MESSAGE_OPPONENT.map((selector) => `${selector}::after`),
+    body: "content: 'Opponent'; font-size: 14px;"
   }
 ]
 
@@ -173,11 +269,11 @@ const LICHESS_LINK_RULES: readonly OpponentRule[] = [
 const ANONYMITY: Record<SiteId, SiteAnonymity> = {
   chesscom: {
     seatPrefix: '.player-',
+    ratingSelectors: ['[class*="cc-user-rating"]', '.rating-score-component'],
+    additionalRatingSelectors: ['.game-over-stat-card-rating'],
     rules: [
       {
         selectors: [
-          '[class*="cc-user-rating"]',
-          '.rating-score-component',
           '.connection-component',
           '.cc-user-title-component',
           '.cc-country-flag-component',
@@ -201,15 +297,21 @@ const ANONYMITY: Record<SiteId, SiteAnonymity> = {
     watchSelector: [
       ...CHESSCOM_SELF_SOURCES,
       CHESSCOM_USERNAME,
-      `.chat-message-component ${CHESSCOM_CHAT_AUTHOR}`
+      `.chat-message-component ${CHESSCOM_CHAT_AUTHOR}`,
+      ...CHESSCOM_GAME_MESSAGES
     ].join(', '),
     watchClasses: ['player-top', 'player-bottom']
   },
   lichess: {
     seatPrefix: '.ruser-',
+    ratingSelectors: ['rating'],
+    additionalRatingSelectors: [
+      '.game__meta a.user-link .rating',
+      '.crosstable a.user-link .rating'
+    ],
     rules: [
       {
-        selectors: ['.utitle', '.uflair', 'rating', 'icon.line'],
+        selectors: ['.utitle', '.uflair', 'icon.line'],
         body: 'display: none !important;'
       },
       { selectors: ['a.user-link'], body: 'font-size: 0 !important;' },
@@ -228,21 +330,38 @@ function declare(selectors: readonly string[], body: string): string {
   return `${selectors.join(',\n')} {\n  ${body}\n}`
 }
 
-function buildCSS({ seatPrefix, rules, linkRules = [] }: SiteAnonymity): string {
-  const seated = rules.map(({ selectors, body }) =>
-    declare(
-      SIDES.flatMap((side) =>
-        selectors.map(
-          (selector) => `html:not([${SELF_MARKER}="${side}"]) ${seatPrefix}${side} ${selector}`
-        )
-      ),
-      body
-    )
+function buildCSS({ seatPrefix, ratingSelectors, rules, linkRules = [] }: SiteAnonymity): string {
+  const seated = [...rules, { selectors: ratingSelectors, body: 'display: none !important;' }].map(
+    ({ selectors, body }) =>
+      declare(
+        SIDES.flatMap((side) =>
+          selectors.map(
+            (selector) => `html:not([${SELF_MARKER}="${side}"]) ${seatPrefix}${side} ${selector}`
+          )
+        ),
+        body
+      )
   )
 
   const linked = linkRules.map(({ selectors, body }) => declare(selectors, body))
 
   return [...seated, ...linked].join('\n\n')
+}
+
+function buildRatingCSS({
+  seatPrefix,
+  ratingSelectors,
+  additionalRatingSelectors
+}: SiteAnonymity): string {
+  return declare(
+    [
+      ...SIDES.flatMap((side) =>
+        ratingSelectors.map((selector) => `${seatPrefix}${side} ${selector}`)
+      ),
+      ...additionalRatingSelectors
+    ],
+    'display: none !important;'
+  )
 }
 
 function buildScript({
@@ -261,8 +380,48 @@ function buildScript({
   if (!window.__chessDesktopAnonymity) {
     let observer = null
     let frame = 0
+    let opponentEnabled = false
+    let ratingsEnabled = false
+    const originalTexts = new WeakMap()
 
     const normalize = (value) => String(value == null ? '' : value).trim().toLowerCase()
+
+    const sourceText = (node) => {
+      const current = node.nodeValue || ''
+      const stored = originalTexts.get(node)
+
+      if (!stored || current !== stored.rendered) {
+        const next = { source: current, rendered: current }
+        originalTexts.set(node, next)
+        return next.source
+      }
+
+      return stored.source
+    }
+
+    const writeText = (node, transform) => {
+      const source = sourceText(node)
+      const rendered = transform(source)
+      originalTexts.set(node, { source, rendered })
+
+      if (node.nodeValue !== rendered) {
+        node.nodeValue = rendered
+      }
+    }
+
+    const restoreText = (node) => {
+      const stored = originalTexts.get(node)
+
+      if (!stored) {
+        return
+      }
+
+      if (node.nodeValue === stored.rendered) {
+        node.nodeValue = stored.source
+      }
+
+      originalTexts.delete(node)
+    }
 
     const readSelf = () => {
       try {
@@ -280,7 +439,7 @@ function buildScript({
       }
     }
 
-    const markLinks = (self, them) => {
+    const markLinks = (self, them, opponentHidden, ratingsHidden) => {
       try {${markLinks}      } catch {}
     }
 
@@ -292,9 +451,14 @@ function buildScript({
       const onBottom = Boolean(self) && self === bottom
       const seated = onTop !== onBottom
 
-      markLinks(self, seated ? (onTop ? bottom : top) : '')
+      markLinks(
+        self,
+        opponentEnabled && seated ? (onTop ? bottom : top) : '',
+        opponentEnabled,
+        ratingsEnabled
+      )
 
-      if (!seated) {
+      if (!opponentEnabled || !seated) {
         document.documentElement.removeAttribute(MARKER)
         return
       }
@@ -343,8 +507,11 @@ function buildScript({
       return Boolean(target.closest(WATCH_SELECTOR))
     }
 
-    window.__chessDesktopAnonymity = (enabled) => {
-      if (!enabled) {
+    window.__chessDesktopAnonymity = (opponentHidden, ratingsHidden) => {
+      opponentEnabled = Boolean(opponentHidden)
+      ratingsEnabled = Boolean(ratingsHidden)
+
+      if (!opponentEnabled && !ratingsEnabled) {
         if (observer) {
           observer.disconnect()
           observer = null
@@ -355,7 +522,7 @@ function buildScript({
           frame = 0
         }
 
-        markLinks('', '')
+        markLinks('', '', false, false)
         document.documentElement.removeAttribute(MARKER)
         return
       }
@@ -380,7 +547,7 @@ function buildScript({
     }
   }
 
-  window.__chessDesktopAnonymity(${ENABLED_TOKEN})
+  window.__chessDesktopAnonymity(${OPPONENT_HIDDEN_TOKEN}, ${RATINGS_HIDDEN_TOKEN})
 })()
 `
 }
@@ -390,6 +557,11 @@ const ANONYMITY_CSS: Record<SiteId, string> = {
   lichess: buildCSS(ANONYMITY.lichess)
 }
 
+const RATING_CSS: Record<SiteId, string> = {
+  chesscom: buildRatingCSS(ANONYMITY.chesscom),
+  lichess: buildRatingCSS(ANONYMITY.lichess)
+}
+
 const ANONYMITY_SCRIPTS: Record<SiteId, string> = {
   chesscom: buildScript(ANONYMITY.chesscom),
   lichess: buildScript(ANONYMITY.lichess)
@@ -397,12 +569,16 @@ const ANONYMITY_SCRIPTS: Record<SiteId, string> = {
 
 const insertedStyles = new WeakMap<WebContents, string>()
 const operationVersions = new WeakMap<WebContents, number>()
-const appliedSettings = new WeakMap<WebContents, { siteId: SiteId; hidden: boolean }>()
+const appliedSettings = new WeakMap<
+  WebContents,
+  { siteId: SiteId; opponentHidden: boolean; ratingsHidden: boolean }
+>()
 
 export function applyPlayerAnonymity(
   contents: WebContents | null,
   siteId: SiteId,
-  hidden: boolean,
+  opponentHidden: boolean,
+  ratingsHidden: boolean,
   refresh = false
 ): void {
   if (!contents || contents.isDestroyed()) {
@@ -410,11 +586,16 @@ export function applyPlayerAnonymity(
   }
 
   const applied = appliedSettings.get(contents)
-  if (!refresh && applied?.siteId === siteId && applied.hidden === hidden) {
+  if (
+    !refresh &&
+    applied?.siteId === siteId &&
+    applied.opponentHidden === opponentHidden &&
+    applied.ratingsHidden === ratingsHidden
+  ) {
     return
   }
 
-  appliedSettings.set(contents, { siteId, hidden })
+  appliedSettings.set(contents, { siteId, opponentHidden, ratingsHidden })
 
   const version = (operationVersions.get(contents) ?? 0) + 1
   operationVersions.set(contents, version)
@@ -427,15 +608,24 @@ export function applyPlayerAnonymity(
   }
 
   contents
-    .executeJavaScript(ANONYMITY_SCRIPTS[siteId].replace(ENABLED_TOKEN, String(hidden)), true)
+    .executeJavaScript(
+      ANONYMITY_SCRIPTS[siteId]
+        .replace(OPPONENT_HIDDEN_TOKEN, String(opponentHidden))
+        .replace(RATINGS_HIDDEN_TOKEN, String(ratingsHidden)),
+      true
+    )
     .catch(() => null)
 
-  if (!hidden) {
+  if (!opponentHidden && !ratingsHidden) {
     return
   }
 
+  const css = [opponentHidden ? ANONYMITY_CSS[siteId] : '', ratingsHidden ? RATING_CSS[siteId] : '']
+    .filter(Boolean)
+    .join('\n\n')
+
   contents
-    .insertCSS(ANONYMITY_CSS[siteId])
+    .insertCSS(css)
     .then((key) => {
       if (contents.isDestroyed()) {
         return

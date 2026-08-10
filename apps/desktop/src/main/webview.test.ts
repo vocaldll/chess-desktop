@@ -101,6 +101,7 @@ describe('webview event scoping', () => {
       soundMuted: false,
       hideChat: false,
       hideOpponent: true,
+      hideRatings: true,
       volume: 100,
       zoom: { chesscom: 100, lichess: 100 }
     })
@@ -209,7 +210,7 @@ describe('webview event scoping', () => {
     expect(contents.setZoomFactor).toHaveBeenCalledWith(1)
     expect(mocks.applyVolume).toHaveBeenCalledWith(contents, 100)
     expect(mocks.applyChatVisibility).toHaveBeenCalledWith(contents, 'chesscom', false, true)
-    expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(contents, 'chesscom', true, true)
+    expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(contents, 'chesscom', true, true, true)
     expect(mocks.rejectCookieBanners).toHaveBeenCalledWith(contents)
     expect(mocks.setLastSiteUrl).toHaveBeenCalledWith('chesscom', contents.url)
   })

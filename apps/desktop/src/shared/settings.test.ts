@@ -29,6 +29,8 @@ describe('setting keys and values', () => {
     expect(isValidSettingValue('hideChat', false)).toBe(true)
     expect(isValidSettingValue('hideOpponent', true)).toBe(true)
     expect(isValidSettingValue('hideOpponent', 'yes')).toBe(false)
+    expect(isValidSettingValue('hideRatings', true)).toBe(true)
+    expect(isValidSettingValue('hideRatings', 'yes')).toBe(false)
     expect(isValidSettingValue('soundMuted', 1)).toBe(false)
     expect(isValidSettingValue('notificationsEnabled', 'false')).toBe(false)
   })
@@ -47,6 +49,7 @@ describe('settings coercion', () => {
       alwaysOnTop: true,
       hideChat: true,
       hideOpponent: true,
+      hideRatings: true,
       notificationsEnabled: false,
       discordRpcEnabled: true,
       onboardingCompleted: true,

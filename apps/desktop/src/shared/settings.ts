@@ -10,6 +10,7 @@ export interface Settings {
   alwaysOnTop: boolean
   hideChat: boolean
   hideOpponent: boolean
+  hideRatings: boolean
   notificationsEnabled: boolean
   discordRpcEnabled: boolean
   onboardingCompleted: boolean
@@ -24,6 +25,7 @@ export const defaultSettings: Settings = {
   alwaysOnTop: false,
   hideChat: false,
   hideOpponent: false,
+  hideRatings: false,
   notificationsEnabled: true,
   discordRpcEnabled: false,
   onboardingCompleted: false,

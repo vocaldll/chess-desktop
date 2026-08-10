@@ -461,6 +461,18 @@
 
             <div class="row">
               <div class="info">
+                <div class="label">Hide ratings</div>
+                <div class="description">Hide both players' ratings across both sites</div>
+              </div>
+              <Toggle
+                label="Hide ratings"
+                checked={settings.current.hideRatings}
+                onchange={(value) => settings.set('hideRatings', value)}
+              />
+            </div>
+
+            <div class="row">
+              <div class="info">
                 <div class="label">Hide chat</div>
                 <div class="description">Hide chat across Chess.com and Lichess</div>
               </div>

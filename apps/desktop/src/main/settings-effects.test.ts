@@ -32,6 +32,7 @@ describe('applySettings', () => {
       soundMuted: true,
       hideChat: true,
       hideOpponent: true,
+      hideRatings: true,
       volume: 35,
       zoom: { chesscom: 80, lichess: 125 }
     }
@@ -44,7 +45,7 @@ describe('applySettings', () => {
     expect(contents.setZoomFactor).toHaveBeenCalledWith(1.25)
     expect(mocks.applyVolume).toHaveBeenCalledWith(contents, 35)
     expect(mocks.applyChatVisibility).toHaveBeenCalledWith(contents, 'lichess', true)
-    expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(contents, 'lichess', true)
+    expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(contents, 'lichess', true, true)
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(settings)
   })
 
@@ -62,7 +63,8 @@ describe('applySettings', () => {
     expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(
       null,
       defaultSettings.activeSite,
-      defaultSettings.hideOpponent
+      defaultSettings.hideOpponent,
+      defaultSettings.hideRatings
     )
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(defaultSettings)
   })
