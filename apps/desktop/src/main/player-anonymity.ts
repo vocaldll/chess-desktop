@@ -3,6 +3,7 @@ import type { SiteId } from '../shared/sites'
 
 const SELF_MARKER = 'data-chess-desktop-self'
 const SELF_LINK_MARKER = 'data-chess-desktop-me'
+const OPPONENT_LINK_MARKER = 'data-chess-desktop-them'
 const ENABLED_TOKEN = '__ENABLED__'
 const SIDES = ['top', 'bottom'] as const
 
@@ -28,7 +29,7 @@ interface SiteAnonymity {
   linkRules?: readonly OpponentRule[]
   readSelf: string
   readSeat: string
-  markSelf?: string
+  markLinks?: string
 }
 
 const CHESSCOM_READ_SELF = `
@@ -76,6 +77,40 @@ const CHESSCOM_READ_SEAT = `
       return node ? node.textContent : ''
 `
 
+const CHESSCOM_CHAT_AUTHOR = '.user-username-component'
+const CHESSCOM_CHAT_TAGLINE = `.user-tagline-chat-component[${OPPONENT_LINK_MARKER}]`
+
+const CHESSCOM_MARK_LINKS = `
+        for (const node of document.querySelectorAll('.chat-message-component ${CHESSCOM_CHAT_AUTHOR}')) {
+          const tagline = node.closest('.user-tagline-chat-component') || node
+          const name = normalize((node.textContent || '').replace(/:\\s*$/, ''))
+
+          if (them && name === them) {
+            tagline.setAttribute(${JSON.stringify(OPPONENT_LINK_MARKER)}, '')
+          } else {
+            tagline.removeAttribute(${JSON.stringify(OPPONENT_LINK_MARKER)})
+          }
+        }
+`
+
+const CHESSCOM_LINK_RULES: readonly OpponentRule[] = [
+  {
+    selectors: [
+      `${CHESSCOM_CHAT_TAGLINE} .user-tagline-chat-flair`,
+      `${CHESSCOM_CHAT_TAGLINE} .flair-rpc-component`
+    ],
+    body: 'display: none !important;'
+  },
+  {
+    selectors: [`${CHESSCOM_CHAT_TAGLINE} ${CHESSCOM_CHAT_AUTHOR}`],
+    body: 'font-size: 0 !important;'
+  },
+  {
+    selectors: [`${CHESSCOM_CHAT_TAGLINE} ${CHESSCOM_CHAT_AUTHOR}::after`],
+    body: "content: 'Opponent:'; font-size: 14px;"
+  }
+]
+
 const LICHESS_READ_SELF = `
       return document.body ? document.body.dataset.user || '' : ''
 `
@@ -86,7 +121,7 @@ const LICHESS_READ_SEAT = `
       return path ? decodeURIComponent(path.split(/[/?#]/)[0]) : ''
 `
 
-const LICHESS_MARK_SELF = `
+const LICHESS_MARK_LINKS = `
         for (const node of document.querySelectorAll('a.user-link')) {
           const path = (node.getAttribute('href') || '').split('/@/')[1]
           const name = path ? normalize(decodeURIComponent(path.split(/[/?#]/)[0])) : ''
@@ -96,29 +131,37 @@ const LICHESS_MARK_SELF = `
           } else {
             node.removeAttribute(${JSON.stringify(SELF_LINK_MARKER)})
           }
+
+          if (them && name === them) {
+            node.setAttribute(${JSON.stringify(OPPONENT_LINK_MARKER)}, '')
+          } else {
+            node.removeAttribute(${JSON.stringify(OPPONENT_LINK_MARKER)})
+          }
         }
 `
 
 const NOT_SELF_LINK = `a.user-link:not([${SELF_LINK_MARKER}])`
+const OPPONENT_LINK = `a.user-link[${OPPONENT_LINK_MARKER}]`
 
 const LICHESS_LINK_SCOPES = [
-  { scope: '.game__meta', fontSize: '0.9rem' },
-  { scope: '.crosstable', fontSize: '1rem' }
+  { scope: '.game__meta', link: NOT_SELF_LINK, fontSize: '0.9rem' },
+  { scope: '.crosstable', link: NOT_SELF_LINK, fontSize: '1rem' },
+  { scope: '.mchat', link: OPPONENT_LINK, fontSize: '0.9rem' }
 ]
 
 const LICHESS_LINK_RULES: readonly OpponentRule[] = [
   {
-    selectors: LICHESS_LINK_SCOPES.flatMap(({ scope }) =>
-      ['.utitle', '.uflair', '.rating'].map((part) => `${scope} ${NOT_SELF_LINK} ${part}`)
+    selectors: LICHESS_LINK_SCOPES.flatMap(({ scope, link }) =>
+      ['.utitle', '.uflair', '.rating'].map((part) => `${scope} ${link} ${part}`)
     ),
     body: 'display: none !important;'
   },
   {
-    selectors: LICHESS_LINK_SCOPES.map(({ scope }) => `${scope} ${NOT_SELF_LINK}`),
+    selectors: LICHESS_LINK_SCOPES.map(({ scope, link }) => `${scope} ${link}`),
     body: 'font-size: 0 !important;'
   },
-  ...LICHESS_LINK_SCOPES.map(({ scope, fontSize }) => ({
-    selectors: [`${scope} ${NOT_SELF_LINK}::after`],
+  ...LICHESS_LINK_SCOPES.map(({ scope, link, fontSize }) => ({
+    selectors: [`${scope} ${link}::after`],
     body: `content: 'Opponent'; font-size: ${fontSize};`
   }))
 ]
@@ -147,8 +190,10 @@ const ANONYMITY: Record<SiteId, SiteAnonymity> = {
         body: "content: 'Opponent'; font-size: 14px;"
       }
     ],
+    linkRules: CHESSCOM_LINK_RULES,
     readSelf: CHESSCOM_READ_SELF,
-    readSeat: CHESSCOM_READ_SEAT
+    readSeat: CHESSCOM_READ_SEAT,
+    markLinks: CHESSCOM_MARK_LINKS
   },
   lichess: {
     seatPrefix: '.ruser-',
@@ -163,7 +208,7 @@ const ANONYMITY: Record<SiteId, SiteAnonymity> = {
     linkRules: LICHESS_LINK_RULES,
     readSelf: LICHESS_READ_SELF,
     readSeat: LICHESS_READ_SEAT,
-    markSelf: LICHESS_MARK_SELF
+    markLinks: LICHESS_MARK_LINKS
   }
 }
 
@@ -188,7 +233,7 @@ function buildCSS({ seatPrefix, rules, linkRules = [] }: SiteAnonymity): string 
   return [...seated, ...linked].join('\n\n')
 }
 
-function buildScript({ readSelf, readSeat, markSelf = '' }: SiteAnonymity): string {
+function buildScript({ readSelf, readSeat, markLinks = '' }: SiteAnonymity): string {
   return `
 (() => {
   const MARKER = ${JSON.stringify(SELF_MARKER)}
@@ -222,19 +267,21 @@ function buildScript({ readSelf, readSeat, markSelf = '' }: SiteAnonymity): stri
       }
     }
 
-    const markSelfLinks = (self) => {
-      try {${markSelf}      } catch {}
+    const markLinks = (self, them) => {
+      try {${markLinks}      } catch {}
     }
 
     const update = () => {
       const self = readSelf()
+      const top = seatName('top')
+      const bottom = seatName('bottom')
+      const onTop = Boolean(self) && self === top
+      const onBottom = Boolean(self) && self === bottom
+      const seated = onTop !== onBottom
 
-      markSelfLinks(self)
+      markLinks(self, seated ? (onTop ? bottom : top) : '')
 
-      const onTop = Boolean(self) && self === seatName('top')
-      const onBottom = Boolean(self) && self === seatName('bottom')
-
-      if (onTop === onBottom) {
+      if (!seated) {
         document.documentElement.removeAttribute(MARKER)
         return
       }
@@ -260,7 +307,7 @@ function buildScript({ readSelf, readSeat, markSelf = '' }: SiteAnonymity): stri
           observer = null
         }
 
-        markSelfLinks('')
+        markLinks('', '')
         document.documentElement.removeAttribute(MARKER)
         return
       }

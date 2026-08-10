@@ -38,9 +38,35 @@ function nav(self: string | null): string {
   return `<div class="board-layout-nav"><nav class="sidebar-container">${link}</nav></div>`
 }
 
-function chesscomPage(top: string, bottom: string, self: string | null = 'TestSelf'): string {
-  const body = `${nav(self)}${player('top', top)}${player('bottom', bottom)}`
+function chesscomChatLine(username: string, message: string): string {
+  return `<div class="chat-message-component">
+    <span class="user-tagline-chat-component chat-message-tagline">
+      <span class="user-tagline-chat-flair"><img class="flair-rpc-component flair-rpc-small"></span>
+      <a class="user-username-component user-username-link user-tagline-chat-member">${username}:</a>
+    </span>
+    <span class="chat-message-content">${message}</span>
+  </div>`
+}
+
+function chesscomPage(
+  top: string,
+  bottom: string,
+  self: string | null = 'TestSelf',
+  chatters: readonly string[] = []
+): string {
+  const chat = `<div class="resizable-chat-area-component">${chatters
+    .map((name) => chesscomChatLine(name, 'hi'))
+    .join('')}</div>`
+  const body = `${nav(self)}${player('top', top)}${player('bottom', bottom)}${chat}`
   return `<!doctype html><html><head></head><body class="board-layout with-players">${body}</body></html>`
+}
+
+function taggedChatAuthors(dom: JSDOM): string[] {
+  return [
+    ...dom.window.document.querySelectorAll(
+      '.user-tagline-chat-component[data-chess-desktop-them] .user-username-component'
+    )
+  ].map((node) => (node.textContent ?? '').trim())
 }
 
 function ruser(side: 'top' | 'bottom', username: string): string {
@@ -57,12 +83,28 @@ function metaPlayer(username: string): string {
   </div>`
 }
 
-function lichessPage(top: string, bottom: string, self: string | null = 'TestSelf'): string {
+function chatLine(username: string, message: string): string {
+  return `<li><action class="reply"></action><action class="flag"></action><a class="user-link ulpt" href="/@/${username}">${username}</a><t>${message}</t></li>`
+}
+
+function lichessPage(
+  top: string,
+  bottom: string,
+  self: string | null = 'TestSelf',
+  chatters: readonly string[] = []
+): string {
   const user = self ? ` data-user="${self}"` : ''
   const seats = `${ruser('top', top)}${ruser('bottom', bottom)}`
   const meta = `<div class="game__meta"><section><div class="game__meta__players">${metaPlayer(top)}${metaPlayer(bottom)}</div></section></div>`
   const cross = `<div class="crosstable"><div class="crosstable__users"><a class="user-link ulpt" href="/@/${top}">${top}</a><a class="user-link ulpt" href="/@/${bottom}">${bottom}</a></div></div>`
-  return `<!doctype html><html><head></head><body${user}>${meta}<div class="round__app variant-standard">${seats}</div>${cross}</body></html>`
+  const chat = `<div class="mchat"><div class="mchat__content discussion"><ol class="mchat__messages">${chatters.map((name) => chatLine(name, 'hi')).join('')}</ol></div></div>`
+  return `<!doctype html><html><head></head><body${user}>${meta}<div class="round__app variant-standard">${seats}</div>${cross}${chat}</body></html>`
+}
+
+function opponentLinks(dom: JSDOM, scope: string): string[] {
+  return [
+    ...dom.window.document.querySelectorAll(`${scope} a.user-link[data-chess-desktop-them]`)
+  ].map((node) => node.getAttribute('href') ?? '')
 }
 
 function markedLinks(dom: JSDOM): string[] {
@@ -360,5 +402,106 @@ describe('Lichess name surfaces outside the seats', () => {
 
     expect(markedLinks(dom)).toEqual([])
     expect(cssFor('chesscom')).not.toContain('data-chess-desktop-me')
+  })
+})
+
+describe('Chess.com chat authorship', () => {
+  const chatters = ['TestRival', 'TestSelf', 'TestWatcher']
+
+  it('tags only the opponent, matching past the trailing colon', () => {
+    const dom = render(chesscomPage('TestRival', 'TestSelf', 'TestSelf', chatters), 'chesscom')
+
+    expect(taggedChatAuthors(dom)).toEqual(['TestRival:'])
+  })
+
+  it('leaves unrelated chatters named', () => {
+    const dom = render(chesscomPage('TestRival', 'TestSelf', 'TestSelf', chatters), 'chesscom')
+    const authors = [
+      ...dom.window.document.querySelectorAll(
+        '.user-tagline-chat-component:not([data-chess-desktop-them]) .user-username-component'
+      )
+    ].map((node) => (node.textContent ?? '').trim())
+
+    expect(authors).toEqual(['TestSelf:', 'TestWatcher:'])
+  })
+
+  it('tags nobody while spectating', () => {
+    const dom = render(chesscomPage('TestRival', 'TestStranger', 'TestSelf', chatters), 'chesscom')
+
+    expect(taggedChatAuthors(dom)).toEqual([])
+  })
+
+  it('follows the opponent when the board is flipped', () => {
+    const dom = render(chesscomPage('TestSelf', 'TestRival', 'TestSelf', chatters), 'chesscom')
+
+    expect(selfMarker(dom)).toBe('top')
+    expect(taggedChatAuthors(dom)).toEqual(['TestRival:'])
+  })
+
+  it('untags the opponent when the setting is turned off', () => {
+    const dom = render(chesscomPage('TestRival', 'TestSelf', 'TestSelf', chatters), 'chesscom')
+    expect(taggedChatAuthors(dom)).not.toEqual([])
+
+    dom.window.eval(scriptFor('chesscom', false))
+
+    expect(taggedChatAuthors(dom)).toEqual([])
+  })
+
+  it('replaces the author with a colon so it matches the native format', () => {
+    const css = cssFor('chesscom')
+
+    expect(css).toContain('.user-tagline-chat-component[data-chess-desktop-them]')
+    expect(css).toContain("content: 'Opponent:';")
+    expect(css).toContain('.user-tagline-chat-flair')
+  })
+})
+
+describe('Lichess chat authorship', () => {
+  const chatters = ['TestRival', 'TestSelf', 'TestWatcher']
+
+  it('tags only the opponent in the chat', () => {
+    const dom = render(lichessPage('TestRival', 'TestSelf', 'TestSelf', chatters), 'lichess')
+
+    expect(opponentLinks(dom, '.mchat')).toEqual(['/@/TestRival'])
+  })
+
+  it('leaves unrelated spectators named', () => {
+    const dom = render(lichessPage('TestRival', 'TestSelf', 'TestSelf', chatters), 'lichess')
+    const watcher = dom.window.document.querySelector('.mchat a[href="/@/TestWatcher"]')
+
+    expect(watcher?.hasAttribute('data-chess-desktop-them')).toBe(false)
+    expect(watcher?.hasAttribute('data-chess-desktop-me')).toBe(false)
+  })
+
+  it('tags nobody in the chat while spectating', () => {
+    const dom = render(
+      lichessPage('TestRival', 'TestStranger', 'TestSelf', ['TestRival', 'TestStranger']),
+      'lichess'
+    )
+
+    expect(opponentLinks(dom, '.mchat')).toEqual([])
+  })
+
+  it('follows the opponent when the board is flipped', () => {
+    const dom = render(lichessPage('TestSelf', 'TestRival', 'TestSelf', chatters), 'lichess')
+
+    expect(selfMarker(dom)).toBe('top')
+    expect(opponentLinks(dom, '.mchat')).toEqual(['/@/TestRival'])
+  })
+
+  it('untags the opponent when the setting is turned off', () => {
+    const dom = render(lichessPage('TestRival', 'TestSelf', 'TestSelf', chatters), 'lichess')
+    expect(opponentLinks(dom, '.mchat')).not.toEqual([])
+
+    dom.window.eval(scriptFor('lichess', false))
+
+    expect(opponentLinks(dom, '.mchat')).toEqual([])
+  })
+
+  it('scopes the chat rule to the opponent rather than every stranger', () => {
+    const css = cssFor('lichess')
+
+    expect(css).toContain('.mchat a.user-link[data-chess-desktop-them]')
+    expect(css).not.toContain('.mchat a.user-link:not(')
   })
 })
