@@ -2,21 +2,12 @@ import type { WebContents } from 'electron'
 import type { SiteId } from '../shared/sites'
 
 const SELF_MARKER = 'data-chess-desktop-self'
-const USERNAME_ELEMENT = '[data-test-element="user-tagline-username"]'
+const SELF_LINK_MARKER = 'data-chess-desktop-me'
 const ENABLED_TOKEN = '__ENABLED__'
 const SIDES = ['top', 'bottom'] as const
 
-const OPPONENT_DETAILS = [
-  '[class*="cc-user-rating"]',
-  '.rating-score-component',
-  '.connection-component',
-  '.cc-user-title-component',
-  '.cc-country-flag-component',
-  '.flair-rpc-component',
-  '.cc-user-badge-component'
-]
-
 const PLACEHOLDER_AVATAR = 'https://www.chess.com/bundles/web/images/black_400.png'
+const CHESSCOM_USERNAME = '[data-test-element="user-tagline-username"]'
 
 const PLACEHOLDER_AVATAR_BODY = [
   'background-color: rgba(128, 128, 128, 0.25);',
@@ -26,55 +17,33 @@ const PLACEHOLDER_AVATAR_BODY = [
   'background-repeat: no-repeat;'
 ].join('\n  ')
 
-function opponentRule(selectors: readonly string[], body: string): string {
-  const scoped = SIDES.flatMap((side) =>
-    selectors.map((selector) => `html:not([${SELF_MARKER}="${side}"]) .player-${side} ${selector}`)
-  )
-
-  return `${scoped.join(',\n')} {\n  ${body}\n}`
+interface OpponentRule {
+  selectors: readonly string[]
+  body: string
 }
 
-const CHESSCOM_CSS = [
-  opponentRule(OPPONENT_DETAILS, 'display: none !important;'),
-  opponentRule(['.cc-avatar-img'], 'visibility: hidden !important;'),
-  opponentRule(['.cc-avatar-component'], PLACEHOLDER_AVATAR_BODY),
-  opponentRule([USERNAME_ELEMENT], 'font-size: 0 !important;'),
-  opponentRule([`${USERNAME_ELEMENT}::after`], "content: 'Opponent'; font-size: 14px;")
-].join('\n\n')
+interface SiteAnonymity {
+  seatPrefix: string
+  rules: readonly OpponentRule[]
+  linkRules?: readonly OpponentRule[]
+  readSelf: string
+  readSeat: string
+  markSelf?: string
+}
 
-const CHESSCOM_SCRIPT = `
-(() => {
-  const MARKER = ${JSON.stringify(SELF_MARKER)}
-  const USERNAME = ${JSON.stringify(USERNAME_ELEMENT)}
+const CHESSCOM_READ_SELF = `
+      const SELF_SOURCES = [
+        '#nav-user-dropdown a[href*="/member/"]',
+        '.nav-user-username',
+        'nav.sidebar-container a[href*="/member/"]',
+        'nav a[href*="/member/"]',
+        'header a[href*="/member/"]'
+      ]
 
-  if (!window.__chessDesktopAnonymity) {
-    const SELF_SOURCES = [
-      '#nav-user-dropdown a[href*="/member/"]',
-      '.nav-user-username',
-      'nav.sidebar-container a[href*="/member/"]',
-      'nav a[href*="/member/"]',
-      'header a[href*="/member/"]'
-    ]
+      const fromGlobal = window.chesscom && window.chesscom.user && window.chesscom.user.username
 
-    let cachedSelf = ''
-    let observer = null
-    let frame = 0
-
-    const memberName = (node) => {
-      const path = (node.getAttribute('href') || '').split('/member/')[1]
-      return path ? decodeURIComponent(path.split(/[/?#]/)[0]) : ''
-    }
-
-    const readSelf = () => {
-      if (cachedSelf) {
-        return cachedSelf
-      }
-
-      const global = window.chesscom && window.chesscom.user && window.chesscom.user.username
-
-      if (typeof global === 'string' && global) {
-        cachedSelf = global.trim().toLowerCase()
-        return cachedSelf
+      if (typeof fromGlobal === 'string' && fromGlobal) {
+        return fromGlobal
       }
 
       for (const selector of SELF_SOURCES) {
@@ -90,26 +59,180 @@ const CHESSCOM_SCRIPT = `
           continue
         }
 
-        const value = (memberName(node) || node.textContent || '').trim()
+        const path = (node.getAttribute('href') || '').split('/member/')[1]
+        const named = path ? decodeURIComponent(path.split(/[/?#]/)[0]) : ''
+        const value = (named || node.textContent || '').trim()
 
         if (value) {
-          cachedSelf = value.toLowerCase()
-          return cachedSelf
+          return value
         }
       }
 
       return ''
+`
+
+const CHESSCOM_READ_SEAT = `
+      const node = document.querySelector('.player-' + side + ' ${CHESSCOM_USERNAME}')
+      return node ? node.textContent : ''
+`
+
+const LICHESS_READ_SELF = `
+      return document.body ? document.body.dataset.user || '' : ''
+`
+
+const LICHESS_READ_SEAT = `
+      const node = document.querySelector('.ruser-' + side + ' a.user-link')
+      const path = (node ? node.getAttribute('href') || '' : '').split('/@/')[1]
+      return path ? decodeURIComponent(path.split(/[/?#]/)[0]) : ''
+`
+
+const LICHESS_MARK_SELF = `
+        for (const node of document.querySelectorAll('a.user-link')) {
+          const path = (node.getAttribute('href') || '').split('/@/')[1]
+          const name = path ? normalize(decodeURIComponent(path.split(/[/?#]/)[0])) : ''
+
+          if (self && name === self) {
+            node.setAttribute(${JSON.stringify(SELF_LINK_MARKER)}, '')
+          } else {
+            node.removeAttribute(${JSON.stringify(SELF_LINK_MARKER)})
+          }
+        }
+`
+
+const NOT_SELF_LINK = `a.user-link:not([${SELF_LINK_MARKER}])`
+
+const LICHESS_LINK_SCOPES = [
+  { scope: '.game__meta', fontSize: '0.9rem' },
+  { scope: '.crosstable', fontSize: '1rem' }
+]
+
+const LICHESS_LINK_RULES: readonly OpponentRule[] = [
+  {
+    selectors: LICHESS_LINK_SCOPES.flatMap(({ scope }) =>
+      ['.utitle', '.uflair', '.rating'].map((part) => `${scope} ${NOT_SELF_LINK} ${part}`)
+    ),
+    body: 'display: none !important;'
+  },
+  {
+    selectors: LICHESS_LINK_SCOPES.map(({ scope }) => `${scope} ${NOT_SELF_LINK}`),
+    body: 'font-size: 0 !important;'
+  },
+  ...LICHESS_LINK_SCOPES.map(({ scope, fontSize }) => ({
+    selectors: [`${scope} ${NOT_SELF_LINK}::after`],
+    body: `content: 'Opponent'; font-size: ${fontSize};`
+  }))
+]
+
+const ANONYMITY: Record<SiteId, SiteAnonymity> = {
+  chesscom: {
+    seatPrefix: '.player-',
+    rules: [
+      {
+        selectors: [
+          '[class*="cc-user-rating"]',
+          '.rating-score-component',
+          '.connection-component',
+          '.cc-user-title-component',
+          '.cc-country-flag-component',
+          '.flair-rpc-component',
+          '.cc-user-badge-component'
+        ],
+        body: 'display: none !important;'
+      },
+      { selectors: ['.cc-avatar-img'], body: 'visibility: hidden !important;' },
+      { selectors: ['.cc-avatar-component'], body: PLACEHOLDER_AVATAR_BODY },
+      { selectors: [CHESSCOM_USERNAME], body: 'font-size: 0 !important;' },
+      {
+        selectors: [`${CHESSCOM_USERNAME}::after`],
+        body: "content: 'Opponent'; font-size: 14px;"
+      }
+    ],
+    readSelf: CHESSCOM_READ_SELF,
+    readSeat: CHESSCOM_READ_SEAT
+  },
+  lichess: {
+    seatPrefix: '.ruser-',
+    rules: [
+      {
+        selectors: ['.utitle', '.uflair', 'rating', 'icon.line'],
+        body: 'display: none !important;'
+      },
+      { selectors: ['a.user-link'], body: 'font-size: 0 !important;' },
+      { selectors: ['a.user-link::after'], body: "content: 'Opponent'; font-size: 1.2rem;" }
+    ],
+    linkRules: LICHESS_LINK_RULES,
+    readSelf: LICHESS_READ_SELF,
+    readSeat: LICHESS_READ_SEAT,
+    markSelf: LICHESS_MARK_SELF
+  }
+}
+
+function declare(selectors: readonly string[], body: string): string {
+  return `${selectors.join(',\n')} {\n  ${body}\n}`
+}
+
+function buildCSS({ seatPrefix, rules, linkRules = [] }: SiteAnonymity): string {
+  const seated = rules.map(({ selectors, body }) =>
+    declare(
+      SIDES.flatMap((side) =>
+        selectors.map(
+          (selector) => `html:not([${SELF_MARKER}="${side}"]) ${seatPrefix}${side} ${selector}`
+        )
+      ),
+      body
+    )
+  )
+
+  const linked = linkRules.map(({ selectors, body }) => declare(selectors, body))
+
+  return [...seated, ...linked].join('\n\n')
+}
+
+function buildScript({ readSelf, readSeat, markSelf = '' }: SiteAnonymity): string {
+  return `
+(() => {
+  const MARKER = ${JSON.stringify(SELF_MARKER)}
+
+  if (!window.__chessDesktopAnonymity) {
+    let cachedSelf = ''
+    let observer = null
+    let frame = 0
+
+    const normalize = (value) => String(value == null ? '' : value).trim().toLowerCase()
+
+    const readSelf = () => {
+      if (cachedSelf) {
+        return cachedSelf
+      }
+
+      try {
+        cachedSelf = normalize((() => {${readSelf}      })())
+      } catch {
+        cachedSelf = ''
+      }
+
+      return cachedSelf
     }
 
-    const taglineOf = (side) => {
-      const node = document.querySelector('.player-' + side + ' ' + USERNAME)
-      return node ? node.textContent.trim().toLowerCase() : ''
+    const seatName = (side) => {
+      try {
+        return normalize((() => {${readSeat}      })())
+      } catch {
+        return ''
+      }
+    }
+
+    const markSelfLinks = (self) => {
+      try {${markSelf}      } catch {}
     }
 
     const update = () => {
       const self = readSelf()
-      const onTop = Boolean(self) && self === taglineOf('top')
-      const onBottom = Boolean(self) && self === taglineOf('bottom')
+
+      markSelfLinks(self)
+
+      const onTop = Boolean(self) && self === seatName('top')
+      const onBottom = Boolean(self) && self === seatName('bottom')
 
       if (onTop === onBottom) {
         document.documentElement.removeAttribute(MARKER)
@@ -137,15 +260,16 @@ const CHESSCOM_SCRIPT = `
           observer = null
         }
 
+        markSelfLinks('')
         document.documentElement.removeAttribute(MARKER)
         return
       }
 
       update()
 
-      if (!observer && document.body) {
+      if (!observer) {
         observer = new MutationObserver(schedule)
-        observer.observe(document.body, { subtree: true, childList: true })
+        observer.observe(document.documentElement, { subtree: true, childList: true })
       }
     }
   }
@@ -153,15 +277,16 @@ const CHESSCOM_SCRIPT = `
   window.__chessDesktopAnonymity(${ENABLED_TOKEN})
 })()
 `
-
-const ANONYMITY_CSS: Record<SiteId, string | null> = {
-  chesscom: CHESSCOM_CSS,
-  lichess: null
 }
 
-const ANONYMITY_SCRIPTS: Record<SiteId, string | null> = {
-  chesscom: CHESSCOM_SCRIPT,
-  lichess: null
+const ANONYMITY_CSS: Record<SiteId, string> = {
+  chesscom: buildCSS(ANONYMITY.chesscom),
+  lichess: buildCSS(ANONYMITY.lichess)
+}
+
+const ANONYMITY_SCRIPTS: Record<SiteId, string> = {
+  chesscom: buildScript(ANONYMITY.chesscom),
+  lichess: buildScript(ANONYMITY.lichess)
 }
 
 const insertedStyles = new WeakMap<WebContents, string>()
@@ -195,22 +320,16 @@ export function applyPlayerAnonymity(
     contents.removeInsertedCSS(previousKey).catch(() => null)
   }
 
-  const script = ANONYMITY_SCRIPTS[siteId]
+  contents
+    .executeJavaScript(ANONYMITY_SCRIPTS[siteId].replace(ENABLED_TOKEN, String(hidden)), true)
+    .catch(() => null)
 
-  if (script) {
-    contents
-      .executeJavaScript(script.replace(ENABLED_TOKEN, String(hidden)), true)
-      .catch(() => null)
-  }
-
-  const css = ANONYMITY_CSS[siteId]
-
-  if (!hidden || !css) {
+  if (!hidden) {
     return
   }
 
   contents
-    .insertCSS(css)
+    .insertCSS(ANONYMITY_CSS[siteId])
     .then((key) => {
       if (contents.isDestroyed()) {
         return

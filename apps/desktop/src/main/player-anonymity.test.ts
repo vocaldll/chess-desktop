@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom'
 import { describe, expect, it, vi } from 'vitest'
+import type { SiteId } from '../shared/sites'
 import { applyPlayerAnonymity } from './player-anonymity'
 
 const SELF_MARKER = 'data-chess-desktop-self'
@@ -20,8 +21,10 @@ function player(side: 'top' | 'bottom', username: string): string {
         <img class="cc-avatar-img" alt="Avatar of ${username}">
       </div></div>
       <div class="player-tagline">
+        <div class="cc-user-title-component">WFM</div>
         <div data-test-element="user-tagline-username">${username}</div>
         <div class="cc-text-medium cc-user-rating-white">(1958)</div>
+        <div class="connection-component connection-good"></div>
       </div>
     </div>
   </div>`
@@ -35,88 +38,96 @@ function nav(self: string | null): string {
   return `<div class="board-layout-nav"><nav class="sidebar-container">${link}</nav></div>`
 }
 
-function page(top: string, bottom: string, self: string | null = 'TestSelf'): string {
+function chesscomPage(top: string, bottom: string, self: string | null = 'TestSelf'): string {
   const body = `${nav(self)}${player('top', top)}${player('bottom', bottom)}`
   return `<!doctype html><html><head></head><body class="board-layout with-players">${body}</body></html>`
 }
 
-function scriptFor(hidden: boolean): string {
+function ruser(side: 'top' | 'bottom', username: string): string {
+  return `<div class="ruser-${side} ruser user-link online">
+    <icon class="line"></icon>
+    <a class="user-link ulpt" href="/@/${username}"><span class="utitle">IM</span><img class="uflair">${username}</a>
+    <rating>2934</rating>
+  </div>`
+}
+
+function metaPlayer(username: string): string {
+  return `<div class="player color-icon is white text">
+    <a class="user-link ulpt" href="/@/${username}"><img class="uflair">${username}<span class="rating">(1663?)</span></a>
+  </div>`
+}
+
+function lichessPage(top: string, bottom: string, self: string | null = 'TestSelf'): string {
+  const user = self ? ` data-user="${self}"` : ''
+  const seats = `${ruser('top', top)}${ruser('bottom', bottom)}`
+  const meta = `<div class="game__meta"><section><div class="game__meta__players">${metaPlayer(top)}${metaPlayer(bottom)}</div></section></div>`
+  const cross = `<div class="crosstable"><div class="crosstable__users"><a class="user-link ulpt" href="/@/${top}">${top}</a><a class="user-link ulpt" href="/@/${bottom}">${bottom}</a></div></div>`
+  return `<!doctype html><html><head></head><body${user}>${meta}<div class="round__app variant-standard">${seats}</div>${cross}</body></html>`
+}
+
+function markedLinks(dom: JSDOM): string[] {
+  return [...dom.window.document.querySelectorAll('a.user-link[data-chess-desktop-me]')].map(
+    (node) => node.getAttribute('href') ?? ''
+  )
+}
+
+function anonymizedLinks(dom: JSDOM, scope: string): string[] {
+  return [
+    ...dom.window.document.querySelectorAll(`${scope} a.user-link:not([data-chess-desktop-me])`)
+  ].map((node) => node.getAttribute('href') ?? '')
+}
+
+function scriptFor(siteId: SiteId, hidden: boolean): string {
   const webContents = contents()
-  applyPlayerAnonymity(webContents as never, 'chesscom', hidden)
+  applyPlayerAnonymity(webContents as never, siteId, hidden)
   return webContents.executeJavaScript.mock.calls[0][0] as string
 }
 
-function cssForChesscom(): string {
+function cssFor(siteId: SiteId): string {
   const webContents = contents()
-  applyPlayerAnonymity(webContents as never, 'chesscom', true)
+  applyPlayerAnonymity(webContents as never, siteId, true)
   return webContents.insertCSS.mock.calls[0][0] as string
 }
 
-function render(html: string, script = scriptFor(true)): JSDOM {
+function render(html: string, siteId: SiteId): JSDOM {
   const dom = new JSDOM(html, { runScripts: 'outside-only', pretendToBeVisual: true })
-  dom.window.eval(script)
+  dom.window.eval(scriptFor(siteId, true))
   return dom
-}
-
-function setTagline(dom: JSDOM, side: 'top' | 'bottom', username: string): void {
-  const node = dom.window.document.querySelector(`.player-${side} [data-test-element]`)
-
-  if (!node) {
-    throw new Error(`missing ${side} tagline`)
-  }
-
-  node.textContent = username
 }
 
 function selfMarker(dom: JSDOM): string | null {
   return dom.window.document.documentElement.getAttribute(SELF_MARKER)
 }
 
-function anonymizedNames(dom: JSDOM): string[] {
+function anonymizedSeats(dom: JSDOM, siteId: SiteId, fragment: string): string[] {
   const { document } = dom.window
   const style = document.createElement('style')
-  style.textContent = cssForChesscom()
+  style.textContent = cssFor(siteId)
   document.head.append(style)
 
   const rules = [...(style.sheet?.cssRules ?? [])] as CSSStyleRule[]
   const rule = rules.find(
     (candidate) =>
-      candidate.selectorText?.includes('user-tagline-username') &&
-      !candidate.selectorText.includes('::')
+      candidate.selectorText?.includes(fragment) && !candidate.selectorText.includes('::')
   )
 
   if (!rule) {
-    throw new Error('missing username rule')
+    throw new Error(`missing rule for ${fragment}`)
   }
 
-  return [...document.querySelectorAll(rule.selectorText)].map((node) => node.textContent ?? '')
+  return [...document.querySelectorAll(rule.selectorText)].map((node) =>
+    node.closest('.player-top, .ruser-top') ? 'top' : 'bottom'
+  )
 }
 
 describe('player anonymity styling', () => {
-  it('inserts the Chess.com override and skips Lichess for now', async () => {
-    const chesscom = contents()
-    const lichess = contents()
+  it.each(['chesscom', 'lichess'] as const)('inserts the %s override', async (siteId) => {
+    const webContents = contents()
 
-    applyPlayerAnonymity(chesscom as never, 'chesscom', true)
-    applyPlayerAnonymity(lichess as never, 'lichess', true)
+    applyPlayerAnonymity(webContents as never, siteId, true)
 
-    await vi.waitFor(() => expect(chesscom.insertCSS).toHaveBeenCalledOnce())
-    expect(chesscom.insertCSS.mock.calls[0][0]).toContain('user-tagline-username')
-    expect(lichess.insertCSS).not.toHaveBeenCalled()
-    expect(lichess.executeJavaScript).not.toHaveBeenCalled()
-  })
-
-  it('anonymizes both players while the self marker is unset', () => {
-    const dom = new JSDOM(page('TestRival', 'TestSelf'))
-
-    expect(anonymizedNames(dom)).toEqual(['TestRival', 'TestSelf'])
-  })
-
-  it('reveals only the side the marker points at', () => {
-    const dom = new JSDOM(page('TestRival', 'TestSelf'))
-    dom.window.document.documentElement.setAttribute(SELF_MARKER, 'bottom')
-
-    expect(anonymizedNames(dom)).toEqual(['TestRival'])
+    await vi.waitFor(() => expect(webContents.insertCSS).toHaveBeenCalledOnce())
+    expect(webContents.executeJavaScript).toHaveBeenCalledOnce()
   })
 
   it.each([
@@ -130,8 +141,41 @@ describe('player anonymity styling', () => {
     '.cc-avatar-img',
     'bundles/web/images/black_400.png',
     "content: 'Opponent'"
-  ])('covers %s in the opponent override', (fragment) => {
-    expect(cssForChesscom()).toContain(fragment)
+  ])('covers %s in the Chess.com override', (fragment) => {
+    expect(cssFor('chesscom')).toContain(fragment)
+  })
+
+  it.each(['.utitle', '.uflair', 'rating', 'icon.line', 'a.user-link', "content: 'Opponent'"])(
+    'covers %s in the Lichess override',
+    (fragment) => {
+      expect(cssFor('lichess')).toContain(fragment)
+    }
+  )
+
+  it('anonymizes both Chess.com players while the self marker is unset', () => {
+    const dom = new JSDOM(chesscomPage('TestRival', 'TestSelf'))
+
+    expect(anonymizedSeats(dom, 'chesscom', 'user-tagline-username')).toEqual(['top', 'bottom'])
+  })
+
+  it('anonymizes both Lichess players while the self marker is unset', () => {
+    const dom = new JSDOM(lichessPage('TestRival', 'TestSelf'))
+
+    expect(anonymizedSeats(dom, 'lichess', 'a.user-link')).toEqual(['top', 'bottom'])
+  })
+
+  it('reveals only the Chess.com seat the marker points at', () => {
+    const dom = new JSDOM(chesscomPage('TestRival', 'TestSelf'))
+    dom.window.document.documentElement.setAttribute(SELF_MARKER, 'bottom')
+
+    expect(anonymizedSeats(dom, 'chesscom', 'user-tagline-username')).toEqual(['top'])
+  })
+
+  it('reveals only the Lichess seat the marker points at', () => {
+    const dom = new JSDOM(lichessPage('TestRival', 'TestSelf'))
+    dom.window.document.documentElement.setAttribute(SELF_MARKER, 'bottom')
+
+    expect(anonymizedSeats(dom, 'lichess', 'a.user-link')).toEqual(['top'])
   })
 
   it('removes the inserted override when the opponent is shown', async () => {
@@ -170,13 +214,13 @@ describe('player anonymity styling', () => {
   })
 })
 
-describe('self detection', () => {
+describe('Chess.com self detection', () => {
   it('marks the bottom seat when the board is not flipped', () => {
-    expect(selfMarker(render(page('TestRival', 'TestSelf')))).toBe('bottom')
+    expect(selfMarker(render(chesscomPage('TestRival', 'TestSelf'), 'chesscom'))).toBe('bottom')
   })
 
   it('resolves self from a nav nested inside the board layout', () => {
-    const dom = render(page('TestRival', 'TestSelf'))
+    const dom = render(chesscomPage('TestRival', 'TestSelf'), 'chesscom')
 
     expect(dom.window.document.body.classList.contains('board-layout')).toBe(true)
     expect(dom.window.document.querySelector('.board-layout-nav nav')).not.toBeNull()
@@ -184,41 +228,137 @@ describe('self detection', () => {
   })
 
   it('marks the top seat when the board is flipped', () => {
-    expect(selfMarker(render(page('TestSelf', 'TestRival')))).toBe('top')
+    expect(selfMarker(render(chesscomPage('TestSelf', 'TestRival'), 'chesscom'))).toBe('top')
   })
 
   it('matches the username regardless of case', () => {
-    expect(selfMarker(render(page('TestRival', 'testself')))).toBe('bottom')
+    expect(selfMarker(render(chesscomPage('TestRival', 'testself'), 'chesscom'))).toBe('bottom')
   })
 
   it('leaves both anonymized when the visitor is logged out', () => {
-    expect(selfMarker(render(page('TestRival', 'TestStranger', null)))).toBeNull()
+    expect(
+      selfMarker(render(chesscomPage('TestRival', 'TestStranger', null), 'chesscom'))
+    ).toBeNull()
   })
 
   it('leaves both anonymized while spectating strangers', () => {
-    expect(selfMarker(render(page('TestRival', 'TestStranger')))).toBeNull()
+    expect(selfMarker(render(chesscomPage('TestRival', 'TestStranger'), 'chesscom'))).toBeNull()
   })
 
   it('ignores a username that appears in both seats', () => {
-    expect(selfMarker(render(page('TestSelf', 'TestSelf')))).toBeNull()
+    expect(selfMarker(render(chesscomPage('TestSelf', 'TestSelf'), 'chesscom'))).toBeNull()
   })
 
   it('re-resolves the seat after a rematch swaps colors', async () => {
-    const dom = render(page('TestRival', 'TestSelf'))
+    const dom = render(chesscomPage('TestRival', 'TestSelf'), 'chesscom')
     expect(selfMarker(dom)).toBe('bottom')
 
-    setTagline(dom, 'top', 'TestSelf')
-    setTagline(dom, 'bottom', 'TestRival')
+    const { document } = dom.window
+    const top = document.querySelector('.player-top [data-test-element]')
+    const bottom = document.querySelector('.player-bottom [data-test-element]')
+
+    if (!top || !bottom) {
+      throw new Error('missing taglines')
+    }
+
+    top.textContent = 'TestSelf'
+    bottom.textContent = 'TestRival'
 
     await vi.waitFor(() => expect(selfMarker(dom)).toBe('top'))
   })
 
   it('clears the marker when the setting is turned off', () => {
-    const dom = render(page('TestRival', 'TestSelf'))
+    const dom = render(chesscomPage('TestRival', 'TestSelf'), 'chesscom')
     expect(selfMarker(dom)).toBe('bottom')
 
-    dom.window.eval(scriptFor(false))
+    dom.window.eval(scriptFor('chesscom', false))
 
     expect(selfMarker(dom)).toBeNull()
+  })
+})
+
+describe('Lichess self detection', () => {
+  it('marks the bottom seat when the board is not flipped', () => {
+    expect(selfMarker(render(lichessPage('TestRival', 'TestSelf'), 'lichess'))).toBe('bottom')
+  })
+
+  it('marks the top seat when the board is flipped', () => {
+    expect(selfMarker(render(lichessPage('TestSelf', 'TestRival'), 'lichess'))).toBe('top')
+  })
+
+  it('matches the username regardless of case', () => {
+    expect(selfMarker(render(lichessPage('TestRival', 'testself'), 'lichess'))).toBe('bottom')
+  })
+
+  it('reads the seat from the profile link rather than the visible text', () => {
+    const dom = render(lichessPage('TestRival', 'TestSelf'), 'lichess')
+    const link = dom.window.document.querySelector('.ruser-bottom a.user-link')
+
+    expect(link?.getAttribute('href')).toBe('/@/TestSelf')
+    expect(link?.textContent).toContain('IM')
+    expect(selfMarker(dom)).toBe('bottom')
+  })
+
+  it('leaves both anonymized when the visitor is logged out', () => {
+    expect(selfMarker(render(lichessPage('TestRival', 'TestStranger', null), 'lichess'))).toBeNull()
+  })
+
+  it('leaves both anonymized while spectating strangers', () => {
+    expect(selfMarker(render(lichessPage('TestRival', 'TestStranger'), 'lichess'))).toBeNull()
+  })
+
+  it('clears the marker when the setting is turned off', () => {
+    const dom = render(lichessPage('TestRival', 'TestSelf'), 'lichess')
+    expect(selfMarker(dom)).toBe('bottom')
+
+    dom.window.eval(scriptFor('lichess', false))
+
+    expect(selfMarker(dom)).toBeNull()
+  })
+})
+
+describe('Lichess name surfaces outside the seats', () => {
+  it.each(['.game__meta', '.crosstable'])('anonymizes the opponent inside %s', (scope) => {
+    const dom = render(lichessPage('TestRival', 'TestSelf'), 'lichess')
+
+    expect(anonymizedLinks(dom, scope)).toEqual(['/@/TestRival'])
+  })
+
+  it('tags every link belonging to the viewer', () => {
+    const dom = render(lichessPage('TestRival', 'TestSelf'), 'lichess')
+
+    expect(markedLinks(dom)).toEqual(['/@/TestSelf', '/@/TestSelf', '/@/TestSelf'])
+  })
+
+  it('anonymizes every link when the viewer cannot be resolved', () => {
+    const dom = render(lichessPage('TestRival', 'TestStranger', null), 'lichess')
+
+    expect(markedLinks(dom)).toEqual([])
+    expect(anonymizedLinks(dom, '.game__meta')).toEqual(['/@/TestRival', '/@/TestStranger'])
+  })
+
+  it('covers the scoped link selectors in the override', () => {
+    const css = cssFor('lichess')
+
+    expect(css).toContain('.game__meta a.user-link:not([data-chess-desktop-me])')
+    expect(css).toContain('.crosstable a.user-link:not([data-chess-desktop-me])')
+    expect(css).toContain('font-size: 0.9rem;')
+    expect(css).toContain('font-size: 1rem;')
+  })
+
+  it('untags the viewer links when the setting is turned off', () => {
+    const dom = render(lichessPage('TestRival', 'TestSelf'), 'lichess')
+    expect(markedLinks(dom)).not.toEqual([])
+
+    dom.window.eval(scriptFor('lichess', false))
+
+    expect(markedLinks(dom)).toEqual([])
+  })
+
+  it('leaves Chess.com links untouched', () => {
+    const dom = render(chesscomPage('TestRival', 'TestSelf'), 'chesscom')
+
+    expect(markedLinks(dom)).toEqual([])
+    expect(cssFor('chesscom')).not.toContain('data-chess-desktop-me')
   })
 })
