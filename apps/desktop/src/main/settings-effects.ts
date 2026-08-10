@@ -5,6 +5,7 @@ import { applyVolume } from './audio'
 import { applyChatVisibility } from './chat-visibility'
 import { applyPresenceSettings } from './discord'
 import { applyKeepAwakeSettings } from './keep-awake'
+import { applyPlayerAnonymity } from './player-anonymity'
 import { getSiteWebContents } from './webview'
 
 export function applySettings(window: BrowserWindow | null, settings: Settings): void {
@@ -15,6 +16,7 @@ export function applySettings(window: BrowserWindow | null, settings: Settings):
   contents?.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
   applyVolume(contents, settings.volume)
   applyChatVisibility(contents, settings.activeSite, settings.hideChat)
+  applyPlayerAnonymity(contents, settings.activeSite, settings.hideOpponent)
   applyPresenceSettings(settings)
   applyKeepAwakeSettings(settings)
 }

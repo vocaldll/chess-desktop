@@ -4,6 +4,7 @@ import { defaultSettings } from '../shared/settings'
 const mocks = vi.hoisted(() => ({
   applyVolume: vi.fn(),
   applyChatVisibility: vi.fn(),
+  applyPlayerAnonymity: vi.fn(),
   applyPresenceSettings: vi.fn(),
   applyKeepAwakeSettings: vi.fn(),
   getSiteWebContents: vi.fn()
@@ -13,6 +14,7 @@ vi.mock('./audio', () => ({ applyVolume: mocks.applyVolume }))
 vi.mock('./chat-visibility', () => ({ applyChatVisibility: mocks.applyChatVisibility }))
 vi.mock('./discord', () => ({ applyPresenceSettings: mocks.applyPresenceSettings }))
 vi.mock('./keep-awake', () => ({ applyKeepAwakeSettings: mocks.applyKeepAwakeSettings }))
+vi.mock('./player-anonymity', () => ({ applyPlayerAnonymity: mocks.applyPlayerAnonymity }))
 vi.mock('./webview', () => ({ getSiteWebContents: mocks.getSiteWebContents }))
 
 import { applySettings } from './settings-effects'
@@ -31,6 +33,7 @@ describe('applySettings', () => {
       alwaysOnTop: true,
       soundMuted: true,
       hideChat: true,
+      hideOpponent: true,
       volume: 35,
       zoom: { chesscom: 80, lichess: 125 }
     }
@@ -43,6 +46,7 @@ describe('applySettings', () => {
     expect(contents.setZoomFactor).toHaveBeenCalledWith(1.25)
     expect(mocks.applyVolume).toHaveBeenCalledWith(contents, 35)
     expect(mocks.applyChatVisibility).toHaveBeenCalledWith(contents, 'lichess', true)
+    expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(contents, 'lichess', true)
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(settings)
     expect(mocks.applyKeepAwakeSettings).toHaveBeenCalledWith(settings)
   })
@@ -57,6 +61,11 @@ describe('applySettings', () => {
       null,
       defaultSettings.activeSite,
       defaultSettings.hideChat
+    )
+    expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(
+      null,
+      defaultSettings.activeSite,
+      defaultSettings.hideOpponent
     )
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(defaultSettings)
     expect(mocks.applyKeepAwakeSettings).toHaveBeenCalledWith(defaultSettings)

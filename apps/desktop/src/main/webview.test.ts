@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   setLastSiteUrl: vi.fn(),
   applyVolume: vi.fn(),
   applyChatVisibility: vi.fn(),
+  applyPlayerAnonymity: vi.fn(),
   rejectCookieBanners: vi.fn(),
   updatePresenceLocation: vi.fn(),
   probeGameRole: vi.fn(),
@@ -30,6 +31,7 @@ vi.mock('./consent', () => ({ rejectCookieBanners: mocks.rejectCookieBanners }))
 vi.mock('./discord', () => ({ updatePresenceLocation: mocks.updatePresenceLocation }))
 vi.mock('./game-role', () => ({ probeGameRole: mocks.probeGameRole }))
 vi.mock('./keep-awake', () => ({ updatePlayingState: mocks.updatePlayingState }))
+vi.mock('./player-anonymity', () => ({ applyPlayerAnonymity: mocks.applyPlayerAnonymity }))
 
 type Handler = (...args: unknown[]) => void
 
@@ -98,6 +100,7 @@ describe('webview event scoping', () => {
       activeSite: 'chesscom',
       soundMuted: false,
       hideChat: false,
+      hideOpponent: true,
       volume: 100,
       zoom: { chesscom: 100, lichess: 100 }
     })
@@ -206,6 +209,7 @@ describe('webview event scoping', () => {
     expect(contents.setZoomFactor).toHaveBeenCalledWith(1)
     expect(mocks.applyVolume).toHaveBeenCalledWith(contents, 100)
     expect(mocks.applyChatVisibility).toHaveBeenCalledWith(contents, 'chesscom', false, true)
+    expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(contents, 'chesscom', true, true)
     expect(mocks.rejectCookieBanners).toHaveBeenCalledWith(contents)
     expect(mocks.setLastSiteUrl).toHaveBeenCalledWith('chesscom', contents.url)
   })
