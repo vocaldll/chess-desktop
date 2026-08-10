@@ -72,7 +72,7 @@ async function refreshGameRole(siteId: SiteId, url: string): Promise<void> {
     return
   }
 
-  const nonPlayer = role === 'spectating' || role === 'finished'
+  const nonPlayer = role === 'spectating' || role === 'finished' || role === 'aborted'
 
   nonPlayerStreak = nonPlayer ? nonPlayerStreak + 1 : 0
   unknownStreak = role === 'unknown' ? unknownStreak + 1 : 0
@@ -89,8 +89,9 @@ async function refreshGameRole(siteId: SiteId, url: string): Promise<void> {
   }
 
   const ownGameEnded =
-    role === 'spectating' && (roleValue === 'playing' || roleValue === 'finished')
-  const resolved = ownGameEnded ? 'finished' : role
+    role === 'spectating' &&
+    (roleValue === 'playing' || roleValue === 'finished' || roleValue === 'aborted')
+  const resolved = ownGameEnded ? (roleValue === 'aborted' ? 'aborted' : 'finished') : role
 
   if (resolved !== roleValue || !rolePublished) {
     publishRole(siteId, url, resolved)

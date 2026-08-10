@@ -1,6 +1,6 @@
 import { SITES, type SiteId } from './sites'
 
-export type GameRole = 'unknown' | 'playing' | 'spectating' | 'finished'
+export type GameRole = 'unknown' | 'playing' | 'spectating' | 'finished' | 'aborted'
 
 export interface Presence {
   details: string
@@ -118,6 +118,7 @@ const LIVE_GAME_LABELS: Record<GameRole, string> = {
   playing: PLAYING,
   spectating: WATCHING_GAME,
   finished: REVIEWING,
+  aborted: BROWSING,
   unknown: PLAYING
 }
 
@@ -125,6 +126,7 @@ const ARCHIVED_GAME_LABELS: Record<GameRole, string> = {
   playing: PLAYING,
   spectating: REVIEWING,
   finished: REVIEWING,
+  aborted: REVIEWING,
   unknown: REVIEWING
 }
 
@@ -132,13 +134,23 @@ const LICHESS_GAME_LABELS: Record<GameRole, string> = {
   playing: PLAYING,
   spectating: WATCHING_GAME,
   finished: REVIEWING,
+  aborted: BROWSING,
   unknown: WATCHING_GAME
+}
+
+const LICHESS_PLAYER_LABELS: Record<GameRole, string> = {
+  playing: PLAYING,
+  spectating: REVIEWING,
+  finished: REVIEWING,
+  aborted: BROWSING,
+  unknown: PLAYING
 }
 
 const SOLO_PLAY_LABELS: Record<GameRole, string> = {
   playing: PLAYING,
   spectating: LOOKING,
   finished: REVIEWING,
+  aborted: LOOKING,
   unknown: LOOKING
 }
 
@@ -214,6 +226,16 @@ function isLichessSpectatorURL(segments: string[]): boolean {
   return !LICHESS_NON_GAME.has(first) && isLichessGameId(first, LICHESS_SPECTATOR_ID)
 }
 
+function isLichessPlayerURL(segments: string[]): boolean {
+  const [first] = segments
+
+  if (first === undefined || Object.hasOwn(LICHESS_ACTIVITIES, first)) {
+    return false
+  }
+
+  return !LICHESS_NON_GAME.has(first) && isLichessGameId(first, LICHESS_PLAYER_ID)
+}
+
 function lichessActivity(segments: string[], role: GameRole): string {
   const [first, second] = segments
 
@@ -238,7 +260,7 @@ function lichessActivity(segments: string[], role: GameRole): string {
   }
 
   if (isLichessGameId(first, LICHESS_PLAYER_ID)) {
-    return PLAYING
+    return LICHESS_PLAYER_LABELS[role]
   }
 
   return isLichessSpectatorURL(segments) ? LICHESS_GAME_LABELS[role] : BROWSING
@@ -248,7 +270,7 @@ export function needsGameRole(siteId: SiteId, url: string): boolean {
   const segments = pathSegments(url)
 
   if (siteId === 'lichess') {
-    return isLichessSpectatorURL(segments)
+    return isLichessSpectatorURL(segments) || isLichessPlayerURL(segments)
   }
 
   return isChesscomGameURL(segments) || isChesscomSoloPlayURL(segments)
@@ -258,9 +280,11 @@ export function isPlayingGame(siteId: SiteId, url: string, role: GameRole = 'unk
   const segments = pathSegments(url)
 
   if (siteId === 'lichess') {
-    const [first] = segments
-    const playerUrl = first !== undefined && isLichessGameId(first, LICHESS_PLAYER_ID)
-    return playerUrl || (isLichessSpectatorURL(segments) && role === 'playing')
+    if (isLichessPlayerURL(segments)) {
+      return role === 'playing' || role === 'unknown'
+    }
+
+    return isLichessSpectatorURL(segments) && role === 'playing'
   }
 
   return (isChesscomGameURL(segments) || isChesscomSoloPlayURL(segments)) && role === 'playing'

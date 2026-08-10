@@ -7,7 +7,8 @@ describe('game-role requirements', () => {
     ['chesscom', 'https://www.chess.com/game/live/123'],
     ['chesscom', 'https://www.chess.com/game/daily/456'],
     ['chesscom', 'https://www.chess.com/play/computer'],
-    ['lichess', 'https://lichess.org/Ab12Cd34']
+    ['lichess', 'https://lichess.org/Ab12Cd34'],
+    ['lichess', 'https://lichess.org/Ab12Cd34Ef56']
   ] as const)('requires a role probe for %s URL %s', (siteId, url) => {
     expect(needsGameRole(siteId, url)).toBe(true)
   })
@@ -15,7 +16,6 @@ describe('game-role requirements', () => {
   it.each([
     ['chesscom', 'https://www.chess.com/play/online'],
     ['chesscom', 'https://www.chess.com/puzzles'],
-    ['lichess', 'https://lichess.org/Ab12Cd34Ef56'],
     ['lichess', 'https://lichess.org/training']
   ] as const)('does not require a role probe for %s URL %s', (siteId, url) => {
     expect(needsGameRole(siteId, url)).toBe(false)
@@ -23,8 +23,16 @@ describe('game-role requirements', () => {
 })
 
 describe('playing state', () => {
-  it('recognizes Lichess player URLs without a role probe', () => {
+  it('assumes a Lichess player URL is playing until the probe resolves', () => {
     expect(isPlayingGame('lichess', 'https://lichess.org/Ab12Cd34Ef56')).toBe(true)
+    expect(isPlayingGame('lichess', 'https://lichess.org/Ab12Cd34Ef56', 'playing')).toBe(true)
+  })
+
+  it('stops treating a Lichess player URL as playing once the game ends', () => {
+    const url = 'https://lichess.org/Ab12Cd34Ef56'
+    expect(isPlayingGame('lichess', url, 'finished')).toBe(false)
+    expect(isPlayingGame('lichess', url, 'spectating')).toBe(false)
+    expect(isPlayingGame('lichess', url, 'aborted')).toBe(false)
   })
 
   it('requires a playing role for spectator-shaped URLs', () => {
@@ -63,6 +71,11 @@ describe('presence descriptions', () => {
     ['lichess', 'https://lichess.org/study/example', 'unknown', 'Analyzing a position'],
     ['lichess', 'https://lichess.org/broadcast/event', 'unknown', 'Watching a game'],
     ['lichess', 'https://lichess.org/Ab12Cd34Ef56', 'unknown', 'Playing a game'],
+    ['lichess', 'https://lichess.org/Ab12Cd34Ef56', 'playing', 'Playing a game'],
+    ['lichess', 'https://lichess.org/Ab12Cd34Ef56', 'finished', 'Reviewing a game'],
+    ['lichess', 'https://lichess.org/Ab12Cd34Ef56', 'spectating', 'Reviewing a game'],
+    ['lichess', 'https://lichess.org/Ab12Cd34Ef56', 'aborted', 'Browsing'],
+    ['lichess', 'https://lichess.org/Ab12Cd34', 'aborted', 'Browsing'],
     ['lichess', 'https://lichess.org/Ab12Cd34', 'spectating', 'Watching a game'],
     ['lichess', 'https://lichess.org/Ab12Cd34', 'finished', 'Reviewing a game']
   ] as const)(
