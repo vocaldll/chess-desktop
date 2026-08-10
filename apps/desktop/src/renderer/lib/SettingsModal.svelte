@@ -439,18 +439,6 @@
 
             <div class="row">
               <div class="info">
-                <div class="label">Keep screen awake while playing</div>
-                <div class="description">Prevent the display from sleeping during your games</div>
-              </div>
-              <Toggle
-                label="Keep screen awake while playing"
-                checked={settings.current.keepAwakeWhilePlaying}
-                onchange={(value) => settings.set('keepAwakeWhilePlaying', value)}
-              />
-            </div>
-
-            <div class="row">
-              <div class="info">
                 <div class="label">Hide chat</div>
                 <div class="description">Hide chat across Chess.com and Lichess</div>
               </div>

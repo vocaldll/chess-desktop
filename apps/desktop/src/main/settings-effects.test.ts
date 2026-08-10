@@ -6,14 +6,12 @@ const mocks = vi.hoisted(() => ({
   applyChatVisibility: vi.fn(),
   applyPlayerAnonymity: vi.fn(),
   applyPresenceSettings: vi.fn(),
-  applyKeepAwakeSettings: vi.fn(),
   getSiteWebContents: vi.fn()
 }))
 
 vi.mock('./audio', () => ({ applyVolume: mocks.applyVolume }))
 vi.mock('./chat-visibility', () => ({ applyChatVisibility: mocks.applyChatVisibility }))
 vi.mock('./discord', () => ({ applyPresenceSettings: mocks.applyPresenceSettings }))
-vi.mock('./keep-awake', () => ({ applyKeepAwakeSettings: mocks.applyKeepAwakeSettings }))
 vi.mock('./player-anonymity', () => ({ applyPlayerAnonymity: mocks.applyPlayerAnonymity }))
 vi.mock('./webview', () => ({ getSiteWebContents: mocks.getSiteWebContents }))
 
@@ -48,7 +46,6 @@ describe('applySettings', () => {
     expect(mocks.applyChatVisibility).toHaveBeenCalledWith(contents, 'lichess', true)
     expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(contents, 'lichess', true)
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(settings)
-    expect(mocks.applyKeepAwakeSettings).toHaveBeenCalledWith(settings)
   })
 
   it('still updates process-level settings without a window or webview', () => {
@@ -68,6 +65,5 @@ describe('applySettings', () => {
       defaultSettings.hideOpponent
     )
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(defaultSettings)
-    expect(mocks.applyKeepAwakeSettings).toHaveBeenCalledWith(defaultSettings)
   })
 })

@@ -45,7 +45,6 @@ describe('settings coercion', () => {
       soundMuted: true,
       volume: 42,
       alwaysOnTop: true,
-      keepAwakeWhilePlaying: true,
       hideChat: true,
       hideOpponent: true,
       notificationsEnabled: false,
@@ -65,6 +64,13 @@ describe('settings coercion', () => {
         back: { 0: null }
       }
     })
+  })
+
+  it('drops settings that no longer exist', () => {
+    const coerced = coerceSettings({ hideChat: true, keepAwakeWhilePlaying: true })
+
+    expect(coerced).not.toHaveProperty('keepAwakeWhilePlaying')
+    expect(coerced.hideChat).toBe(true)
   })
 
   it('defaults invalid fields without discarding valid fields', () => {

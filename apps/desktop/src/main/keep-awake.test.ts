@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { defaultSettings } from '../shared/settings'
 
 const blocker = vi.hoisted(() => ({
   start: vi.fn(),
@@ -19,10 +18,9 @@ describe('keep-awake state', () => {
     blocker.start.mockReturnValue(42)
   })
 
-  it('starts only while enabled and playing', async () => {
+  it('starts as soon as a game is being played', async () => {
     const keepAwake = await freshModule()
 
-    keepAwake.applyKeepAwakeSettings({ ...defaultSettings, keepAwakeWhilePlaying: true })
     expect(blocker.start).not.toHaveBeenCalled()
 
     keepAwake.updatePlayingState(true)
@@ -33,10 +31,9 @@ describe('keep-awake state', () => {
     expect(blocker.start).toHaveBeenCalledOnce()
   })
 
-  it('stops when play ends or the setting is disabled', async () => {
+  it('stops when play ends', async () => {
     const keepAwake = await freshModule()
 
-    keepAwake.applyKeepAwakeSettings({ ...defaultSettings, keepAwakeWhilePlaying: true })
     keepAwake.updatePlayingState(true)
     keepAwake.updatePlayingState(false)
 
@@ -46,7 +43,6 @@ describe('keep-awake state', () => {
   it('cleans up during shutdown', async () => {
     const keepAwake = await freshModule()
 
-    keepAwake.applyKeepAwakeSettings({ ...defaultSettings, keepAwakeWhilePlaying: true })
     keepAwake.updatePlayingState(true)
     keepAwake.shutdownKeepAwake()
 

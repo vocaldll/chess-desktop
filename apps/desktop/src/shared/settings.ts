@@ -8,7 +8,6 @@ export interface Settings {
   soundMuted: boolean
   volume: number
   alwaysOnTop: boolean
-  keepAwakeWhilePlaying: boolean
   hideChat: boolean
   hideOpponent: boolean
   notificationsEnabled: boolean
@@ -23,7 +22,6 @@ export const defaultSettings: Settings = {
   soundMuted: false,
   volume: DEFAULT_VOLUME,
   alwaysOnTop: false,
-  keepAwakeWhilePlaying: false,
   hideChat: false,
   hideOpponent: false,
   notificationsEnabled: true,
