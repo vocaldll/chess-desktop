@@ -302,6 +302,34 @@ describe('numbered native arrows', () => {
     })
   })
 
+  it('resumes numbering when the drawing button is released outside the window', async () => {
+    document.body.innerHTML = `
+      <wc-chess-board class="board">
+        <svg class="arrows"></svg>
+      </wc-chess-board>
+    `
+    const board = document.querySelector('wc-chess-board') as HTMLElement
+    const layer = document.querySelector('svg.arrows') as SVGSVGElement
+    setBounds(board)
+    setBounds(layer)
+
+    controller = new NumberedArrowsController(document)
+    controller.configure({ enabled: true, siteId: 'chesscom' })
+
+    board.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 2, buttons: 2 }))
+    const arrow = chesscomArrow('a1a4')
+    setScreenMatrix(arrow)
+    layer.append(arrow)
+
+    await vi.waitFor(() => expect(layer.contains(arrow)).toBe(true))
+    expect(labels()).toHaveLength(0)
+
+    board.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, buttons: 0 }))
+
+    await vi.waitFor(() => expect(labels()).toHaveLength(1))
+    expect(labels()[0].textContent).toBe('1')
+  })
+
   it('removes labels when the setting is disabled', () => {
     document.body.innerHTML = `
       <wc-chess-board class="board">

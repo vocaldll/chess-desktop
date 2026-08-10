@@ -6,6 +6,8 @@ import {
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
 const OVERLAY_ATTRIBUTE = 'data-chess-desktop-numbered-arrows'
+const RIGHT_BUTTON = 2
+const RIGHT_BUTTON_HELD = 2
 
 interface Point {
   x: number
@@ -173,6 +175,7 @@ export class NumberedArrowsController {
   constructor(private readonly document: Document) {
     document.addEventListener('mousedown', this.onMouseDown, true)
     document.addEventListener('mouseup', this.onMouseUp, true)
+    document.addEventListener('mousemove', this.onMouseMove, true)
   }
 
   configure(update: NumberedArrowsUpdate): void {
@@ -192,22 +195,30 @@ export class NumberedArrowsController {
   destroy(): void {
     this.document.removeEventListener('mousedown', this.onMouseDown, true)
     this.document.removeEventListener('mouseup', this.onMouseUp, true)
+    this.document.removeEventListener('mousemove', this.onMouseMove, true)
     this.reset()
   }
 
   private readonly onMouseDown = (event: MouseEvent): void => {
-    if (this.enabled && event.button === 2) {
+    if (this.enabled && event.button === RIGHT_BUTTON) {
       this.drawing = true
     }
   }
 
   private readonly onMouseUp = (event: MouseEvent): void => {
-    if (!this.enabled || event.button !== 2) {
+    if (!this.enabled || event.button !== RIGHT_BUTTON) {
       return
     }
 
     this.drawing = false
     this.scheduleSync(true)
+  }
+
+  private readonly onMouseMove = (event: MouseEvent): void => {
+    if (this.drawing && (event.buttons & RIGHT_BUTTON_HELD) === 0) {
+      this.drawing = false
+      this.scheduleSync(true)
+    }
   }
 
   private scheduleSync(afterNativeRender = false): void {
