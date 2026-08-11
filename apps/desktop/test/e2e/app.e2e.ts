@@ -81,7 +81,37 @@ describe('Chess Desktop', () => {
 
     await settingsDialog.$('aria/Keyboard shortcuts').click()
     const shortcutsDialog = $('[role="dialog"][aria-label="Keyboard shortcuts"]')
+    const shortcutLayout = await browser.execute(() => {
+      const body = document.querySelector<HTMLElement>('[aria-label="Keyboard shortcuts"] .body')
+      if (!body) {
+        throw new Error('Shortcut list not found')
+      }
+
+      const styles = getComputedStyle(body)
+      return {
+        hasOverflow: body.scrollHeight > body.clientHeight,
+        scrollbarColor: styles.scrollbarColor,
+        scrollbarWidth: styles.scrollbarWidth
+      }
+    })
+    expect(shortcutLayout.hasOverflow).toBe(true)
+    expect(shortcutLayout.scrollbarColor).not.toBe('auto')
+    expect(shortcutLayout.scrollbarWidth).toBe('thin')
+
     await shortcutsDialog.$('aria/Edit reload the page shortcut 1').click()
+    const recordingHintLayout = await browser.execute(() => {
+      const hint = document.querySelector<HTMLElement>('.recording-hint')
+      if (!hint) {
+        throw new Error('Recording hint not found')
+      }
+
+      return {
+        fits: hint.scrollWidth <= hint.clientWidth,
+        text: hint.textContent
+      }
+    })
+    expect(recordingHintLayout.text).toBe('Esc cancel · Del remove')
+    expect(recordingHintLayout.fits).toBe(true)
     await browser.keys(['Control', 'Shift', 'k'])
     await browser.waitUntil(async () => {
       const settings = await readSettings()

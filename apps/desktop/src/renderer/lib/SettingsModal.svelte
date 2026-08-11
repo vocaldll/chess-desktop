@@ -708,6 +708,28 @@
   .body {
     padding: var(--cd-space-2) var(--cd-space-5) var(--cd-space-5);
     overflow-y: auto;
+    scrollbar-color: var(--cd-text-subtle) transparent;
+    scrollbar-width: thin;
+  }
+
+  .body::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .body::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: var(--cd-border);
+    background-clip: content-box;
+  }
+
+  .body::-webkit-scrollbar-thumb:hover {
+    background: var(--cd-text-subtle);
+    background-clip: content-box;
   }
 
   .settings-body {
@@ -775,7 +797,7 @@
 
   .shortcut-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 190px;
+    grid-template-columns: minmax(0, 1fr) 220px;
     width: 100%;
     min-height: 45px;
     border-bottom: 1px solid var(--cd-border);
@@ -823,7 +845,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    width: 190px;
+    width: 220px;
   }
 
   .shortcut-key {
@@ -855,8 +877,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 116px;
-    max-width: 116px;
+    width: 140px;
+    max-width: 140px;
     min-width: 0;
     padding: 4px 8px;
     border: 1px solid var(--cd-accent);
@@ -900,11 +922,13 @@
     animation-delay: 300ms;
   }
 
-  .recording-hint {
+  .recorder > .recording-hint {
     margin-top: 2px;
     color: var(--cd-text-subtle);
     font-size: 11px;
     font-weight: 400;
+    white-space: nowrap;
+    word-break: normal;
   }
 
   .or {
