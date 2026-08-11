@@ -16,7 +16,7 @@ function webview(url = 'https://www.chess.com/game/123') {
     goBack: vi.fn(),
     goForward: vi.fn(),
     reload: vi.fn(),
-    loadURL: vi.fn()
+    loadURL: vi.fn().mockResolvedValue(undefined)
   }
 }
 
@@ -79,5 +79,17 @@ describe('browser store', () => {
 
     browser.detach()
     expect(browser.element).toBeNull()
+  })
+
+  it('contains navigation promise failures', async () => {
+    const browser = await freshBrowser()
+    const element = webview()
+    element.loadURL.mockRejectedValue(new Error('navigation failed'))
+    browser.attach(element as never)
+
+    browser.navigate('https://www.chess.com/puzzles')
+    await Promise.resolve()
+
+    expect(element.loadURL).toHaveBeenCalledOnce()
   })
 })

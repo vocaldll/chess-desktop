@@ -75,7 +75,7 @@ class Browser {
 
   navigate(url: string): void {
     this.error = null
-    this.element?.loadURL(url)
+    this.element?.loadURL(url).catch(() => undefined)
   }
 }
 

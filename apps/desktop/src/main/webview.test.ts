@@ -45,7 +45,7 @@ class FakeContents {
   readonly setAudioMuted = vi.fn()
   readonly setWindowOpenHandler = vi.fn()
   readonly setZoomFactor = vi.fn()
-  readonly loadURL = vi.fn()
+  readonly loadURL = vi.fn().mockResolvedValue(undefined)
   readonly navigationHistory = {
     canGoBack: vi.fn(),
     canGoForward: vi.fn(),
@@ -201,6 +201,18 @@ describe('webview event scoping', () => {
 
     expect(openWindow({ url: 'https://example.com/' })).toEqual({ action: 'deny' })
     expect(mocks.openExternal).toHaveBeenCalledWith('https://example.com/')
+  })
+
+  it('contains failed same-site popup navigation', async () => {
+    const contents = new FakeContents()
+    contents.loadURL.mockRejectedValue(new Error('navigation failed'))
+    await configure(contents)
+    const openWindow = contents.setWindowOpenHandler.mock.calls[0][0]
+
+    expect(openWindow({ url: 'https://www.chess.com/puzzles' })).toEqual({ action: 'deny' })
+    await Promise.resolve()
+
+    expect(contents.loadURL).toHaveBeenCalledOnce()
   })
 
   it('blocks external top-level navigation and reapplies page settings on readiness', async () => {

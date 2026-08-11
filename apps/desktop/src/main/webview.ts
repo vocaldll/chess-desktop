@@ -196,7 +196,7 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
 
   contents.setWindowOpenHandler(({ url }) => {
     if (isActiveSiteURL(url)) {
-      contents.loadURL(url)
+      contents.loadURL(url).catch(() => undefined)
     } else {
       openExternally(url)
     }
