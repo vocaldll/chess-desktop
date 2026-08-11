@@ -106,12 +106,13 @@ describe('Chess Desktop', () => {
       }
 
       return {
-        fits: hint.scrollWidth <= hint.clientWidth,
+        clientWidth: hint.clientWidth,
+        scrollWidth: hint.scrollWidth,
         text: hint.textContent
       }
     })
     expect(recordingHintLayout.text).toBe('Esc cancel · Del remove')
-    expect(recordingHintLayout.fits).toBe(true)
+    expect(recordingHintLayout.scrollWidth).toBeLessThanOrEqual(recordingHintLayout.clientWidth)
     await browser.keys(['Control', 'Shift', 'k'])
     await browser.waitUntil(async () => {
       const settings = await readSettings()

@@ -797,7 +797,7 @@
 
   .shortcut-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 220px;
+    grid-template-columns: minmax(0, 1fr) 240px;
     width: 100%;
     min-height: 45px;
     border-bottom: 1px solid var(--cd-border);
@@ -845,7 +845,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    width: 220px;
+    width: 240px;
   }
 
   .shortcut-key {
@@ -877,8 +877,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 140px;
-    max-width: 140px;
+    width: 160px;
+    max-width: 160px;
     min-width: 0;
     padding: 4px 8px;
     border: 1px solid var(--cd-accent);
