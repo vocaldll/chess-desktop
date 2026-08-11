@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { color } from '@chess-desktop/tokens'
+import { backgroundColor } from '@chess-desktop/tokens'
 import { app, BrowserWindow, type Rectangle, screen } from 'electron'
 import { IPC } from '../shared/ipc-channels'
 import { getSettings, getWindowBounds, setWindowBounds } from './store'
@@ -48,7 +48,7 @@ export function createMainWindow(): BrowserWindow {
     show: false,
     frame: false,
     titleBarStyle: 'hidden',
-    backgroundColor: color.background,
+    backgroundColor,
     icon: developmentIcon(),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),

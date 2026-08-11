@@ -1,15 +1,1 @@
-export const color = {
-  background: '#0e0e0e',
-  surface: '#151515',
-  surfaceRaised: '#1d1d1d',
-  border: '#2c2c2c',
-  text: '#ececec',
-  textMuted: '#a0a0a0',
-  accent: '#e6e6e6',
-  accentHover: '#f5f5f5',
-  brand: '#81b64c',
-  brandHover: '#93c75d',
-  danger: '#e5484d'
-} as const
-
-export const titlebarHeight = 40
+export const backgroundColor = '#0e0e0e'
