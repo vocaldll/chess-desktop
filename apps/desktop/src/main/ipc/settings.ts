@@ -1,7 +1,7 @@
 import { type BrowserWindow, ipcMain } from 'electron'
 import { IPC } from '../../shared/ipc-channels'
 import { isSettingKey, isValidSettingValue } from '../../shared/settings'
-import { applySettings } from '../settings-effects'
+import { applySetting } from '../settings-effects'
 import { getSettings, setSetting } from '../store'
 
 export function registerSettingsIpc(getWindow: () => BrowserWindow | null): void {
@@ -17,7 +17,7 @@ export function registerSettingsIpc(getWindow: () => BrowserWindow | null): void
     }
 
     const settings = setSetting(key, value as never)
-    applySettings(getWindow(), settings)
+    applySetting(getWindow(), settings, key)
     return settings
   })
 }

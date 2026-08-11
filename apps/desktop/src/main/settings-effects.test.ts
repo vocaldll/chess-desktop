@@ -19,7 +19,7 @@ vi.mock('./numbered-arrows', () => ({ applyNumberedArrows: mocks.applyNumberedAr
 vi.mock('./lichess-review', () => ({ applyReviewOnLichess: mocks.applyReviewOnLichess }))
 vi.mock('./webview', () => ({ getSiteWebContents: mocks.getSiteWebContents }))
 
-import { applySettings } from './settings-effects'
+import { applySetting, applySettings } from './settings-effects'
 
 describe('applySettings', () => {
   beforeEach(() => {
@@ -85,5 +85,38 @@ describe('applySettings', () => {
       defaultSettings.reviewOnLichess
     )
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(defaultSettings)
+  })
+
+  it('applies only the effect associated with an individual setting', () => {
+    const window = { setAlwaysOnTop: vi.fn() }
+    const contents = { setAudioMuted: vi.fn(), setZoomFactor: vi.fn() }
+    const settings = { ...defaultSettings, volume: 35 }
+    mocks.getSiteWebContents.mockReturnValue(contents)
+
+    applySetting(window as never, settings, 'volume')
+
+    expect(mocks.applyVolume).toHaveBeenCalledWith(contents, 35)
+    expect(window.setAlwaysOnTop).not.toHaveBeenCalled()
+    expect(contents.setAudioMuted).not.toHaveBeenCalled()
+    expect(contents.setZoomFactor).not.toHaveBeenCalled()
+    expect(mocks.applyChatVisibility).not.toHaveBeenCalled()
+    expect(mocks.applyPlayerAnonymity).not.toHaveBeenCalled()
+    expect(mocks.applyNumberedArrows).not.toHaveBeenCalled()
+    expect(mocks.applyReviewOnLichess).not.toHaveBeenCalled()
+    expect(mocks.applyPresenceSettings).not.toHaveBeenCalled()
+  })
+
+  it('defers active-site webview effects until the new webview is ready', () => {
+    const contents = { setAudioMuted: vi.fn(), setZoomFactor: vi.fn() }
+    const settings = { ...defaultSettings, activeSite: 'lichess' as const }
+    mocks.getSiteWebContents.mockReturnValue(contents)
+
+    applySetting(null, settings, 'activeSite')
+
+    expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(settings)
+    expect(contents.setAudioMuted).not.toHaveBeenCalled()
+    expect(contents.setZoomFactor).not.toHaveBeenCalled()
+    expect(mocks.applyVolume).not.toHaveBeenCalled()
+    expect(mocks.applyNumberedArrows).not.toHaveBeenCalled()
   })
 })

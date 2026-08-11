@@ -1,5 +1,5 @@
 import type { BrowserWindow } from 'electron'
-import type { Settings } from '../shared/settings'
+import type { SettingKey, Settings } from '../shared/settings'
 import { toZoomFactor } from '../shared/zoom'
 import { applyVolume } from './audio'
 import { applyChatVisibility } from './chat-visibility'
@@ -21,4 +21,57 @@ export function applySettings(window: BrowserWindow | null, settings: Settings):
   applyNumberedArrows(contents, settings.activeSite, settings.numberedArrows)
   applyReviewOnLichess(contents, settings.activeSite, settings.reviewOnLichess)
   applyPresenceSettings(settings)
+}
+
+export function applySetting(
+  window: BrowserWindow | null,
+  settings: Settings,
+  key: SettingKey
+): void {
+  const contents = getSiteWebContents()
+
+  switch (key) {
+    case 'alwaysOnTop':
+      window?.setAlwaysOnTop(settings.alwaysOnTop)
+      return
+    case 'soundMuted':
+      contents?.setAudioMuted(settings.soundMuted)
+      return
+    case 'volume':
+      applyVolume(contents, settings.volume)
+      return
+    case 'zoom':
+      contents?.setZoomFactor(toZoomFactor(settings.zoom[settings.activeSite]))
+      return
+    case 'hideChat':
+      applyChatVisibility(contents, settings.activeSite, settings.hideChat)
+      return
+    case 'hideOpponent':
+    case 'hideRatings':
+      applyPlayerAnonymity(
+        contents,
+        settings.activeSite,
+        settings.hideOpponent,
+        settings.hideRatings
+      )
+      return
+    case 'numberedArrows':
+      applyNumberedArrows(contents, settings.activeSite, settings.numberedArrows)
+      return
+    case 'reviewOnLichess':
+      applyReviewOnLichess(contents, settings.activeSite, settings.reviewOnLichess)
+      return
+    case 'activeSite':
+    case 'discordRpcEnabled':
+      applyPresenceSettings(settings)
+      return
+    case 'notificationsEnabled':
+    case 'onboardingCompleted':
+    case 'shortcutOverrides':
+      return
+    default: {
+      const unhandled: never = key
+      throw new Error(`Unhandled setting effect: ${unhandled}`)
+    }
+  }
 }
