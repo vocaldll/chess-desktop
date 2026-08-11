@@ -73,7 +73,7 @@
 
 {#if !fullscreen.active}
   <header class="titlebar" class:interactive={addressFocused}>
-    <div class="group">
+    <div class="group leading">
       <button
         class="btn"
         title="Back"
@@ -103,7 +103,7 @@
       <UrlBar bind:editing={addressFocused} />
     </div>
 
-    <div class="group">
+    <div class="group trailing">
       {#if updates.downloadedVersion !== null}
         <button
           class="update"
@@ -169,15 +169,16 @@
 <style>
   .titlebar {
     --omnibox-width: 520px;
-    --window-controls-reserve: 191px;
 
     position: relative;
-    display: flex;
+    display: grid;
+    grid-template-columns:
+      minmax(max-content, 1fr)
+      minmax(0, calc(var(--omnibox-width) + var(--cd-space-4) * 2))
+      minmax(max-content, 1fr);
     align-items: center;
-    justify-content: space-between;
     flex: 0 0 var(--cd-titlebar-height);
     height: var(--cd-titlebar-height);
-    padding: 0 0 0 var(--cd-space-2);
     background: var(--cd-surface);
     border-bottom: 1px solid var(--cd-border);
     -webkit-app-region: drag;
@@ -202,18 +203,20 @@
     -webkit-app-region: no-drag;
   }
 
+  /* Margin rather than titlebar padding so the omnibox track stays centered on the window. */
+  .leading {
+    margin-left: var(--cd-space-2);
+  }
+
+  .trailing {
+    justify-self: end;
+  }
+
   .omnibox {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
     align-items: center;
     gap: var(--cd-space-2);
     min-width: 0;
-    width: min(
-      calc(var(--omnibox-width) + var(--cd-space-4) * 2),
-      calc(100% - var(--window-controls-reserve) * 2)
-    );
     padding: 0 var(--cd-space-4);
   }
 

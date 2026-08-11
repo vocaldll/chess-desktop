@@ -48,6 +48,21 @@ describe('Chess Desktop', () => {
       window?.unmaximize()
       window?.setSize(800, 600)
     })
+
+    const titlebarLayout = await browser.execute(() => {
+      const omnibox = document.querySelector<HTMLElement>('.omnibox')
+      const controls = document.querySelector<HTMLElement>('.titlebar .trailing')
+      if (!omnibox || !controls) {
+        throw new Error('Titlebar layout not found')
+      }
+
+      return {
+        controlsLeft: controls.getBoundingClientRect().left,
+        omniboxRight: omnibox.getBoundingClientRect().right
+      }
+    })
+    expect(titlebarLayout.omniboxRight).toBeLessThanOrEqual(titlebarLayout.controlsLeft)
+
     await $('aria/Settings').click()
     const settingsDialog = $('[role="dialog"][aria-label="Settings"]')
     await expect(settingsDialog).toBeDisplayed()
