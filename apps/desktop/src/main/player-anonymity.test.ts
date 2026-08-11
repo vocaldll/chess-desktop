@@ -660,6 +660,16 @@ describe('Chess.com game messages', () => {
       expect([...messages].map((node) => node.textContent).join(' ')).not.toMatch(/1927|1944|1952/)
     })
   })
+
+  it('ignores unrelated page mutations', async () => {
+    const dom = render(chesscomPage('TestRival', 'TestSelf'), 'chesscom')
+    dom.window.document.documentElement.removeAttribute(SELF_MARKER)
+
+    dom.window.document.body.append(dom.window.document.createElement('div'))
+    await new Promise((resolve) => dom.window.setTimeout(resolve, 20))
+
+    expect(selfMarker(dom)).toBeNull()
+  })
 })
 
 describe('Lichess chat authorship', () => {

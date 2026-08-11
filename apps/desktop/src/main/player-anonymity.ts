@@ -479,7 +479,26 @@ function buildScript({
 
     const relevantMutation = (mutation) => {
       if (mutation.type === 'childList') {
-        return true
+        const touchesWatchedElement = (node) => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            return Boolean(node.parentElement && node.parentElement.closest(WATCH_SELECTOR))
+          }
+
+          return (
+            node instanceof Element &&
+            (node.matches(WATCH_SELECTOR) || Boolean(node.querySelector(WATCH_SELECTOR)))
+          )
+        }
+
+        const target =
+          mutation.target.nodeType === Node.TEXT_NODE
+            ? mutation.target.parentElement
+            : mutation.target
+
+        return (
+          (target instanceof Element && Boolean(target.closest(WATCH_SELECTOR))) ||
+          [...mutation.addedNodes, ...mutation.removedNodes].some(touchesWatchedElement)
+        )
       }
 
       const target =

@@ -48,4 +48,15 @@ describe('Chess.com Lichess review buttons', () => {
       expect(document.querySelectorAll('[data-chess-desktop-review-on-lichess]')).toHaveLength(1)
     })
   })
+
+  it('ignores unrelated page mutations', async () => {
+    installReviewButtons()
+    const query = vi.spyOn(document, 'querySelectorAll')
+
+    document.body.append(document.createElement('div'))
+    await new Promise((resolve) => setTimeout(resolve, 20))
+
+    expect(query).not.toHaveBeenCalled()
+    query.mockRestore()
+  })
 })

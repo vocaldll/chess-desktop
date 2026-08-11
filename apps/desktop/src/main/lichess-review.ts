@@ -39,10 +39,10 @@ export function installReviewButtons(): void {
 
   stateWindow.__chessDesktopLichessReview?.destroy()
 
-  let scheduled = false
+  let frame = 0
 
   const addButtons = (): void => {
-    scheduled = false
+    frame = 0
 
     for (const reviewLink of document.querySelectorAll<HTMLAnchorElement>(selector)) {
       if (reviewLink.nextElementSibling?.hasAttribute(marker)) {
@@ -79,20 +79,47 @@ export function installReviewButtons(): void {
   }
 
   const schedule = (): void => {
-    if (scheduled) {
+    if (frame) {
       return
     }
 
-    scheduled = true
-    queueMicrotask(addButtons)
+    frame = requestAnimationFrame(addButtons)
   }
 
-  const observer = new MutationObserver(schedule)
+  const containsReviewLink = (node: Node): boolean => {
+    if (!(node instanceof Element)) {
+      return false
+    }
+
+    return node.matches(selector) || Boolean(node.querySelector(selector))
+  }
+
+  const containsReviewButton = (node: Node): boolean => {
+    return (
+      node instanceof Element &&
+      (node.hasAttribute(marker) || Boolean(node.querySelector(`[${marker}]`)))
+    )
+  }
+
+  const observer = new MutationObserver((mutations) => {
+    if (
+      mutations.some(
+        (mutation) =>
+          [...mutation.addedNodes].some(containsReviewLink) ||
+          [...mutation.removedNodes].some(
+            (node) => containsReviewLink(node) || containsReviewButton(node)
+          )
+      )
+    ) {
+      schedule()
+    }
+  })
   observer.observe(document.documentElement, { childList: true, subtree: true })
 
   stateWindow.__chessDesktopLichessReview = {
     destroy: () => {
       observer.disconnect()
+      cancelAnimationFrame(frame)
       document.querySelectorAll(`[${marker}]`).forEach((button) => {
         button.remove()
       })
