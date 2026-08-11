@@ -1,5 +1,21 @@
 # Contributing
 
+## Workflow
+
+Changes land on `master` through a pull request. A repository ruleset requires an up-to-date branch and passing CI before a merge is allowed.
+
+```sh
+git switch -c fix/thing
+gh pr create --fill
+gh pr merge --squash --auto -d
+```
+
+`gh pr create --fill` pushes the branch and opens the pull request, taking the title and body from the commits. `gh pr merge --squash --auto -d` queues the merge for whenever CI turns green, then deletes the branch.
+
+Contributors without push access should fork the repository and open a pull request from their fork.
+
+Use [Conventional Commits](https://www.conventionalcommits.org) for commit subjects and pull request titles. A squashed commit takes its subject from the pull request title, or from the commit itself when the branch holds only one.
+
 ## Testing
 
 - `pnpm test`: run unit and component tests
@@ -7,11 +23,8 @@
 - `pnpm test:e2e`: build and run the Electron smoke test
 - `pnpm typecheck`: check application and end-to-end test types
 
-Run `pnpm lint` and the relevant tests before submitting a change. CI runs coverage and builds on
-Linux, plus the Electron smoke test on Windows and Linux. Overall unit and component coverage must
-remain at or above 55% for statements, branches, functions, and lines.
+Run `pnpm lint` and the relevant tests before submitting a change. CI runs coverage and builds on Linux, plus the Electron smoke test on Windows and Linux. Overall unit and component coverage must remain at or above 55% for statements, branches, functions, and lines.
 
 ## Releases
 
-See [Sentry release setup](docs/sentry.md) for the repository values used to upload desktop source
-maps without exposing the upload credential to the application.
+See [Sentry release setup](docs/sentry.md) for the repository values used to upload desktop source maps without exposing the upload credential to the application.
