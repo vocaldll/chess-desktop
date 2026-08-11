@@ -53,7 +53,7 @@ describe('Chess Desktop', () => {
     await expect(settingsDialog).toBeDisplayed()
     const settingsLayout = await browser.execute(() => {
       const body = document.querySelector<HTMLElement>('.settings-body')
-      const grids = [...document.querySelectorAll<HTMLElement>('.settings-section-grid')]
+      const grids = Array.from(document.querySelectorAll<HTMLElement>('.settings-section-grid'))
       if (!body || grids.length === 0) {
         throw new Error('Settings layout not found')
       }
