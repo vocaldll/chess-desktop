@@ -147,11 +147,6 @@
     }
   }
 
-  function setErrorReporting(event: Event): void {
-    const input = event.currentTarget as HTMLInputElement
-    void settings.set('anonymousErrorReporting', input.checked)
-  }
-
   function chordFor(shortcut: Shortcut, index: number) {
     return resolveShortcutChord(shortcut, index, settings.current.shortcutOverrides)
   }
@@ -413,148 +408,151 @@
           </section>
         </div>
       {:else}
-        <div class="body">
+        <div class="body settings-body">
           <section>
             <h3>General</h3>
-
-            <div class="row">
-              <div class="info">
-                <div class="label">Always on top</div>
-                <div class="description">Keep the window above other windows</div>
+            <div class="settings-section-grid">
+              <div class="row">
+                <div class="info">
+                  <div class="label">Always on top</div>
+                  <div class="description">Keep the window above other windows</div>
+                </div>
+                <Toggle
+                  label="Always on top"
+                  checked={settings.current.alwaysOnTop}
+                  onchange={(value) => settings.set('alwaysOnTop', value)}
+                />
               </div>
-              <Toggle
-                label="Always on top"
-                checked={settings.current.alwaysOnTop}
-                onchange={(value) => settings.set('alwaysOnTop', value)}
-              />
-            </div>
 
-            <div class="row">
-              <div class="info">
-                <div class="label">Desktop notifications</div>
-                <div class="description">Let both sites send system notifications</div>
+              <div class="row">
+                <div class="info">
+                  <div class="label">Desktop notifications</div>
+                  <div class="description">Let both sites send system notifications</div>
+                </div>
+                <Toggle
+                  label="Desktop notifications"
+                  checked={settings.current.notificationsEnabled}
+                  onchange={(value) => settings.set('notificationsEnabled', value)}
+                />
               </div>
-              <Toggle
-                label="Desktop notifications"
-                checked={settings.current.notificationsEnabled}
-                onchange={(value) => settings.set('notificationsEnabled', value)}
-              />
             </div>
           </section>
 
           <section>
             <h3>Gameplay</h3>
-
-            <div class="row">
-              <div class="info">
-                <div class="label">
-                  Hide opponent
-                  <span
-                    class="beta"
-                    title={opponentBetaNotice}
-                    aria-label={`Beta: ${opponentBetaNotice}`}
-                  >BETA</span>
+            <div class="settings-section-grid">
+              <div class="row">
+                <div class="info">
+                  <div class="label">
+                    Hide opponent
+                    <span
+                      class="beta"
+                      title={opponentBetaNotice}
+                      aria-label={`Beta: ${opponentBetaNotice}`}
+                    >BETA</span>
+                  </div>
+                  <div class="description">Anonymize your opponent's name, avatar, and rating</div>
                 </div>
-                <div class="description">Anonymize your opponent's name, avatar, and rating</div>
+                <Toggle
+                  label="Hide opponent"
+                  checked={settings.current.hideOpponent}
+                  onchange={(value) => settings.set('hideOpponent', value)}
+                />
               </div>
-              <Toggle
-                label="Hide opponent"
-                checked={settings.current.hideOpponent}
-                onchange={(value) => settings.set('hideOpponent', value)}
-              />
-            </div>
 
-            <div class="row">
-              <div class="info">
-                <div class="label">Hide ratings</div>
-                <div class="description">Hide both players' ratings across both sites</div>
+              <div class="row">
+                <div class="info">
+                  <div class="label">Hide ratings</div>
+                  <div class="description">Hide both players' ratings across both sites</div>
+                </div>
+                <Toggle
+                  label="Hide ratings"
+                  checked={settings.current.hideRatings}
+                  onchange={(value) => settings.set('hideRatings', value)}
+                />
               </div>
-              <Toggle
-                label="Hide ratings"
-                checked={settings.current.hideRatings}
-                onchange={(value) => settings.set('hideRatings', value)}
-              />
-            </div>
 
-            <div class="row">
-              <div class="info">
-                <div class="label">Hide chat</div>
-                <div class="description">Hide chat across both sites</div>
+              <div class="row">
+                <div class="info">
+                  <div class="label">Hide chat</div>
+                  <div class="description">Hide chat across both sites</div>
+                </div>
+                <Toggle
+                  label="Hide chat"
+                  checked={settings.current.hideChat}
+                  onchange={(value) => settings.set('hideChat', value)}
+                />
               </div>
-              <Toggle
-                label="Hide chat"
-                checked={settings.current.hideChat}
-                onchange={(value) => settings.set('hideChat', value)}
-              />
-            </div>
 
-            <div class="row">
-              <div class="info">
-                <div class="label">Number drawn arrows</div>
-                <div class="description">Show the order of right-click arrows on the board</div>
+              <div class="row">
+                <div class="info">
+                  <div class="label">Number drawn arrows</div>
+                  <div class="description">Show the order of right-click arrows on the board</div>
+                </div>
+                <Toggle
+                  label="Number drawn arrows"
+                  checked={settings.current.numberedArrows}
+                  onchange={(value) => settings.set('numberedArrows', value)}
+                />
               </div>
-              <Toggle
-                label="Number drawn arrows"
-                checked={settings.current.numberedArrows}
-                onchange={(value) => settings.set('numberedArrows', value)}
-              />
             </div>
           </section>
 
           <section>
             <h3>Integrations</h3>
-
-            <div class="row">
-              <div class="info">
-                <div class="label">Review on Lichess</div>
-                <div class="description">
-                  Add a button to publicly import finished Chess.com games for free analysis
+            <div class="settings-section-grid">
+              <div class="row">
+                <div class="info">
+                  <div class="label">Review on Lichess</div>
+                  <div class="description">
+                    Add a button to publicly import finished Chess.com games for free analysis
+                  </div>
                 </div>
+                <Toggle
+                  label="Review on Lichess"
+                  checked={settings.current.reviewOnLichess}
+                  onchange={(value) => settings.set('reviewOnLichess', value)}
+                />
               </div>
-              <Toggle
-                label="Review on Lichess"
-                checked={settings.current.reviewOnLichess}
-                onchange={(value) => settings.set('reviewOnLichess', value)}
-              />
-            </div>
 
-            <div class="row">
-              <div class="info">
-                <div class="label">
-                  Discord Rich Presence
-                  <span
-                    class="beta"
-                    title={discordBetaNotice}
-                    aria-label={`Beta: ${discordBetaNotice}`}
-                  >BETA</span>
+              <div class="row">
+                <div class="info">
+                  <div class="label">
+                    Discord Rich Presence
+                    <span
+                      class="beta"
+                      title={discordBetaNotice}
+                      aria-label={`Beta: ${discordBetaNotice}`}
+                    >BETA</span>
+                  </div>
+                  <div class="description">Show what you're playing on your Discord profile</div>
                 </div>
-                <div class="description">Show what you're playing on your Discord profile</div>
+                <Toggle
+                  label="Discord Rich Presence"
+                  checked={settings.current.discordRpcEnabled}
+                  onchange={(value) => settings.set('discordRpcEnabled', value)}
+                />
               </div>
-              <Toggle
-                label="Discord Rich Presence"
-                checked={settings.current.discordRpcEnabled}
-                onchange={(value) => settings.set('discordRpcEnabled', value)}
-              />
             </div>
           </section>
 
-          <section class="privacy">
+          <section>
             <h3>Privacy</h3>
 
-            <label class="privacy-option">
-              <input
-                type="checkbox"
-                checked={settings.current.anonymousErrorReporting}
-                onchange={setErrorReporting}
-              />
-              <span>
-                <span class="privacy-label">Send anonymous crash reports</span>
-                <span class="privacy-description">
+            <div class="row privacy-option">
+              <div class="info">
+                <div class="label">Send anonymous crash reports</div>
+                <div class="description">
                   Share app errors and technical crash details. No usage analytics or session
                   replay.
-                </span>
-              </span>
-            </label>
+                </div>
+              </div>
+              <Toggle
+                label="Send anonymous crash reports"
+                checked={settings.current.anonymousErrorReporting}
+                onchange={(value) => settings.set('anonymousErrorReporting', value)}
+              />
+            </div>
           </section>
         </div>
       {/if}
@@ -584,7 +582,7 @@
 
   .panel {
     position: relative;
-    width: min(520px, 100%);
+    width: min(720px, 100%);
     max-height: 100%;
     display: flex;
     flex-direction: column;
@@ -710,6 +708,39 @@
   .body {
     padding: var(--cd-space-2) var(--cd-space-5) var(--cd-space-5);
     overflow-y: auto;
+  }
+
+  .settings-body {
+    padding-top: var(--cd-space-2);
+  }
+
+  .settings-body section {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    align-items: start;
+    column-gap: var(--cd-space-5);
+  }
+
+  .settings-body section + section {
+    margin-top: var(--cd-space-3);
+    padding-top: var(--cd-space-1);
+    border-top: 1px solid var(--cd-border);
+  }
+
+  .settings-body h3 {
+    margin-top: 12px;
+  }
+
+  .settings-section-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--cd-space-6);
+  }
+
+  .settings-section-grid .row {
+    min-height: 58px;
+    padding-block: 10px;
+    border-bottom: 0;
   }
 
   section {
@@ -888,72 +919,10 @@
     line-height: 1.4;
   }
 
-  .privacy {
-    margin-top: var(--cd-space-5);
-  }
-
   .privacy-option {
-    display: grid;
-    grid-template-columns: 14px 1fr;
-    align-items: center;
-    gap: 10px;
-    padding: 2px 0;
-    color: var(--cd-text-muted);
-    cursor: pointer;
-  }
-
-  .privacy-option input {
-    display: grid;
-    place-items: center;
-    appearance: none;
-    width: 13px;
-    height: 13px;
-    margin: 0;
-    border: 1px solid var(--cd-text-subtle);
-    border-radius: 3px;
-    background: var(--cd-surface-raised);
-    cursor: pointer;
-  }
-
-  .privacy-option input::before {
-    width: 6px;
-    height: 3px;
-    border-bottom: 2px solid var(--cd-surface);
-    border-left: 2px solid var(--cd-surface);
-    content: '';
-    transform: translateY(-1px) rotate(-45deg) scale(0);
-  }
-
-  .privacy-option input:checked {
-    border-color: var(--cd-text-subtle);
-    background: var(--cd-text-subtle);
-  }
-
-  .privacy-option input:checked::before {
-    transform: translateY(-1px) rotate(-45deg) scale(1);
-  }
-
-  .privacy-label,
-  .privacy-description {
-    display: block;
-  }
-
-  .privacy-label {
-    color: var(--cd-text);
-    font-size: var(--cd-font-size-sm);
-    font-weight: 500;
-  }
-
-  .privacy-description {
-    margin-top: 2px;
-    font-size: 11px;
-    line-height: 1.4;
-  }
-
-  .privacy-option:has(input:focus-visible) {
-    outline: 2px solid var(--cd-accent);
-    outline-offset: 4px;
-    border-radius: var(--cd-radius-sm);
+    min-height: 58px;
+    padding: 10px 0 2px;
+    border-bottom: 0;
   }
 
   @keyframes fade {
@@ -979,6 +948,24 @@
     .waiting-dots span {
       opacity: 1;
       animation: none;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .panel {
+      width: min(520px, 100%);
+    }
+
+    .settings-section-grid {
+      display: block;
+    }
+
+    .settings-body section {
+      display: block;
+    }
+
+    .settings-body h3 {
+      margin-top: 0;
     }
   }
 

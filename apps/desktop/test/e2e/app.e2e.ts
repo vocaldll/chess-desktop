@@ -43,9 +43,31 @@ describe('Chess Desktop', () => {
     const address = $('aria/Address')
     await expect(address).toHaveValue('https://lichess.org/')
 
+    await browser.electron.execute((electron) => {
+      const window = electron.BrowserWindow.getAllWindows()[0]
+      window?.unmaximize()
+      window?.setSize(800, 600)
+    })
     await $('aria/Settings').click()
     const settingsDialog = $('[role="dialog"][aria-label="Settings"]')
     await expect(settingsDialog).toBeDisplayed()
+    const settingsLayout = await browser.execute(() => {
+      const body = document.querySelector<HTMLElement>('.settings-body')
+      const grids = [...document.querySelectorAll<HTMLElement>('.settings-section-grid')]
+      if (!body || grids.length === 0) {
+        throw new Error('Settings layout not found')
+      }
+
+      return {
+        clientHeight: body.clientHeight,
+        columnCounts: grids.map(
+          (grid) => getComputedStyle(grid).gridTemplateColumns.split(' ').length
+        ),
+        scrollHeight: body.scrollHeight
+      }
+    })
+    expect(settingsLayout.columnCounts).toEqual([2, 2, 2])
+    expect(settingsLayout.scrollHeight).toBeLessThanOrEqual(settingsLayout.clientHeight)
     await expect(settingsDialog.$('aria/Keyboard shortcuts')).toBeDisplayed()
     await expect(settingsDialog.$('.privacy-option input')).toBeSelected()
     await expect(
