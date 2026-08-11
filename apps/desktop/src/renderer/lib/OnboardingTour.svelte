@@ -87,6 +87,11 @@
     onboarding.next()
   }
 
+  function setErrorReporting(event: Event): void {
+    const input = event.currentTarget as HTMLInputElement
+    void settings.set('anonymousErrorReporting', input.checked)
+  }
+
   function onKeydown(event: KeyboardEvent): void {
     if (!onboarding.active) {
       return
@@ -126,6 +131,21 @@
             </button>
           {/each}
         </div>
+
+        <label class="crash-consent">
+          <input
+            type="checkbox"
+            checked={settings.current.anonymousErrorReporting}
+            onchange={setErrorReporting}
+          />
+          <span>
+            <strong>Send anonymous crash reports</strong>
+            <small>
+              Share technical errors with the developer. No account, game, or page data is
+              collected.
+            </small>
+          </span>
+        </label>
 
         <button class="skip" onclick={() => onboarding.finish()}>Skip the introduction</button>
       </div>
@@ -302,7 +322,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--cd-space-3);
-    margin: var(--cd-space-5) 0 var(--cd-space-4);
+    margin: var(--cd-space-5) 0 var(--cd-space-3);
   }
 
   .choice {
@@ -330,6 +350,71 @@
   }
 
   .choice:focus-visible {
+    outline: 2px solid var(--cd-accent);
+    outline-offset: 2px;
+  }
+
+  .crash-consent {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    align-items: center;
+    gap: var(--cd-space-3);
+    margin-bottom: var(--cd-space-3);
+    padding: 2px 0;
+    color: var(--cd-text);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .crash-consent input {
+    display: grid;
+    place-items: center;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    border: 1px solid var(--cd-text-subtle);
+    border-radius: 3px;
+    background: var(--cd-surface-raised);
+    cursor: pointer;
+  }
+
+  .crash-consent input::before {
+    width: 7px;
+    height: 4px;
+    border-bottom: 2px solid var(--cd-surface);
+    border-left: 2px solid var(--cd-surface);
+    content: '';
+    transform: translateY(-1px) rotate(-45deg) scale(0);
+  }
+
+  .crash-consent input:checked {
+    border-color: var(--cd-text-subtle);
+    background: var(--cd-text-subtle);
+  }
+
+  .crash-consent input:checked::before {
+    transform: translateY(-1px) rotate(-45deg) scale(1);
+  }
+
+  .crash-consent strong,
+  .crash-consent small {
+    display: block;
+  }
+
+  .crash-consent strong {
+    font-size: var(--cd-font-size-sm);
+    font-weight: 600;
+  }
+
+  .crash-consent small {
+    margin-top: 3px;
+    color: var(--cd-text-muted);
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .crash-consent:has(input:focus-visible) {
     outline: 2px solid var(--cd-accent);
     outline-offset: 2px;
   }

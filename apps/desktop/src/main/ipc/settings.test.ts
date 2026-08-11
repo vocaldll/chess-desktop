@@ -4,12 +4,16 @@ import { defaultSettings } from '../../shared/settings'
 const mocks = vi.hoisted(() => ({
   handle: vi.fn(),
   applySetting: vi.fn(),
+  setErrorReportingEnabled: vi.fn(),
   getSettings: vi.fn(),
   setSetting: vi.fn()
 }))
 
 vi.mock('electron', () => ({ ipcMain: { handle: mocks.handle } }))
 vi.mock('../settings-effects', () => ({ applySetting: mocks.applySetting }))
+vi.mock('../error-reporting', () => ({
+  setErrorReportingEnabled: mocks.setErrorReportingEnabled
+}))
 vi.mock('../store', () => ({
   getSettings: mocks.getSettings,
   setSetting: mocks.setSetting
@@ -63,5 +67,14 @@ describe('settings IPC', () => {
     expect(handler(IPC.settings.set)({}, 'volume', 40)).toBe(updated)
     expect(mocks.setSetting).toHaveBeenCalledWith('volume', 40)
     expect(mocks.applySetting).toHaveBeenCalledWith(window, updated, 'volume')
+    expect(mocks.setErrorReportingEnabled).not.toHaveBeenCalled()
+  })
+
+  it('applies error reporting changes immediately', () => {
+    const updated = { ...defaultSettings, anonymousErrorReporting: false }
+    mocks.setSetting.mockReturnValue(updated)
+
+    expect(handler(IPC.settings.set)({}, 'anonymousErrorReporting', false)).toBe(updated)
+    expect(mocks.setErrorReportingEnabled).toHaveBeenCalledWith(false)
   })
 })

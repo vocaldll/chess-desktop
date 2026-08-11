@@ -147,6 +147,11 @@
     }
   }
 
+  function setErrorReporting(event: Event): void {
+    const input = event.currentTarget as HTMLInputElement
+    void settings.set('anonymousErrorReporting', input.checked)
+  }
+
   function chordFor(shortcut: Shortcut, index: number) {
     return resolveShortcutChord(shortcut, index, settings.current.shortcutOverrides)
   }
@@ -532,6 +537,25 @@
               />
             </div>
           </section>
+
+          <section class="privacy">
+            <h3>Privacy</h3>
+
+            <label class="privacy-option">
+              <input
+                type="checkbox"
+                checked={settings.current.anonymousErrorReporting}
+                onchange={setErrorReporting}
+              />
+              <span>
+                <span class="privacy-label">Send anonymous crash reports</span>
+                <span class="privacy-description">
+                  Share app errors and technical crash details. No usage analytics or session
+                  replay.
+                </span>
+              </span>
+            </label>
+          </section>
         </div>
       {/if}
     </div>
@@ -862,6 +886,74 @@
     font-size: var(--cd-font-size-sm);
     color: var(--cd-text-muted);
     line-height: 1.4;
+  }
+
+  .privacy {
+    margin-top: var(--cd-space-5);
+  }
+
+  .privacy-option {
+    display: grid;
+    grid-template-columns: 14px 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 0;
+    color: var(--cd-text-muted);
+    cursor: pointer;
+  }
+
+  .privacy-option input {
+    display: grid;
+    place-items: center;
+    appearance: none;
+    width: 13px;
+    height: 13px;
+    margin: 0;
+    border: 1px solid var(--cd-text-subtle);
+    border-radius: 3px;
+    background: var(--cd-surface-raised);
+    cursor: pointer;
+  }
+
+  .privacy-option input::before {
+    width: 6px;
+    height: 3px;
+    border-bottom: 2px solid var(--cd-surface);
+    border-left: 2px solid var(--cd-surface);
+    content: '';
+    transform: translateY(-1px) rotate(-45deg) scale(0);
+  }
+
+  .privacy-option input:checked {
+    border-color: var(--cd-text-subtle);
+    background: var(--cd-text-subtle);
+  }
+
+  .privacy-option input:checked::before {
+    transform: translateY(-1px) rotate(-45deg) scale(1);
+  }
+
+  .privacy-label,
+  .privacy-description {
+    display: block;
+  }
+
+  .privacy-label {
+    color: var(--cd-text);
+    font-size: var(--cd-font-size-sm);
+    font-weight: 500;
+  }
+
+  .privacy-description {
+    margin-top: 2px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .privacy-option:has(input:focus-visible) {
+    outline: 2px solid var(--cd-accent);
+    outline-offset: 4px;
+    border-radius: var(--cd-radius-sm);
   }
 
   @keyframes fade {

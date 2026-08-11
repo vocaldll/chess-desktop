@@ -4,11 +4,14 @@ import type { DesktopApi } from './index'
 
 const mocks = vi.hoisted(() => ({
   exposeInMainWorld: vi.fn(),
+  hookupSentryIpc: vi.fn(),
   invoke: vi.fn(),
   on: vi.fn(),
   removeListener: vi.fn(),
   send: vi.fn()
 }))
+
+vi.mock('@sentry/electron/preload-namespaced', () => ({ hookupIpc: mocks.hookupSentryIpc }))
 
 vi.mock('electron', () => ({
   contextBridge: { exposeInMainWorld: mocks.exposeInMainWorld },
@@ -24,6 +27,7 @@ await import('./index')
 
 const exposedName = mocks.exposeInMainWorld.mock.calls[0]?.[0]
 const api = mocks.exposeInMainWorld.mock.calls[0]?.[1] as DesktopApi
+const sentryIpcWasHookedUp = mocks.hookupSentryIpc.mock.calls.length === 1
 
 describe('preload API', () => {
   beforeEach(() => {
@@ -31,6 +35,7 @@ describe('preload API', () => {
   })
 
   it('exposes only the desktop API namespace', () => {
+    expect(sentryIpcWasHookedUp).toBe(true)
     expect(exposedName).toBe('api')
     expect(api).toBeDefined()
     expect(Object.keys(api).sort()).toEqual([

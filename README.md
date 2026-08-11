@@ -47,6 +47,8 @@ Free, open source, for Windows and Linux.
 
 Found a bug or want something added? [Open an issue](https://github.com/vocaldll/chess-desktop/issues) or write to [contact@chessdesktop.app](mailto:contact@chessdesktop.app).
 
+Anonymous crash reporting can be controlled during setup or in Settings. See the [privacy details](PRIVACY.md) for exactly what is and is not collected.
+
 ---
 
 <sub>Not affiliated with Chess.com or Lichess. All trademarks belong to their owners. Released under the [MIT License](LICENSE).</sub>

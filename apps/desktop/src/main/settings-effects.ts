@@ -66,6 +66,7 @@ export function applySetting(
       applyPresenceSettings(settings)
       return
     case 'notificationsEnabled':
+    case 'anonymousErrorReporting':
     case 'onboardingCompleted':
     case 'shortcutOverrides':
       return

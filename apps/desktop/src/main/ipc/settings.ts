@@ -1,6 +1,7 @@
 import { type BrowserWindow, ipcMain } from 'electron'
 import { IPC } from '../../shared/ipc-channels'
 import { isSettingKey, isValidSettingValue } from '../../shared/settings'
+import { setErrorReportingEnabled } from '../error-reporting'
 import { applySetting } from '../settings-effects'
 import { getSettings, setSetting } from '../store'
 
@@ -17,6 +18,9 @@ export function registerSettingsIpc(getWindow: () => BrowserWindow | null): void
     }
 
     const settings = setSetting(key, value as never)
+    if (key === 'anonymousErrorReporting') {
+      setErrorReportingEnabled(settings.anonymousErrorReporting)
+    }
     applySetting(getWindow(), settings, key)
     return settings
   })

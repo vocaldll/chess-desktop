@@ -1,3 +1,4 @@
+import { hookupIpc as hookupSentryIpc } from '@sentry/electron/preload-namespaced'
 import { contextBridge, ipcRenderer } from 'electron'
 import {
   type AppUpdateCheckResult,
@@ -10,6 +11,8 @@ import type { ShortcutCommand } from '../shared/shortcuts'
 import type { LastSiteUrls } from '../shared/sites'
 
 type Unsubscribe = () => void
+
+hookupSentryIpc()
 
 function subscribe<T>(channel: string, listener: (payload: T) => void): Unsubscribe {
   const handler = (_event: Electron.IpcRendererEvent, payload: T): void => listener(payload)

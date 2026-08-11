@@ -11,6 +11,7 @@ allowBuilds:
   electron-winstaller: false
   edgedriver: false
   geckodriver: false
+  '@sentry/cli': true
 
 minimumReleaseAgeExclude:
   - '@biomejs/biome@2.5.7'

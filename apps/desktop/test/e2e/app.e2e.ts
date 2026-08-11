@@ -28,6 +28,7 @@ describe('Chess Desktop', () => {
     await expect($('h2=Where do you play?')).toBeDisplayed()
     await expect($('aria/Settings')).toBeDisplayed()
     await expect($('aria/Back')).toBeDisabled()
+    await expect($('.crash-consent input')).toBeSelected()
 
     await $('.welcome .choice:nth-child(2)').click()
     await expect($('h2=Switch sites anytime')).toBeDisplayed()
@@ -46,6 +47,7 @@ describe('Chess Desktop', () => {
     const settingsDialog = $('[role="dialog"][aria-label="Settings"]')
     await expect(settingsDialog).toBeDisplayed()
     await expect(settingsDialog.$('aria/Keyboard shortcuts')).toBeDisplayed()
+    await expect(settingsDialog.$('.privacy-option input')).toBeSelected()
     await expect(
       settingsDialog.$(
         'aria/Beta: Discord status detection is still being tested and may sometimes be inaccurate.'

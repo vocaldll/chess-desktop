@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Menu } from 'electron'
 import { registerContextMenus } from './context-menu'
 import { shutdownPresence } from './discord'
+import { initializeErrorReporting } from './error-reporting'
 import { registerIpc } from './ipc'
 import { shutdownKeepAwake } from './keep-awake'
 import { registerPermissions } from './permissions'
@@ -23,6 +24,7 @@ const getWindow = (): BrowserWindow | null =>
   mainWindow && !mainWindow.isDestroyed() ? mainWindow : null
 
 app.setName(app.isPackaged ? 'Chess Desktop' : 'Chess Desktop Dev')
+initializeErrorReporting(getSettings().anonymousErrorReporting)
 
 if (!app.requestSingleInstanceLock()) {
   app.quit()

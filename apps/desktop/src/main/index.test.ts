@@ -36,12 +36,16 @@ vi.mock('electron', () => ({
 }))
 vi.mock('./context-menu', () => ({ registerContextMenus: mocks.registerContextMenus }))
 vi.mock('./discord', () => ({ shutdownPresence: vi.fn() }))
+vi.mock('./error-reporting', () => ({ initializeErrorReporting: vi.fn() }))
 vi.mock('./ipc', () => ({ registerIpc: mocks.registerIpc }))
 vi.mock('./keep-awake', () => ({ shutdownKeepAwake: vi.fn() }))
 vi.mock('./permissions', () => ({ registerPermissions: vi.fn() }))
 vi.mock('./settings-effects', () => ({ applySettings: vi.fn() }))
 vi.mock('./shortcuts', () => ({ registerShortcuts: mocks.registerShortcuts }))
-vi.mock('./store', () => ({ flushState: mocks.flushState, getSettings: vi.fn() }))
+vi.mock('./store', () => ({
+  flushState: mocks.flushState,
+  getSettings: vi.fn(() => ({ anonymousErrorReporting: true }))
+}))
 vi.mock('./updates', () => ({ startAutoUpdates: vi.fn() }))
 vi.mock('./webview', () => ({
   browserUserAgent: vi.fn().mockReturnValue('test-agent'),

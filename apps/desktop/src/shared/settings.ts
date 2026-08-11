@@ -15,6 +15,7 @@ export interface Settings {
   reviewOnLichess: boolean
   notificationsEnabled: boolean
   discordRpcEnabled: boolean
+  anonymousErrorReporting: boolean
   onboardingCompleted: boolean
   shortcutOverrides: ShortcutOverrides
   zoom: SiteZoom
@@ -32,6 +33,7 @@ export const defaultSettings: Settings = {
   reviewOnLichess: true,
   notificationsEnabled: true,
   discordRpcEnabled: false,
+  anonymousErrorReporting: true,
   onboardingCompleted: false,
   shortcutOverrides: {},
   zoom: coerceSiteZoom(null)

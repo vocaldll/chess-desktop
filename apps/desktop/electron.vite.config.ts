@@ -1,9 +1,39 @@
+import { readFileSync } from 'node:fs'
 import { builtinModules } from 'node:module'
 import { resolve } from 'node:path'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { defineConfig } from 'electron-vite'
 
 const tokens = resolve(__dirname, '../../packages/tokens/src')
+const packageVersion = (
+  JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8')) as { version: string }
+).version
+const sentryRelease = `chess-desktop@${packageVersion}`
+const uploadSourceMaps = Boolean(
+  process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT
+)
+
+function sourceMapPlugins(outputDirectory: 'main' | 'renderer') {
+  if (!uploadSourceMaps) {
+    return []
+  }
+
+  return sentryVitePlugin({
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+    org: process.env.SENTRY_ORG,
+    project: process.env.SENTRY_PROJECT,
+    telemetry: false,
+    release: {
+      name: sentryRelease,
+      setCommits: { auto: true, ignoreMissing: true }
+    },
+    sourcemaps: {
+      assets: `./out/${outputDirectory}/**/*.{js,map}`,
+      filesToDeleteAfterUpload: `./out/${outputDirectory}/**/*.map`
+    }
+  })
+}
 
 const nodeExternals = [
   'electron',
@@ -16,7 +46,9 @@ export default defineConfig({
     resolve: {
       alias: { '@chess-desktop/tokens': tokens }
     },
+    plugins: sourceMapPlugins('main'),
     build: {
+      sourcemap: uploadSourceMaps ? 'hidden' : false,
       rollupOptions: {
         input: resolve(__dirname, 'src/main/index.ts'),
         external: nodeExternals,
@@ -45,8 +77,12 @@ export default defineConfig({
         $shared: resolve(__dirname, 'src/shared')
       }
     },
-    plugins: [svelte({ configFile: resolve(__dirname, 'svelte.config.mjs') })],
+    plugins: [
+      svelte({ configFile: resolve(__dirname, 'svelte.config.mjs') }),
+      ...sourceMapPlugins('renderer')
+    ],
     build: {
+      sourcemap: uploadSourceMaps ? 'hidden' : false,
       rollupOptions: {
         input: resolve(__dirname, 'src/renderer/index.html')
       }

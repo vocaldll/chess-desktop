@@ -10,6 +10,10 @@ describe('setting keys and values', () => {
     expect(defaultSettings.numberedArrows).toBe(false)
   })
 
+  it('enables anonymous error reporting by default', () => {
+    expect(defaultSettings.anonymousErrorReporting).toBe(true)
+  })
+
   it.each(Object.keys(defaultSettings))('recognizes %s', (key) => {
     expect(isSettingKey(key)).toBe(true)
   })
@@ -43,6 +47,8 @@ describe('setting keys and values', () => {
     expect(isValidSettingValue('numberedArrows', 'yes')).toBe(false)
     expect(isValidSettingValue('reviewOnLichess', true)).toBe(true)
     expect(isValidSettingValue('reviewOnLichess', 'yes')).toBe(false)
+    expect(isValidSettingValue('anonymousErrorReporting', true)).toBe(true)
+    expect(isValidSettingValue('anonymousErrorReporting', 'yes')).toBe(false)
     expect(isValidSettingValue('soundMuted', 1)).toBe(false)
     expect(isValidSettingValue('notificationsEnabled', 'false')).toBe(false)
   })
@@ -66,6 +72,7 @@ describe('settings coercion', () => {
       reviewOnLichess: false,
       notificationsEnabled: false,
       discordRpcEnabled: true,
+      anonymousErrorReporting: false,
       onboardingCompleted: true,
       shortcutOverrides: {
         reload: { 0: { key: 'R', control: true, alt: false, shift: true } },

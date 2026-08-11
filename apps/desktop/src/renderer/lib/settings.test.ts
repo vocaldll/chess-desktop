@@ -3,6 +3,13 @@ import { defaultSettings } from '$shared/settings'
 
 const getAll = vi.fn()
 const set = vi.fn()
+const initializeRendererErrorReporting = vi.fn()
+const setRendererErrorReportingEnabled = vi.fn()
+
+vi.mock('./error-reporting', () => ({
+  initializeRendererErrorReporting,
+  setRendererErrorReportingEnabled
+}))
 
 async function freshSettings() {
   vi.resetModules()
@@ -23,6 +30,7 @@ describe('settings store', () => {
 
     expect(settings.current).toEqual(defaultSettings)
     expect(settings.loaded).toBe(true)
+    expect(initializeRendererErrorReporting).toHaveBeenCalledWith(true)
   })
 
   it('replaces local state with the value returned after a setting change', async () => {
@@ -34,6 +42,17 @@ describe('settings store', () => {
 
     expect(set).toHaveBeenCalledWith('soundMuted', true)
     expect(settings.current).toEqual(updated)
+    expect(setRendererErrorReportingEnabled).not.toHaveBeenCalled()
+  })
+
+  it('updates renderer error reporting after consent changes', async () => {
+    const settings = await freshSettings()
+    const updated = { ...defaultSettings, anonymousErrorReporting: false }
+    set.mockResolvedValue(updated)
+
+    await settings.set('anonymousErrorReporting', false)
+
+    expect(setRendererErrorReportingEnabled).toHaveBeenCalledWith(false)
   })
 
   it('updates one site zoom without changing the other', async () => {
