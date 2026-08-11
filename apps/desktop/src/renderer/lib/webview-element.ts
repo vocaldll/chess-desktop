@@ -3,6 +3,15 @@ export interface GuestIpcMessageEvent extends Event {
   args: unknown[]
 }
 
+export interface FoundInPageEvent extends Event {
+  result: {
+    requestId: number
+    activeMatchOrdinal: number
+    matches: number
+    finalUpdate: boolean
+  }
+}
+
 export interface SiteWebviewElement extends HTMLElement {
   src: string
   goBack(): void
@@ -14,4 +23,6 @@ export interface SiteWebviewElement extends HTMLElement {
   getURL(): string
   loadURL(url: string): Promise<void>
   send(channel: string, ...args: unknown[]): void
+  findInPage(text: string, options?: { forward?: boolean; findNext?: boolean }): number
+  stopFindInPage(action: 'clearSelection' | 'keepSelection' | 'activateSelection'): void
 }

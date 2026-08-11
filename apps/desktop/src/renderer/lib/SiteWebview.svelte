@@ -8,6 +8,7 @@
     REVIEW_ON_LICHESS_FAILED_CHANNEL,
     REVIEW_ON_LICHESS_NAVIGATE_CHANNEL
   } from '$shared/lichess-review'
+  import FindBar from './FindBar.svelte'
   import { browser } from './browser.svelte'
   import { settings } from './settings.svelte'
   import type { GuestIpcMessageEvent, SiteWebviewElement } from './webview-element'
@@ -137,6 +138,8 @@
       allowpopups
     ></webview>
   {/key}
+
+  <FindBar />
 
   {#if browser.error}
     <div class="error">

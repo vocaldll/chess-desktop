@@ -1,5 +1,6 @@
 export type ShortcutCommand =
   | 'focus-address'
+  | 'find'
   | 'reload'
   | 'back'
   | 'forward'
@@ -245,6 +246,11 @@ export const SHORTCUTS: readonly Shortcut[] = [
     command: 'focus-address',
     description: 'Focus the address bar',
     chords: [{ keys: ['l'], control: true, alt: false, shift: false, label: 'Ctrl+L' }]
+  },
+  {
+    command: 'find',
+    description: 'Find on the page',
+    chords: [{ keys: ['f'], control: true, alt: false, shift: false, label: 'Ctrl+F' }]
   },
   {
     command: 'reload',
