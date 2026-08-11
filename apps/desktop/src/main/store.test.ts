@@ -1,4 +1,4 @@
-import { access, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { access, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -125,7 +125,7 @@ describe('state store', () => {
     await expect(access(join(paths.userData, 'state.json'))).rejects.toThrow()
   })
 
-  it('logs persistence failures without rejecting the flush', async () => {
+  it('logs background persistence failures and retries the dirty state', async () => {
     const store = await freshStore()
     const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
@@ -133,9 +133,31 @@ describe('state store', () => {
     await writeFile(paths.userData, 'not a directory', 'utf8')
     store.setSetting('soundMuted', true)
 
+    await vi.advanceTimersByTimeAsync(500)
+    await vi.waitFor(() => {
+      expect(error).toHaveBeenCalledWith('Failed to persist state:', expect.any(Error))
+    })
+
+    await rm(paths.userData)
+    await mkdir(paths.userData)
     await expect(store.flushState()).resolves.toBeUndefined()
-    expect(error).toHaveBeenCalledWith('Failed to persist state:', expect.any(Error))
+    expect((await readState()).settings).toMatchObject({ soundMuted: true })
 
     error.mockRestore()
+  })
+
+  it('rejects explicit flush failures without clearing the dirty state', async () => {
+    const store = await freshStore()
+
+    await rm(paths.userData, { recursive: true })
+    await writeFile(paths.userData, 'not a directory', 'utf8')
+    store.setSetting('alwaysOnTop', true)
+
+    await expect(store.flushState()).rejects.toThrow()
+
+    await rm(paths.userData)
+    await mkdir(paths.userData)
+    await store.flushState()
+    expect((await readState()).settings).toMatchObject({ alwaysOnTop: true })
   })
 })

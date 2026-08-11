@@ -36,7 +36,7 @@ const WRITE_DELAY = 500
 let cached: PersistedState | null = null
 let dirty = false
 let writeTimer: NodeJS.Timeout | null = null
-let writeQueue = Promise.resolve()
+let flushPromise: Promise<void> | null = null
 
 function statePath(): string {
   return join(app.getPath('userData'), 'state.json')
@@ -101,29 +101,40 @@ function scheduleWrite(): void {
 
   writeTimer = setTimeout(() => {
     writeTimer = null
-    void flushState()
+    void flushState().catch((error) => console.error('Failed to persist state:', error))
   }, WRITE_DELAY)
   writeTimer.unref()
 }
 
-export async function flushState(): Promise<void> {
-  if (writeTimer) {
-    clearTimeout(writeTimer)
-    writeTimer = null
-  }
-
+async function performFlush(): Promise<void> {
   do {
     if (dirty) {
       dirty = false
       const serialized = JSON.stringify(read(), null, 2)
 
-      writeQueue = writeQueue
-        .then(() => write(serialized))
-        .catch((error) => console.error('Failed to persist state:', error))
+      try {
+        await write(serialized)
+      } catch (error) {
+        dirty = true
+        throw error
+      }
     }
-
-    await writeQueue
   } while (dirty)
+}
+
+export function flushState(): Promise<void> {
+  if (writeTimer) {
+    clearTimeout(writeTimer)
+    writeTimer = null
+  }
+
+  if (!flushPromise) {
+    flushPromise = performFlush().finally(() => {
+      flushPromise = null
+    })
+  }
+
+  return flushPromise
 }
 
 export function getSettings(): Settings {

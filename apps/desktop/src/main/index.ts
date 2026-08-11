@@ -72,10 +72,12 @@ if (!app.requestSingleInstanceLock()) {
 
     event.preventDefault()
 
-    void flushState().finally(() => {
-      stateFlushed = true
-      app.quit()
-    })
+    void flushState()
+      .catch((error) => console.error('Failed to persist state before quitting:', error))
+      .finally(() => {
+        stateFlushed = true
+        app.quit()
+      })
   })
 
   app.on('window-all-closed', () => {
