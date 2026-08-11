@@ -1,5 +1,6 @@
 import type { WebContents } from 'electron'
 import type { SiteId } from '../shared/sites'
+import { InsertedCss } from './inserted-css'
 
 const SELF_MARKER = 'data-chess-desktop-self'
 const SELF_LINK_MARKER = 'data-chess-desktop-me'
@@ -586,8 +587,7 @@ const ANONYMITY_SCRIPTS: Record<SiteId, string> = {
   lichess: buildScript(ANONYMITY.lichess)
 }
 
-const insertedStyles = new WeakMap<WebContents, string>()
-const operationVersions = new WeakMap<WebContents, number>()
+const styles = new InsertedCss()
 const appliedSettings = new WeakMap<
   WebContents,
   { siteId: SiteId; opponentHidden: boolean; ratingsHidden: boolean }
@@ -616,15 +616,7 @@ export function applyPlayerAnonymity(
 
   appliedSettings.set(contents, { siteId, opponentHidden, ratingsHidden })
 
-  const version = (operationVersions.get(contents) ?? 0) + 1
-  operationVersions.set(contents, version)
-
-  const previousKey = insertedStyles.get(contents)
-  insertedStyles.delete(contents)
-
-  if (previousKey) {
-    contents.removeInsertedCSS(previousKey).catch(() => null)
-  }
+  const styleVersion = styles.start(contents)
 
   contents
     .executeJavaScript(
@@ -635,27 +627,11 @@ export function applyPlayerAnonymity(
     )
     .catch(() => null)
 
-  if (!opponentHidden && !ratingsHidden) {
-    return
-  }
-
   const css = [opponentHidden ? ANONYMITY_CSS[siteId] : '', ratingsHidden ? RATING_CSS[siteId] : '']
     .filter(Boolean)
     .join('\n\n')
 
-  contents
-    .insertCSS(css)
-    .then((key) => {
-      if (contents.isDestroyed()) {
-        return
-      }
-
-      if (operationVersions.get(contents) !== version) {
-        contents.removeInsertedCSS(key).catch(() => null)
-        return
-      }
-
-      insertedStyles.set(contents, key)
-    })
-    .catch(() => null)
+  if (css) {
+    styles.insert(contents, styleVersion, css)
+  }
 }

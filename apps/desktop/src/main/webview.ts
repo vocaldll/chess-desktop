@@ -1,13 +1,14 @@
 import { join } from 'node:path'
-import { app, type BrowserWindow, shell, type WebContents } from 'electron'
+import { app, type BrowserWindow, type WebContents } from 'electron'
 import { IPC, type WebviewLoadError } from '../shared/ipc-channels'
 import { type GameRole, isPlayingGame, needsGameRole } from '../shared/presence'
-import { isOpenableExternally, isSiteURL, SITES, type SiteId } from '../shared/sites'
+import { isSiteURL, SITES, type SiteId } from '../shared/sites'
 import { toZoomFactor } from '../shared/zoom'
 import { applyVolume } from './audio'
 import { applyChatVisibility } from './chat-visibility'
 import { rejectCookieBanners } from './consent'
 import { updatePresenceLocation } from './discord'
+import { openExternalUrl } from './external-links'
 import { probeGameRole } from './game-role'
 import { updatePlayingState } from './keep-awake'
 import { applyReviewOnLichess } from './lichess-review'
@@ -166,17 +167,6 @@ export function browserUserAgent(): string {
   return `Mozilla/5.0 (${platform}) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${process.versions.chrome} Safari/537.36`
 }
 
-function openExternally(url: string): void {
-  if (!isOpenableExternally(url)) {
-    console.warn('Blocked external URL with unsupported protocol:', url)
-    return
-  }
-
-  shell.openExternal(url).catch((error) => {
-    console.error('Failed to open external URL:', error)
-  })
-}
-
 export function hardenWebviewAttachment(host: WebContents): void {
   host.on('will-attach-webview', (_event, webPreferences, params) => {
     webPreferences.preload = join(__dirname, '../preload/webview.js')
@@ -198,7 +188,7 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
     if (isActiveSiteURL(url)) {
       contents.loadURL(url).catch(() => undefined)
     } else {
-      openExternally(url)
+      openExternalUrl(url)
     }
     return { action: 'deny' }
   })
@@ -206,7 +196,7 @@ function configure(contents: WebContents, getWindow: () => BrowserWindow | null)
   contents.on('will-navigate', (event, url) => {
     if (!isActiveSiteURL(url)) {
       event.preventDefault()
-      openExternally(url)
+      openExternalUrl(url)
     }
   })
 

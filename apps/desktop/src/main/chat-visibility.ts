@@ -1,5 +1,6 @@
 import type { WebContents } from 'electron'
 import type { SiteId } from '../shared/sites'
+import { InsertedCss } from './inserted-css'
 
 const CHAT_CSS: Record<SiteId, string> = {
   chesscom:
@@ -7,8 +8,7 @@ const CHAT_CSS: Record<SiteId, string> = {
   lichess: '.mchat { display: none !important; }'
 }
 
-const insertedStyles = new WeakMap<WebContents, string>()
-const operationVersions = new WeakMap<WebContents, number>()
+const styles = new InsertedCss()
 const appliedSettings = new WeakMap<WebContents, { siteId: SiteId; hidden: boolean }>()
 
 export function applyChatVisibility(
@@ -28,33 +28,5 @@ export function applyChatVisibility(
 
   appliedSettings.set(contents, { siteId, hidden })
 
-  const version = (operationVersions.get(contents) ?? 0) + 1
-  operationVersions.set(contents, version)
-
-  const previousKey = insertedStyles.get(contents)
-  insertedStyles.delete(contents)
-
-  if (previousKey) {
-    contents.removeInsertedCSS(previousKey).catch(() => null)
-  }
-
-  if (!hidden) {
-    return
-  }
-
-  contents
-    .insertCSS(CHAT_CSS[siteId])
-    .then((key) => {
-      if (contents.isDestroyed()) {
-        return
-      }
-
-      if (operationVersions.get(contents) !== version) {
-        contents.removeInsertedCSS(key).catch(() => null)
-        return
-      }
-
-      insertedStyles.set(contents, key)
-    })
-    .catch(() => null)
+  styles.replace(contents, hidden ? CHAT_CSS[siteId] : null)
 }

@@ -5,21 +5,11 @@ import {
   clipboard,
   Menu,
   type MenuItemConstructorOptions,
-  shell,
   type WebContents
 } from 'electron'
 import { isOpenableExternally } from '../shared/sites'
+import { openExternalUrl } from './external-links'
 import { getSiteWebContents } from './webview'
-
-function openExternally(url: string): void {
-  if (!isOpenableExternally(url)) {
-    return
-  }
-
-  shell.openExternal(url).catch((error) => {
-    console.error('Failed to open external URL:', error)
-  })
-}
 
 function buildTemplate(
   contents: WebContents,
@@ -30,7 +20,7 @@ function buildTemplate(
 
   if (currentPageURL && isOpenableExternally(currentPageURL)) {
     items.push(
-      { label: 'Open in browser', click: () => openExternally(currentPageURL) },
+      { label: 'Open in browser', click: () => openExternalUrl(currentPageURL) },
       { type: 'separator' }
     )
   }
@@ -59,7 +49,7 @@ function buildTemplate(
     if (isOpenableExternally(params.linkURL)) {
       items.push({
         label: 'Open in browser',
-        click: () => openExternally(params.linkURL)
+        click: () => openExternalUrl(params.linkURL)
       })
     }
 

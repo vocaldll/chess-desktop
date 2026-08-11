@@ -1,5 +1,6 @@
 import type { WebContents } from 'electron'
 import type { SiteId } from '../shared/sites'
+import { InsertedCss } from './inserted-css'
 
 const REVIEW_BUTTON_CSS = `
   [data-chess-desktop-review-on-lichess] {
@@ -138,8 +139,7 @@ export function removeReviewButtons(): void {
   })
 }
 
-const insertedStyles = new WeakMap<WebContents, string>()
-const operationVersions = new WeakMap<WebContents, number>()
+const styles = new InsertedCss()
 const appliedSettings = new WeakMap<WebContents, { siteId: SiteId; enabled: boolean }>()
 
 export function applyReviewOnLichess(
@@ -159,36 +159,14 @@ export function applyReviewOnLichess(
 
   appliedSettings.set(contents, { siteId, enabled })
 
-  const version = (operationVersions.get(contents) ?? 0) + 1
-  operationVersions.set(contents, version)
-
-  const previousKey = insertedStyles.get(contents)
-  insertedStyles.delete(contents)
-
-  if (previousKey) {
-    contents.removeInsertedCSS(previousKey).catch(() => null)
-  }
+  const styleVersion = styles.start(contents)
 
   if (!enabled || siteId !== 'chesscom') {
     contents.executeJavaScript(`(${removeReviewButtons.toString()})()`).catch(() => null)
     return
   }
 
-  contents
-    .insertCSS(REVIEW_BUTTON_CSS)
-    .then((key) => {
-      if (contents.isDestroyed()) {
-        return
-      }
-
-      if (operationVersions.get(contents) !== version) {
-        contents.removeInsertedCSS(key).catch(() => null)
-        return
-      }
-
-      insertedStyles.set(contents, key)
-    })
-    .catch(() => null)
+  styles.insert(contents, styleVersion, REVIEW_BUTTON_CSS)
 
   contents.executeJavaScript(`(${installReviewButtons.toString()})()`).catch(() => null)
 }
