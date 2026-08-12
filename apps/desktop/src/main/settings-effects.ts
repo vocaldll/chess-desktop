@@ -7,7 +7,7 @@ import { applyPresenceSettings } from './discord'
 import { applyReviewOnLichess } from './lichess-review'
 import { applyNumberedArrows } from './numbered-arrows'
 import { applyPlayerAnonymity } from './player-anonymity'
-import { getSiteWebContents } from './webview'
+import { activateSite, getSiteWebContents } from './webview'
 
 export function applySettings(window: BrowserWindow | null, settings: Settings): void {
   window?.setAlwaysOnTop(settings.alwaysOnTop)
@@ -62,6 +62,9 @@ export function applySetting(
       applyReviewOnLichess(contents, settings.activeSite, settings.reviewOnLichess)
       return
     case 'activeSite':
+      activateSite(window)
+      applyPresenceSettings(settings)
+      return
     case 'discordRpcEnabled':
       applyPresenceSettings(settings)
       return

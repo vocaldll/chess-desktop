@@ -39,6 +39,7 @@ describe('preload API', () => {
     expect(exposedName).toBe('api')
     expect(api).toBeDefined()
     expect(Object.keys(api).sort()).toEqual([
+      'activeGame',
       'audio',
       'links',
       'reviewOnLichess',
@@ -61,6 +62,7 @@ describe('preload API', () => {
     api.links.openRepository()
     api.updates.install()
     await api.window.isMaximized()
+    await api.activeGame.isPlaying()
     await api.settings.getAll()
     await api.settings.set('soundMuted', true)
     await api.webview.getLastSiteUrls()
@@ -79,6 +81,7 @@ describe('preload API', () => {
     ])
     expect(mocks.invoke.mock.calls).toEqual([
       [IPC.window.isMaximized],
+      [IPC.activeGame.isPlaying],
       [IPC.settings.getAll],
       [IPC.settings.set, 'soundMuted', true],
       [IPC.webview.getLastSiteUrls],

@@ -33,6 +33,11 @@ const api = {
     onFullscreenChange: (listener: (isFullscreen: boolean) => void): Unsubscribe =>
       subscribe(IPC.window.fullscreenChanged, listener)
   },
+  activeGame: {
+    isPlaying: (): Promise<boolean> => ipcRenderer.invoke(IPC.activeGame.isPlaying),
+    onPlayingChange: (listener: (playing: boolean) => void): Unsubscribe =>
+      subscribe(IPC.activeGame.playingChanged, listener)
+  },
   shortcuts: {
     onCommand: (listener: (command: ShortcutCommand) => void): Unsubscribe =>
       subscribe(IPC.shortcuts.triggered, listener),

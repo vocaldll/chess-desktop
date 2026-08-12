@@ -2,11 +2,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { IPC } from '../../shared/ipc-channels'
 
 const mocks = vi.hoisted(() => ({
+  isActiveGame: vi.fn(),
   on: vi.fn(),
   handle: vi.fn()
 }))
 
 vi.mock('electron', () => ({ ipcMain: mocks }))
+vi.mock('../active-game', () => ({ isActiveGame: mocks.isActiveGame }))
 
 import { registerWindowIpc } from './window'
 
@@ -46,6 +48,8 @@ describe('window IPC', () => {
     expect(window.unmaximize).toHaveBeenCalledOnce()
     expect(window.close).toHaveBeenCalledOnce()
     expect(registration(mocks.handle, IPC.window.isMaximized)()).toBe(true)
+    mocks.isActiveGame.mockReturnValue(true)
+    expect(registration(mocks.handle, IPC.activeGame.isPlaying)()).toBe(true)
   })
 
   it('is safe while no window exists', () => {

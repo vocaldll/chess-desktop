@@ -2,6 +2,7 @@
   import { SITE_ORDER, SITES, type SiteId } from '$shared/sites'
   import ChessComMark from './marks/ChessComMark.svelte'
   import LichessMark from './marks/LichessMark.svelte'
+  import { activeGame } from './active-game.svelte'
   import { anchor } from './onboarding.svelte'
   import { settings } from './settings.svelte'
 
@@ -12,7 +13,7 @@
 
   function select(id: SiteId): void {
     if (settings.current.activeSite !== id) {
-      settings.set('activeSite', id)
+      void activeGame.switchTo(id)
     }
   }
 </script>

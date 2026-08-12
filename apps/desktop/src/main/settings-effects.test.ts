@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   applyNumberedArrows: vi.fn(),
   applyReviewOnLichess: vi.fn(),
   applyPresenceSettings: vi.fn(),
+  activateSite: vi.fn(),
   getSiteWebContents: vi.fn()
 }))
 
@@ -17,7 +18,10 @@ vi.mock('./discord', () => ({ applyPresenceSettings: mocks.applyPresenceSettings
 vi.mock('./player-anonymity', () => ({ applyPlayerAnonymity: mocks.applyPlayerAnonymity }))
 vi.mock('./numbered-arrows', () => ({ applyNumberedArrows: mocks.applyNumberedArrows }))
 vi.mock('./lichess-review', () => ({ applyReviewOnLichess: mocks.applyReviewOnLichess }))
-vi.mock('./webview', () => ({ getSiteWebContents: mocks.getSiteWebContents }))
+vi.mock('./webview', () => ({
+  activateSite: mocks.activateSite,
+  getSiteWebContents: mocks.getSiteWebContents
+}))
 
 import { applySetting, applySettings } from './settings-effects'
 
@@ -113,6 +117,7 @@ describe('applySettings', () => {
 
     applySetting(null, settings, 'activeSite')
 
+    expect(mocks.activateSite).toHaveBeenCalledWith(null)
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(settings)
     expect(contents.setAudioMuted).not.toHaveBeenCalled()
     expect(contents.setZoomFactor).not.toHaveBeenCalled()
