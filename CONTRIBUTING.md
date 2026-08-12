@@ -6,11 +6,11 @@ Changes land on `master` through a pull request. A repository ruleset requires a
 
 ```sh
 git switch -c fix/thing
-gh pr create --fill
+gh pr create
 gh pr merge --squash --auto -d
 ```
 
-`gh pr create --fill` pushes the branch and opens the pull request, taking the title and body from the commits. `gh pr merge --squash --auto -d` queues the merge for whenever CI turns green, then deletes the branch.
+`gh pr create` pushes the branch and prompts for a title and description. Write the description by hand and cover what changed, why, and how it was verified. `gh pr merge --squash --auto -d` queues the merge for whenever CI turns green, then deletes the branch.
 
 Contributors without push access should fork the repository and open a pull request from their fork.
 
