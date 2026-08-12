@@ -5,7 +5,7 @@
   "description": "Desktop client for Chess.com and Lichess",
   "packageManager": "pnpm@11.18.0",
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
   },
   "scripts": {
     "dev:desktop": "pnpm --filter @chess-desktop/desktop dev",
