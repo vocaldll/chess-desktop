@@ -170,6 +170,45 @@ describe('webview event scoping', () => {
     expect(mocks.updatePlayingState).toHaveBeenCalledWith(false)
   })
 
+  it('targets the selected site while a different site webview remains alive', async () => {
+    const settings = {
+      activeSite: 'chesscom' as 'chesscom' | 'lichess',
+      soundMuted: false,
+      hideChat: false,
+      hideOpponent: true,
+      hideRatings: true,
+      numberedArrows: true,
+      reviewOnLichess: true,
+      volume: 100,
+      zoom: { chesscom: 100, lichess: 100 }
+    }
+    mocks.getSettings.mockReturnValue(settings)
+    const chesscom = new FakeContents()
+    const lichess = new FakeContents()
+    lichess.url = 'https://lichess.org/'
+    const send = vi.fn()
+
+    const { webview } = await configure(chesscom, send)
+    await configure(lichess, send)
+
+    expect(webview.getSiteWebContents()).toBe(chesscom)
+
+    settings.activeSite = 'lichess'
+    webview.activateSite({ webContents: { send } } as never)
+    expect(webview.getSiteWebContents()).toBe(lichess)
+
+    send.mockClear()
+    chesscom.emit('did-start-loading')
+    lichess.emit('did-start-loading')
+    expect(send).toHaveBeenCalledOnce()
+    expect(send).toHaveBeenCalledWith('webview:load-start')
+
+    const navigation = { preventDefault: vi.fn() }
+    chesscom.emit('will-navigate', navigation, 'https://www.chess.com/game/123')
+    expect(navigation.preventDefault).not.toHaveBeenCalled()
+    expect(mocks.openExternal).not.toHaveBeenCalled()
+  })
+
   it('hardens attachment preferences and replaces untrusted initial URLs', async () => {
     const host = new FakeContents()
     const webview = await import('./webview')
@@ -238,9 +277,7 @@ describe('webview event scoping', () => {
   it('handles mouse navigation commands through the active history', async () => {
     const webview = await import('./webview')
     const handlers = new Map<string, Handler>()
-    const window = {
-      on: (event: string, handler: Handler) => handlers.set(event, handler)
-    }
+    const window = { on: (event: string, handler: Handler) => handlers.set(event, handler) }
     const contents = new FakeContents()
     contents.navigationHistory.canGoBack.mockReturnValue(true)
     contents.navigationHistory.canGoForward.mockReturnValue(true)

@@ -1,5 +1,6 @@
 import { type BrowserWindow, ipcMain } from 'electron'
 import { IPC } from '../../shared/ipc-channels'
+import { isActiveGame } from '../active-game'
 
 export function registerWindowIpc(getWindow: () => BrowserWindow | null): void {
   ipcMain.on(IPC.window.minimize, () => {
@@ -24,4 +25,5 @@ export function registerWindowIpc(getWindow: () => BrowserWindow | null): void {
   })
 
   ipcMain.handle(IPC.window.isMaximized, () => getWindow()?.isMaximized() ?? false)
+  ipcMain.handle(IPC.activeGame.isPlaying, () => isActiveGame())
 }

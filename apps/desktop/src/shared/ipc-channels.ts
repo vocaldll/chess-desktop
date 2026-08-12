@@ -27,6 +27,10 @@ export const IPC = {
     loadStop: 'webview:load-stop',
     loadError: 'webview:load-error'
   },
+  activeGame: {
+    isPlaying: 'active-game:is-playing',
+    playingChanged: 'active-game:playing-changed'
+  },
   reviewOnLichess: {
     start: 'review-on-lichess:start'
   },

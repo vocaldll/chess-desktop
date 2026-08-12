@@ -9,6 +9,7 @@
   import Titlebar from './lib/Titlebar.svelte'
   import { browser } from './lib/browser.svelte'
   import { fullscreen } from './lib/fullscreen.svelte'
+  import { activeGame } from './lib/active-game.svelte'
   import { notices } from './lib/notices.svelte'
   import { onboarding } from './lib/onboarding.svelte'
   import { settings } from './lib/settings.svelte'
@@ -112,6 +113,8 @@
       resolved = true
     })
   })
+
+  onMount(() => activeGame.connect())
 </script>
 
 <Titlebar onOpenSettings={() => (settingsOpen = true)} />

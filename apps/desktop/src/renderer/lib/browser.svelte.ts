@@ -40,8 +40,10 @@ class Browser {
     this.element = element
   }
 
-  detach(): void {
-    this.element = null
+  detach(element?: SiteWebviewElement): void {
+    if (!element || this.element === element) {
+      this.element = null
+    }
   }
 
   syncHistory(siteId: SiteId): void {
