@@ -23,7 +23,7 @@ Use [Conventional Commits](https://www.conventionalcommits.org) for commit subje
 - `pnpm test:e2e`: build and run the Electron smoke test
 - `pnpm typecheck`: check application and end-to-end test types
 
-Run `pnpm lint` and the relevant tests before submitting a change. CI runs coverage and builds on Linux, plus the Electron smoke test on Windows and Linux. Overall unit and component coverage must remain at or above 55% for statements, branches, functions, and lines.
+Use Node.js 24 or newer. Run `pnpm lint` and the relevant tests before submitting a change. CI runs coverage and production builds, creates the Windows and Linux desktop distributables without publishing them, reviews dependency changes for known high-severity vulnerabilities, and runs the Electron smoke test on Windows and Linux. Overall unit and component coverage must remain at or above 55% for statements, branches, functions, and lines.
 
 ## Releases
 
