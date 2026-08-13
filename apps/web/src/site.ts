@@ -15,5 +15,4 @@ export const latestRelease = `${releases}/latest`
 export const downloadWindows = `${latestRelease}/download/Chess-Desktop-Setup.exe`
 export const downloadLinuxX64 = `${latestRelease}/download/Chess-Desktop-x64.AppImage`
 export const downloadLinuxArm64 = `${latestRelease}/download/Chess-Desktop-arm64.AppImage`
-export const downloadLinux = downloadLinuxX64
 export const issues = `${repository}/issues`

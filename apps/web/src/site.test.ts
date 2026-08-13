@@ -3,7 +3,6 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import {
   contact,
-  downloadLinux,
   downloadLinuxArm64,
   downloadLinuxX64,
   downloadWindows,
@@ -38,6 +37,5 @@ describe('public site links', () => {
     expect(downloadWindows).toBe(`${latestRelease}/download/Chess-Desktop-Setup.exe`)
     expect(downloadLinuxX64).toBe(`${latestRelease}/download/Chess-Desktop-x64.AppImage`)
     expect(downloadLinuxArm64).toBe(`${latestRelease}/download/Chess-Desktop-arm64.AppImage`)
-    expect(downloadLinux).toBe(downloadLinuxX64)
   })
 })

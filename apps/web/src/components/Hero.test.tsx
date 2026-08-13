@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { downloadLinux, downloadWindows, repository } from '../site'
+import { downloadLinuxArm64, downloadLinuxX64, downloadWindows, repository } from '../site'
 import Hero from './Hero'
 
 const mocks = vi.hoisted(() => ({ useGitHubStars: vi.fn() }))
@@ -22,9 +22,13 @@ describe('Hero', () => {
       'href',
       downloadWindows
     )
-    expect(screen.getByRole('link', { name: 'Download for Linux' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Download for Linux x64' })).toHaveAttribute(
       'href',
-      downloadLinux
+      downloadLinuxX64
+    )
+    expect(screen.getByRole('link', { name: 'Download for Linux ARM64' })).toHaveAttribute(
+      'href',
+      downloadLinuxArm64
     )
     expect(screen.getByRole('link', { name: /View on GitHub/ })).toHaveAttribute('href', repository)
     expect(screen.getByText('0')).toHaveClass('invisible')
