@@ -162,7 +162,7 @@ export function applyReviewOnLichess(
 
   const styleVersion = styles.start(contents)
 
-  if (!enabled || !getSiteAdapter(siteId)?.capabilities.reviewOnLichess) {
+  if (!enabled || !getSiteAdapter(siteId).capabilities.reviewOnLichess) {
     contents.executeJavaScript(`(${removeReviewButtons.toString()})()`).catch(() => null)
     return
   }

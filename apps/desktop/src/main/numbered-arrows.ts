@@ -17,7 +17,7 @@ export function applyNumberedArrows(
 
   const adapter = getSiteAdapter(siteId)
   const update: NumberedArrowsUpdate = {
-    enabled: enabled && (adapter?.capabilities.numberedArrows ?? true),
+    enabled: enabled && adapter.capabilities.numberedArrows,
     siteId
   }
   contents.send(NUMBERED_ARROWS_UPDATE_CHANNEL, update)

@@ -1,7 +1,7 @@
 import type { WebContents } from 'electron'
 import type { GameRole } from '../shared/presence'
 import type { SiteId } from '../shared/sites'
-import { type GameRoleAdapter, getSiteAdapter } from './site-adapters'
+import { getSiteAdapter } from './site-adapters'
 
 interface ProbeResult {
   ready: boolean
@@ -10,16 +10,8 @@ interface ProbeResult {
   aborted: boolean
 }
 
-const LICHESS_GAME_ROLE: GameRoleAdapter = {
-  ready: 'cg-board, .cg-wrap, .round__app, .rcontrols',
-  player:
-    '[class*="resign"], [class*="takeback"], [class*="draw-yes"], [title*="resign" i], [title*="abort" i], [title*="takeback" i], [title*="offer draw" i], [aria-label*="resign" i], [aria-label*="abort" i], [aria-label*="takeback" i]',
-  finished: '[class*="copy-me"], [class*="rematch"]',
-  result: '.result-wrap .result, .status .result'
-}
-
 function buildProbe(siteId: SiteId): string {
-  const { ready, player, finished, result } = getSiteAdapter(siteId)?.gameRole ?? LICHESS_GAME_ROLE
+  const { ready, player, finished, result } = getSiteAdapter(siteId).gameRole
 
   return `(() => {
   const has = (selector) => {

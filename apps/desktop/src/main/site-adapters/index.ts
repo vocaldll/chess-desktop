@@ -1,12 +1,14 @@
 import type { SiteId } from '../../shared/sites'
 import { chessComAdapter } from './chesscom'
+import { lichessAdapter } from './lichess'
 import type { SiteAdapter } from './types'
 
-export const SITE_ADAPTERS: Partial<Record<SiteId, SiteAdapter>> = {
-  chesscom: chessComAdapter
-}
+export const SITE_ADAPTERS = {
+  chesscom: chessComAdapter,
+  lichess: lichessAdapter
+} satisfies Record<SiteId, SiteAdapter>
 
-export function getSiteAdapter(siteId: SiteId): SiteAdapter | undefined {
+export function getSiteAdapter(siteId: SiteId): SiteAdapter {
   return SITE_ADAPTERS[siteId]
 }
 
