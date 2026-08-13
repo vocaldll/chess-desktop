@@ -46,14 +46,22 @@ jobs:
       - run: pnpm build:web
 
   electron-smoke:
-    name: Electron smoke (${{ matrix.os }})
+    name: Electron smoke (${{ matrix.platform }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
 
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            platform: Linux x64
+          - os: ubuntu-24.04-arm
+            platform: Linux ARM64
+          - os: windows-latest
+            platform: Windows x64
+          - os: windows-11-arm
+            platform: Windows ARM64
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

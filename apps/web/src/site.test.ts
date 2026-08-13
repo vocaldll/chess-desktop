@@ -4,6 +4,8 @@ import { describe, expect, it } from 'vitest'
 import {
   contact,
   downloadLinux,
+  downloadLinuxArm64,
+  downloadLinuxX64,
   downloadWindows,
   issues,
   latestRelease,
@@ -29,8 +31,13 @@ describe('public site links', () => {
     )
 
     expect(builderConfig).toContain(`artifactName: Chess-Desktop-Setup.${extensionPlaceholder}`)
-    expect(builderConfig).toContain(`artifactName: Chess-Desktop.${extensionPlaceholder}`)
+    expect(builderConfig).toContain(
+      `artifactName: Chess-Desktop-${'$'}{arch}.${extensionPlaceholder}`
+    )
+    expect(builderConfig).toMatch(/arch:\s+- x64\s+- arm64/g)
     expect(downloadWindows).toBe(`${latestRelease}/download/Chess-Desktop-Setup.exe`)
-    expect(downloadLinux).toBe(`${latestRelease}/download/Chess-Desktop.AppImage`)
+    expect(downloadLinuxX64).toBe(`${latestRelease}/download/Chess-Desktop-x64.AppImage`)
+    expect(downloadLinuxArm64).toBe(`${latestRelease}/download/Chess-Desktop-arm64.AppImage`)
+    expect(downloadLinux).toBe(downloadLinuxX64)
   })
 })

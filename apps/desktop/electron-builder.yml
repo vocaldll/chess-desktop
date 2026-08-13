@@ -16,8 +16,10 @@ win:
     - target: nsis
       arch:
         - x64
+        - arm64
 
 nsis:
+  buildUniversalInstaller: true
   license: ../../LICENSE
   include: resources/installer.nsh
   installerSidebar: resources/sidebar.bmp
@@ -33,11 +35,12 @@ linux:
   executableName: chess-desktop
   category: Game
   synopsis: Desktop client for Chess.com and Lichess
-  artifactName: Chess-Desktop.${ext}
+  artifactName: Chess-Desktop-${arch}.${ext}
   target:
     - target: AppImage
       arch:
         - x64
+        - arm64
 
 publish:
   provider: github
