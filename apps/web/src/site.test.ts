@@ -35,7 +35,7 @@ describe('public site links', () => {
     )
     expect(builderConfig).toMatch(/arch:\s+- x64\s+- arm64/g)
     expect(downloadWindows).toBe(`${latestRelease}/download/Chess-Desktop-Setup.exe`)
-    expect(downloadLinuxX64).toBe(`${latestRelease}/download/Chess-Desktop-x64.AppImage`)
+    expect(downloadLinuxX64).toBe(`${latestRelease}/download/Chess-Desktop-x86_64.AppImage`)
     expect(downloadLinuxArm64).toBe(`${latestRelease}/download/Chess-Desktop-arm64.AppImage`)
   })
 })
