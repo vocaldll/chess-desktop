@@ -1,6 +1,7 @@
 import type { WebContents } from 'electron'
 import type { SiteId } from '../shared/sites'
 import { InsertedCss } from './inserted-css'
+import { getSiteAdapter } from './site-adapters'
 
 const REVIEW_BUTTON_CSS = `
   [data-chess-desktop-review-on-lichess] {
@@ -161,7 +162,7 @@ export function applyReviewOnLichess(
 
   const styleVersion = styles.start(contents)
 
-  if (!enabled || siteId !== 'chesscom') {
+  if (!enabled || !getSiteAdapter(siteId)?.capabilities.reviewOnLichess) {
     contents.executeJavaScript(`(${removeReviewButtons.toString()})()`).catch(() => null)
     return
   }

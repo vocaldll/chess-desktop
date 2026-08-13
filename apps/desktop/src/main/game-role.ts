@@ -1,6 +1,7 @@
 import type { WebContents } from 'electron'
 import type { GameRole } from '../shared/presence'
 import type { SiteId } from '../shared/sites'
+import { type GameRoleAdapter, getSiteAdapter } from './site-adapters'
 
 interface ProbeResult {
   ready: boolean
@@ -9,33 +10,16 @@ interface ProbeResult {
   aborted: boolean
 }
 
-interface SiteSelectors {
-  ready: string
-  player: string
-  finished: string | null
-  result: string | null
-}
-
-const SELECTORS: Record<SiteId, SiteSelectors> = {
-  chesscom: {
-    ready:
-      'wc-chess-board, #board-layout-chessboard, [class*="board-layout"], [class*="chessboard"]',
-    player:
-      '[aria-label="Resign" i], [aria-label="Abort" i], [aria-label="Draw" i], [aria-label="Undo" i], [aria-label="Takeback" i], [class*="resign-button"], [class*="draw-button"], [class*="abort-button"]',
-    finished: null,
-    result: null
-  },
-  lichess: {
-    ready: 'cg-board, .cg-wrap, .round__app, .rcontrols',
-    player:
-      '[class*="resign"], [class*="takeback"], [class*="draw-yes"], [title*="resign" i], [title*="abort" i], [title*="takeback" i], [title*="offer draw" i], [aria-label*="resign" i], [aria-label*="abort" i], [aria-label*="takeback" i]',
-    finished: '[class*="copy-me"], [class*="rematch"]',
-    result: '.result-wrap .result, .status .result'
-  }
+const LICHESS_GAME_ROLE: GameRoleAdapter = {
+  ready: 'cg-board, .cg-wrap, .round__app, .rcontrols',
+  player:
+    '[class*="resign"], [class*="takeback"], [class*="draw-yes"], [title*="resign" i], [title*="abort" i], [title*="takeback" i], [title*="offer draw" i], [aria-label*="resign" i], [aria-label*="abort" i], [aria-label*="takeback" i]',
+  finished: '[class*="copy-me"], [class*="rematch"]',
+  result: '.result-wrap .result, .status .result'
 }
 
 function buildProbe(siteId: SiteId): string {
-  const { ready, player, finished, result } = SELECTORS[siteId]
+  const { ready, player, finished, result } = getSiteAdapter(siteId)?.gameRole ?? LICHESS_GAME_ROLE
 
   return `(() => {
   const has = (selector) => {

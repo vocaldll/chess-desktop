@@ -1,12 +1,9 @@
 import type { WebContents } from 'electron'
 import type { SiteId } from '../shared/sites'
 import { InsertedCss } from './inserted-css'
+import { getSiteAdapter } from './site-adapters'
 
-const CHAT_CSS: Record<SiteId, string> = {
-  chesscom:
-    '.resizable-chat-area-component, [data-tab="GameViewTab.Chat"] { display: none !important; }',
-  lichess: '.mchat { display: none !important; }'
-}
+const LICHESS_CHAT_CSS = '.mchat { display: none !important; }'
 
 const styles = new InsertedCss()
 const appliedSettings = new WeakMap<WebContents, { siteId: SiteId; hidden: boolean }>()
@@ -28,5 +25,7 @@ export function applyChatVisibility(
 
   appliedSettings.set(contents, { siteId, hidden })
 
-  styles.replace(contents, hidden ? CHAT_CSS[siteId] : null)
+  const adapter = getSiteAdapter(siteId)
+  const css = adapter?.capabilities.chatVisibility ? adapter.chatHiddenCss : LICHESS_CHAT_CSS
+  styles.replace(contents, hidden ? css : null)
 }
