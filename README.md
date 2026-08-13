@@ -10,7 +10,7 @@ Free, open source, for Windows and Linux.
 
 <br />
 
-[![Download for Windows](https://img.shields.io/badge/Download-Windows_%C2%B7_Installer-0078d4?style=for-the-badge&labelColor=151515&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTAgMy40NSA5Ljc1IDIuMXY5LjQ1SDB6bTEwLjk1LTEuNUwyNCAwdjExLjU1SDEwLjk1ek0wIDEyLjZoOS43NXY5LjQ1TDAgMjAuN3ptMTAuOTUgMEgyNFYyNGwtMTMuMDUtMS44eiIvPjwvc3ZnPg==)](https://github.com/vocaldll/chess-desktop/releases/latest/download/Chess-Desktop-Setup.exe)
+[![Download for Windows](https://img.shields.io/badge/Windows-x64_%2B_ARM64_%C2%B7_Installer-0078d4?style=for-the-badge&labelColor=151515&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZD0iTTAgMy40NSA5Ljc1IDIuMXY5LjQ1SDB6bTEwLjk1LTEuNUwyNCAwdjExLjU1SDEwLjk1ek0wIDEyLjZoOS43NXY5LjQ1TDAgMjAuN3ptMTAuOTUgMEgyNFYyNGwtMTMuMDUtMS44eiIvPjwvc3ZnPg==)](https://github.com/vocaldll/chess-desktop/releases/latest/download/Chess-Desktop-Setup.exe)
 [![Download Linux x64](https://img.shields.io/badge/Linux-x64_%C2%B7_AppImage-FCC624?style=for-the-badge&labelColor=151515&logo=linux&logoColor=white)](https://github.com/vocaldll/chess-desktop/releases/latest/download/Chess-Desktop-x64.AppImage)
 [![Download Linux ARM64](https://img.shields.io/badge/Linux-ARM64_%C2%B7_AppImage-FCC624?style=for-the-badge&labelColor=151515&logo=linux&logoColor=white)](https://github.com/vocaldll/chess-desktop/releases/latest/download/Chess-Desktop-arm64.AppImage)
 
