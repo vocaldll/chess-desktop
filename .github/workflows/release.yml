@@ -78,6 +78,20 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Install Electron ChromeDriver for Linux ARM64
+        if: runner.os == 'Linux' && runner.arch == 'ARM64'
+        shell: bash
+        run: |
+          electron_version="$(node -p "require('./apps/desktop/package.json').devDependencies.electron")"
+          driver_directory="$RUNNER_TEMP/electron-chromedriver"
+          mkdir -p "$driver_directory"
+          curl --fail --location --silent --show-error \
+            "https://github.com/electron/electron/releases/download/v${electron_version}/chromedriver-v${electron_version}-linux-arm64.zip" \
+            --output "$driver_directory/chromedriver.zip"
+          unzip -q "$driver_directory/chromedriver.zip" -d "$driver_directory"
+          chmod +x "$driver_directory/chromedriver"
+          echo "ELECTRON_CHROMEDRIVER_PATH=$driver_directory/chromedriver" >> "$GITHUB_ENV"
+
       - run: pnpm test:e2e
 
   release:

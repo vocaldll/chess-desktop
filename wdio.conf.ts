@@ -14,6 +14,7 @@ const desktopPackage = JSON.parse(
 ) as DesktopPackage
 const userDataDirectory = mkdtempSync(join(tmpdir(), 'chess-desktop-e2e-'))
 const appArgs = [`--user-data-dir=${userDataDirectory}`]
+const chromedriverBinary = process.env.ELECTRON_CHROMEDRIVER_PATH
 
 if (process.platform === 'linux') {
   appArgs.push('--no-sandbox')
@@ -26,7 +27,14 @@ export const config: WebdriverIO.Config = {
   capabilities: [
     {
       browserName: 'electron',
-      browserVersion: desktopPackage.devDependencies.electron
+      browserVersion: desktopPackage.devDependencies.electron,
+      ...(chromedriverBinary
+        ? {
+            'wdio:chromedriverOptions': {
+              binary: chromedriverBinary
+            }
+          }
+        : {})
     }
   ],
   services: [
