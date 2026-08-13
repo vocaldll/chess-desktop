@@ -1,9 +1,8 @@
-import { downloadLinuxArm64, downloadLinuxX64, downloadWindows, repository, site } from '../site'
+import { repository, site } from '../site'
 import { formatStars, useGitHubStars } from '../useGitHubStars'
+import DownloadButton from './DownloadButton'
 import GitHubMark from './GitHubMark'
-import LinuxMark from './LinuxMark'
 import StarMark from './StarMark'
-import WindowsMark from './WindowsMark'
 
 export default function Hero() {
   const stars = useGitHubStars()
@@ -34,36 +33,7 @@ export default function Hero() {
         style={{ animationDelay: '180ms' }}
         data-nosnippet=""
       >
-        <div className="grid w-full max-w-[360px] grid-cols-2 gap-3 min-[680px]:w-auto min-[680px]:max-w-none min-[680px]:grid-cols-[auto_auto_auto]">
-          <a
-            className="col-span-2 inline-flex items-center justify-center gap-2.5 rounded-full border border-[#0078d4] bg-[#0078d4] px-6 py-3 font-semibold text-[15px] text-white transition hover:-translate-y-0.5 hover:border-[#1a86da] hover:bg-[#1a86da] min-[680px]:col-span-1"
-            href={downloadWindows}
-            aria-label="Download for Windows"
-          >
-            <WindowsMark />
-            Windows
-            <span className="font-medium text-[11px] text-white/70">x64 + ARM64</span>
-          </a>
-
-          <a
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#fcc624] bg-[#fcc624] px-5 py-3 font-semibold text-[15px] text-black transition hover:-translate-y-0.5 hover:border-[#ffd34f] hover:bg-[#ffd34f]"
-            href={downloadLinuxX64}
-            aria-label="Download for Linux x64"
-          >
-            <LinuxMark size={17} />
-            Linux
-            <span className="font-medium text-[12px] text-black/55">x64</span>
-          </a>
-          <a
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-[#fcc624] bg-[#fcc624] px-5 py-3 font-semibold text-[15px] text-black transition hover:-translate-y-0.5 hover:border-[#ffd34f] hover:bg-[#ffd34f]"
-            href={downloadLinuxArm64}
-            aria-label="Download for Linux ARM64"
-          >
-            <LinuxMark size={17} />
-            Linux
-            <span className="font-medium text-[12px] text-black/55">ARM64</span>
-          </a>
-        </div>
+        <DownloadButton />
 
         <a
           className="relative inline-flex items-center gap-2 font-medium text-[14px] text-ink-muted transition-colors hover:text-ink"
