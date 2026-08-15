@@ -6,7 +6,7 @@ import {
   isZoomPercent,
   stepZoom,
   toZoomFactor,
-  ZOOM_STEPS
+  ZOOM_STEPS,
 } from './zoom'
 
 describe('zoom validation', () => {
@@ -30,7 +30,7 @@ describe('zoom coercion', () => {
   it('preserves valid values and defaults invalid values independently', () => {
     expect(coerceSiteZoom({ chesscom: 75, lichess: 123 })).toEqual({
       chesscom: 75,
-      lichess: DEFAULT_ZOOM
+      lichess: DEFAULT_ZOOM,
     })
   })
 

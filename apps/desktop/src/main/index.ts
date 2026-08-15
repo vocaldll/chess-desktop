@@ -13,7 +13,7 @@ import {
   browserUserAgent,
   hardenWebviewAttachment,
   registerAppCommands,
-  registerWebviewHandling
+  registerWebviewHandling,
 } from './webview'
 import { createMainWindow } from './window'
 

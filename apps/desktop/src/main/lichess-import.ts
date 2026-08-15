@@ -33,8 +33,8 @@ export function importGameOnLichess(pgn: string): Promise<string> {
         partition: SITES.lichess.partition,
         contextIsolation: true,
         nodeIntegration: false,
-        sandbox: true
-      }
+        sandbox: true,
+      },
     })
     const contents = window.webContents
     let settled = false
@@ -86,7 +86,7 @@ export function importGameOnLichess(pgn: string): Promise<string> {
         if (isMainFrame && errorCode !== ABORTED_BY_USER) {
           finish(new Error(errorDescription))
         }
-      }
+      },
     )
     contents.on('dom-ready', () => {
       if (submitted || contents.getURL() !== LICHESS_IMPORT_URL) {

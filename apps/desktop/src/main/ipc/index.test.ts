@@ -6,7 +6,7 @@ const mocks = vi.hoisted(() => ({
   registerLinksIpc: vi.fn(),
   registerSettingsIpc: vi.fn(),
   registerWebviewIpc: vi.fn(),
-  registerWindowIpc: vi.fn()
+  registerWindowIpc: vi.fn(),
 }))
 
 vi.mock('./audio', () => ({ registerAudioIpc: mocks.registerAudioIpc }))

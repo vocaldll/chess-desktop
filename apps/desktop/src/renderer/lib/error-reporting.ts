@@ -8,7 +8,7 @@ const ALLOWED_INTEGRATIONS = new Set([
   'FunctionToString',
   'GlobalHandlers',
   'InboundFilters',
-  'LinkedErrors'
+  'LinkedErrors',
 ])
 
 let reportingEnabled = false
@@ -32,7 +32,7 @@ export function initializeRendererErrorReporting(enabled: boolean): void {
     integrations: (defaults) =>
       defaults.filter((integration) => ALLOWED_INTEGRATIONS.has(integration.name)),
     beforeBreadcrumb: () => null,
-    beforeSend: (event) => (reportingEnabled ? sanitizeErrorEvent(event) : null)
+    beforeSend: (event) => (reportingEnabled ? sanitizeErrorEvent(event) : null),
   })
 }
 

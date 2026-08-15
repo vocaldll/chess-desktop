@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({ useGitHubStars: vi.fn() }))
 
 vi.mock('../useGitHubStars', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../useGitHubStars')>()),
-  useGitHubStars: mocks.useGitHubStars
+  useGitHubStars: mocks.useGitHubStars,
 }))
 
 describe('Hero', () => {
@@ -27,15 +27,15 @@ describe('Hero', () => {
 
     expect(screen.getByRole('link', { name: 'Download for Windows' })).toHaveAttribute(
       'href',
-      downloadWindows
+      downloadWindows,
     )
     expect(screen.getByRole('link', { name: 'Download for Linux x64' })).toHaveAttribute(
       'href',
-      downloadLinuxX64
+      downloadLinuxX64,
     )
     expect(screen.getByRole('link', { name: 'Download for Linux ARM64' })).toHaveAttribute(
       'href',
-      downloadLinuxArm64
+      downloadLinuxArm64,
     )
     expect(screen.getByRole('link', { name: /View on GitHub/ })).toHaveAttribute('href', repository)
     expect(screen.getByText('0')).toHaveClass('invisible')
@@ -45,10 +45,10 @@ describe('Hero', () => {
     render(<Hero />)
 
     expect(
-      screen.getByRole('button', { name: 'Download Chess Desktop' }).closest('[data-nosnippet]')
+      screen.getByRole('button', { name: 'Download Chess Desktop' }).closest('[data-nosnippet]'),
     ).not.toBeNull()
     expect(
-      screen.getByRole('link', { name: /View on GitHub/ }).closest('[data-nosnippet]')
+      screen.getByRole('link', { name: /View on GitHub/ }).closest('[data-nosnippet]'),
     ).not.toBeNull()
   })
 

@@ -10,7 +10,7 @@ const api = {
   onAvailable: vi.fn((listener: Listener) => api.listeners.set('available', listener)),
   onFailed: vi.fn((listener: Listener) => api.listeners.set('failed', listener)),
   onDownloaded: vi.fn((listener: Listener) => api.listeners.set('downloaded', listener)),
-  onInstallFailed: vi.fn((listener: Listener) => api.listeners.set('install-failed', listener))
+  onInstallFailed: vi.fn((listener: Listener) => api.listeners.set('install-failed', listener)),
 }
 
 async function freshUpdates() {
@@ -26,7 +26,7 @@ describe('update store', () => {
     api.getInfo.mockResolvedValue({
       version: '1.0.0',
       canCheck: true,
-      downloadedVersion: null
+      downloadedVersion: null,
     })
   })
 
@@ -34,7 +34,7 @@ describe('update store', () => {
     api.getInfo.mockResolvedValue({
       version: '1.0.0',
       canCheck: true,
-      downloadedVersion: '1.1.0'
+      downloadedVersion: '1.1.0',
     })
 
     const updates = await freshUpdates()

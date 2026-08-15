@@ -9,12 +9,12 @@ const mocks = vi.hoisted(() => ({
   getLastSiteUrls: vi.fn(),
   importGameOnLichess: vi.fn(),
   rememberLichessReview: vi.fn(),
-  updatePresenceLocation: vi.fn()
+  updatePresenceLocation: vi.fn(),
 }))
 
 vi.mock('electron', () => ({
   ipcMain: { handle: mocks.handle, on: mocks.on },
-  shell: { openExternal: mocks.openExternal }
+  shell: { openExternal: mocks.openExternal },
 }))
 vi.mock('../audio', () => ({ applyVolume: mocks.applyVolume }))
 vi.mock('../webview', () => ({ getSiteWebContents: mocks.getSiteWebContents }))
@@ -58,7 +58,7 @@ describe('supporting IPC services', () => {
   it('returns the persisted site URLs', () => {
     const urls = {
       chesscom: 'https://www.chess.com/home',
-      lichess: 'https://lichess.org/training'
+      lichess: 'https://lichess.org/training',
     }
     mocks.getLastSiteUrls.mockReturnValue(urls)
     registerWebviewIpc()

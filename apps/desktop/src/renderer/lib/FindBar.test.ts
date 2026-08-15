@@ -18,13 +18,13 @@ let webview: FakeWebview
 function createWebview(): FakeWebview {
   return Object.assign(document.createElement('div'), {
     findInPage: vi.fn<SiteWebviewElement['findInPage']>().mockReturnValue(1),
-    stopFindInPage: vi.fn<SiteWebviewElement['stopFindInPage']>()
+    stopFindInPage: vi.fn<SiteWebviewElement['stopFindInPage']>(),
   }) as unknown as FakeWebview
 }
 
 function report(matches: number, activeMatchOrdinal: number): void {
   const event = Object.assign(new Event('found-in-page'), {
-    result: { requestId: 1, matches, activeMatchOrdinal, finalUpdate: true }
+    result: { requestId: 1, matches, activeMatchOrdinal, finalUpdate: true },
   }) satisfies FoundInPageEvent
 
   webview.dispatchEvent(event)
@@ -47,8 +47,8 @@ describe('FindBar', () => {
         onCommand: vi.fn((listener) => {
           shortcutListener = listener
           return vi.fn()
-        })
-      }
+        }),
+      },
     } as unknown as typeof window.api
   })
 

@@ -15,8 +15,8 @@ Object.defineProperty(window, 'matchMedia', {
       removeEventListener: () => undefined,
       addListener: () => undefined,
       removeListener: () => undefined,
-      dispatchEvent: () => true
-    }) as MediaQueryList
+      dispatchEvent: () => true,
+    }) as MediaQueryList,
 })
 
 HTMLDialogElement.prototype.showModal = function showModal(): void {

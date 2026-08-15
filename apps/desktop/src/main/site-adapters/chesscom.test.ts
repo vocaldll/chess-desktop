@@ -9,7 +9,7 @@ describe('Chess.com site adapter', () => {
       chatVisibility: true,
       playerAnonymity: true,
       numberedArrows: true,
-      reviewOnLichess: true
+      reviewOnLichess: true,
     })
   })
 
@@ -18,7 +18,7 @@ describe('Chess.com site adapter', () => {
     expect(chessComAdapter.gameRole.ready).toContain('wc-chess-board')
     expect(chessComAdapter.anonymity.seatPrefix).toBe('.player-')
     expect(chessComAdapter.anonymity.watchSelector).toContain(
-      '[data-test-element="user-tagline-username"]'
+      '[data-test-element="user-tagline-username"]',
     )
   })
 
@@ -28,7 +28,7 @@ describe('Chess.com site adapter', () => {
       chessComAdapter.gameRole.player,
       chessComAdapter.anonymity.watchSelector,
       ...chessComAdapter.anonymity.rules.flatMap((rule) => rule.selectors),
-      ...(chessComAdapter.anonymity.linkRules ?? []).flatMap((rule) => rule.selectors)
+      ...(chessComAdapter.anonymity.linkRules ?? []).flatMap((rule) => rule.selectors),
     ]
 
     expect(selectorGroups.every((selector) => selector.trim().length > 0)).toBe(true)

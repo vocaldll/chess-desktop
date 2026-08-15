@@ -8,7 +8,7 @@ const mocks = vi.hoisted(() => ({
   invoke: vi.fn(),
   on: vi.fn(),
   removeListener: vi.fn(),
-  send: vi.fn()
+  send: vi.fn(),
 }))
 
 vi.mock('@sentry/electron/preload-namespaced', () => ({ hookupIpc: mocks.hookupSentryIpc }))
@@ -19,8 +19,8 @@ vi.mock('electron', () => ({
     invoke: mocks.invoke,
     on: mocks.on,
     removeListener: mocks.removeListener,
-    send: mocks.send
-  }
+    send: mocks.send,
+  },
 }))
 
 await import('./index')
@@ -47,7 +47,7 @@ describe('preload API', () => {
       'shortcuts',
       'updates',
       'webview',
-      'window'
+      'window',
     ])
   })
 
@@ -77,7 +77,7 @@ describe('preload API', () => {
       [IPC.shortcuts.recording, true],
       [IPC.audio.setVolume, 45],
       [IPC.links.openRepository],
-      [IPC.updates.install]
+      [IPC.updates.install],
     ])
     expect(mocks.invoke.mock.calls).toEqual([
       [IPC.window.isMaximized],
@@ -87,7 +87,7 @@ describe('preload API', () => {
       [IPC.webview.getLastSiteUrls],
       [IPC.reviewOnLichess.start, '[Event "Live Chess"]'],
       [IPC.updates.info],
-      [IPC.updates.check]
+      [IPC.updates.check],
     ])
   })
 

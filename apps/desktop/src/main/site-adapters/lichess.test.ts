@@ -9,7 +9,7 @@ describe('Lichess site adapter', () => {
       chatVisibility: true,
       playerAnonymity: true,
       numberedArrows: true,
-      reviewOnLichess: false
+      reviewOnLichess: false,
     })
   })
 
@@ -29,7 +29,7 @@ describe('Lichess site adapter', () => {
       lichessAdapter.gameRole.result ?? '',
       lichessAdapter.anonymity.watchSelector,
       ...lichessAdapter.anonymity.rules.flatMap((rule) => rule.selectors),
-      ...(lichessAdapter.anonymity.linkRules ?? []).flatMap((rule) => rule.selectors)
+      ...(lichessAdapter.anonymity.linkRules ?? []).flatMap((rule) => rule.selectors),
     ]
 
     expect(selectorGroups.every((selector) => selector.trim().length > 0)).toBe(true)

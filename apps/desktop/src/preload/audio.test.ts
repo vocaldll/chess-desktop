@@ -35,7 +35,7 @@ describe('master gain preload', () => {
   it('still scales media elements when the audio context cannot be wrapped', () => {
     const dom = new JSDOM('<!doctype html><html><body><audio></audio></body></html>', {
       runScripts: 'outside-only',
-      pretendToBeVisual: true
+      pretendToBeVisual: true,
     })
     const { window } = dom
 
@@ -43,7 +43,7 @@ describe('master gain preload', () => {
 
     const nativeVolume = Object.getOwnPropertyDescriptor(
       window.HTMLMediaElement.prototype,
-      'volume'
+      'volume',
     )
 
     window.eval(injectedScript())

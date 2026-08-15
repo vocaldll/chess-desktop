@@ -16,7 +16,7 @@ function rect(left = 0, top = 0, width = 800, height = width): DOMRect {
     bottom: top + height,
     width,
     height,
-    toJSON: () => ({})
+    toJSON: () => ({}),
   }
 }
 
@@ -27,7 +27,7 @@ function setBounds(element: Element, bounds = rect()): void {
 function setScreenMatrix(element: Element, matrix: Partial<DOMMatrix> = {}): void {
   Object.defineProperty(element, 'getScreenCTM', {
     configurable: true,
-    value: () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0, ...matrix })
+    value: () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0, ...matrix }),
   })
 }
 
@@ -37,7 +37,7 @@ function chesscomArrow(id: string): SVGPolygonElement {
   polygon.setAttribute('data-arrow', id)
   polygon.setAttribute(
     'points',
-    '0 0, 0 21.875, 9.375 21.875, 9.375 23.75, 13.875 20.5, 9.375 17.25, 9.375 19.125, 2.75 19.125, 2.75 0'
+    '0 0, 0 21.875, 9.375 21.875, 9.375 23.75, 13.875 20.5, 9.375 17.25, 9.375 19.125, 2.75 19.125, 2.75 0',
   )
   return polygon
 }
@@ -83,13 +83,13 @@ describe('numbered native arrows', () => {
     controller.configure({ enabled: true, siteId: 'chesscom' })
 
     board.dispatchEvent(
-      new MouseEvent('mousedown', { bubbles: true, button: 2, clientX: 790, clientY: 790 })
+      new MouseEvent('mousedown', { bubbles: true, button: 2, clientX: 790, clientY: 790 }),
     )
     const arrow = chesscomArrow('b1c3')
     setScreenMatrix(arrow, { a: 2, d: 2, e: 100, f: 50 })
     layer.append(arrow)
     board.dispatchEvent(
-      new MouseEvent('mouseup', { bubbles: true, button: 2, clientX: 5, clientY: 5 })
+      new MouseEvent('mouseup', { bubbles: true, button: 2, clientX: 5, clientY: 5 }),
     )
 
     await vi.waitFor(() => expect(labels()).toHaveLength(1))
@@ -224,7 +224,7 @@ describe('numbered native arrows', () => {
     setBounds(layer)
     shapes.append(
       lichessArrow('800,800,2,d3,e4,green,-', 2),
-      lichessArrow('800,800,2,f3,e4,green,-', 4)
+      lichessArrow('800,800,2,f3,e4,green,-', 4),
     )
 
     controller = new NumberedArrowsController(document)
@@ -279,7 +279,7 @@ describe('numbered native arrows', () => {
       return `${square(index)},${square((index * 7 + 13) % 64)},green`
     }
     const arrows = Array.from({ length: 30 }, (_, index) =>
-      lichessArrow(`800,800,1,${key(index)}`, index + 1)
+      lichessArrow(`800,800,1,${key(index)}`, index + 1),
     )
     setBounds(board)
     setBounds(layer)
@@ -296,7 +296,7 @@ describe('numbered native arrows', () => {
 
     await vi.waitFor(() => {
       expect(labels().map((label) => label.textContent)).toEqual(
-        Array.from({ length: 30 }, (_, index) => String(index + 1))
+        Array.from({ length: 30 }, (_, index) => String(index + 1)),
       )
       expect(labels().map((label) => label.getAttribute('x'))).toEqual(initialPositions)
     })

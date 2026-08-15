@@ -58,7 +58,7 @@ describe('Chess Desktop', () => {
 
       return {
         controlsLeft: controls.getBoundingClientRect().left,
-        omniboxRight: omnibox.getBoundingClientRect().right
+        omniboxRight: omnibox.getBoundingClientRect().right,
       }
     })
     expect(titlebarLayout.omniboxRight).toBeLessThanOrEqual(titlebarLayout.controlsLeft)
@@ -76,9 +76,9 @@ describe('Chess Desktop', () => {
       return {
         clientHeight: body.clientHeight,
         columnCounts: grids.map(
-          (grid) => getComputedStyle(grid).gridTemplateColumns.split(' ').length
+          (grid) => getComputedStyle(grid).gridTemplateColumns.split(' ').length,
         ),
-        scrollHeight: body.scrollHeight
+        scrollHeight: body.scrollHeight,
       }
     })
     expect(settingsLayout.columnCounts).toEqual([2, 2, 2])
@@ -87,11 +87,11 @@ describe('Chess Desktop', () => {
     await expect(settingsDialog.$('.privacy-option input')).toBeSelected()
     await expect(
       settingsDialog.$(
-        'aria/Beta: Discord status detection is still being tested and may sometimes be inaccurate.'
-      )
+        'aria/Beta: Discord status detection is still being tested and may sometimes be inaccurate.',
+      ),
     ).toHaveAttribute(
       'title',
-      'Discord status detection is still being tested and may sometimes be inaccurate.'
+      'Discord status detection is still being tested and may sometimes be inaccurate.',
     )
 
     await settingsDialog.$('aria/Keyboard shortcuts').click()
@@ -106,7 +106,7 @@ describe('Chess Desktop', () => {
       return {
         hasOverflow: body.scrollHeight > body.clientHeight,
         scrollbarColor: styles.scrollbarColor,
-        scrollbarWidth: styles.scrollbarWidth
+        scrollbarWidth: styles.scrollbarWidth,
       }
     })
     expect(shortcutLayout.hasOverflow).toBe(true)
@@ -123,7 +123,7 @@ describe('Chess Desktop', () => {
       return {
         clientWidth: hint.clientWidth,
         scrollWidth: hint.scrollWidth,
-        text: hint.textContent
+        text: hint.textContent,
       }
     })
     expect(recordingHintLayout.text).toBe('Esc cancel · Del remove')

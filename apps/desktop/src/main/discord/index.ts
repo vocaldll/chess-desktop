@@ -38,10 +38,10 @@ function setActivity(presence: Presence | null): void {
             state: presence.state,
             assets: { large_image: presence.assetKey, large_text: presence.assetText },
             timestamps: { start: sessionStart ?? Date.now() },
-            buttons: BUTTONS
+            buttons: BUTTONS,
           }
-        : undefined
-    }
+        : undefined,
+    },
   })
 }
 
@@ -106,7 +106,7 @@ function start(): void {
       if (enabled) {
         scheduleReconnect()
       }
-    }
+    },
   })
 }
 
@@ -138,7 +138,7 @@ export function applyPresenceSettings(settings: Settings): void {
     location = {
       siteId: settings.activeSite,
       url: SITES[settings.activeSite].startUrl,
-      role: 'unknown'
+      role: 'unknown',
     }
   }
 
@@ -159,7 +159,7 @@ export function applyPresenceSettings(settings: Settings): void {
 export function updatePresenceLocation(
   siteId: SiteId,
   url: string,
-  role: GameRole = 'unknown'
+  role: GameRole = 'unknown',
 ): void {
   location = { siteId, url, role }
   push()

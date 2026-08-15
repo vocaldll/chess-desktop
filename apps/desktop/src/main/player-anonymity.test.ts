@@ -10,7 +10,7 @@ function contents(key = 'style-key') {
     isDestroyed: vi.fn().mockReturnValue(false),
     insertCSS: vi.fn().mockResolvedValue(key),
     removeInsertedCSS: vi.fn().mockResolvedValue(undefined),
-    executeJavaScript: vi.fn().mockResolvedValue(undefined)
+    executeJavaScript: vi.fn().mockResolvedValue(undefined),
   }
 }
 
@@ -67,7 +67,7 @@ function chesscomPage(
   bottom: string,
   self: string | null = 'TestSelf',
   chatters: readonly string[] = [],
-  messages = ''
+  messages = '',
 ): string {
   const chat = `<div class="resizable-chat-area-component">${chatters
     .map((name) => chesscomChatLine(name, 'hi'))
@@ -79,8 +79,8 @@ function chesscomPage(
 function taggedChatAuthors(dom: JSDOM): string[] {
   return [
     ...dom.window.document.querySelectorAll(
-      '.user-tagline-chat-component[data-chess-desktop-them] .user-username-component'
-    )
+      '.user-tagline-chat-component[data-chess-desktop-them] .user-username-component',
+    ),
   ].map((node) => (node.textContent ?? '').trim())
 }
 
@@ -106,7 +106,7 @@ function lichessPage(
   top: string,
   bottom: string,
   self: string | null = 'TestSelf',
-  chatters: readonly string[] = []
+  chatters: readonly string[] = [],
 ): string {
   const user = self ? ` data-user="${self}"` : ''
   const seats = `${ruser('top', top)}${ruser('bottom', bottom)}`
@@ -118,19 +118,19 @@ function lichessPage(
 
 function opponentLinks(dom: JSDOM, scope: string): string[] {
   return [
-    ...dom.window.document.querySelectorAll(`${scope} a.user-link[data-chess-desktop-them]`)
+    ...dom.window.document.querySelectorAll(`${scope} a.user-link[data-chess-desktop-them]`),
   ].map((node) => node.getAttribute('href') ?? '')
 }
 
 function markedLinks(dom: JSDOM): string[] {
   return [...dom.window.document.querySelectorAll('a.user-link[data-chess-desktop-me]')].map(
-    (node) => node.getAttribute('href') ?? ''
+    (node) => node.getAttribute('href') ?? '',
   )
 }
 
 function anonymizedLinks(dom: JSDOM, scope: string): string[] {
   return [
-    ...dom.window.document.querySelectorAll(`${scope} a.user-link:not([data-chess-desktop-me])`)
+    ...dom.window.document.querySelectorAll(`${scope} a.user-link:not([data-chess-desktop-me])`),
   ].map((node) => node.getAttribute('href') ?? '')
 }
 
@@ -156,7 +156,7 @@ function renderWithSettings(
   html: string,
   siteId: SiteId,
   opponentHidden: boolean,
-  ratingsHidden: boolean
+  ratingsHidden: boolean,
 ): JSDOM {
   const dom = new JSDOM(html, { runScripts: 'outside-only', pretendToBeVisual: true })
   dom.window.eval(scriptFor(siteId, opponentHidden, ratingsHidden))
@@ -180,7 +180,7 @@ function anonymizedSeats(dom: JSDOM, siteId: SiteId, fragment: string): string[]
   const rules = [...(style.sheet?.cssRules ?? [])] as CSSStyleRule[]
   const rule = rules.find(
     (candidate) =>
-      candidate.selectorText?.includes(fragment) && !candidate.selectorText.includes('::')
+      candidate.selectorText?.includes(fragment) && !candidate.selectorText.includes('::'),
   )
 
   if (!rule) {
@@ -188,7 +188,7 @@ function anonymizedSeats(dom: JSDOM, siteId: SiteId, fragment: string): string[]
   }
 
   return [...document.querySelectorAll(rule.selectorText)].map((node) =>
-    node.closest('.player-top, .ruser-top') ? 'top' : 'bottom'
+    node.closest('.player-top, .ruser-top') ? 'top' : 'bottom',
   )
 }
 
@@ -212,7 +212,7 @@ describe('player anonymity styling', () => {
     '.cc-user-badge-component',
     '.cc-avatar-img',
     'bundles/web/images/black_400.png',
-    "content: 'Opponent'"
+    "content: 'Opponent'",
   ])('covers %s in the Chess.com override', (fragment) => {
     expect(cssFor('chesscom')).toContain(fragment)
   })
@@ -221,7 +221,7 @@ describe('player anonymity styling', () => {
     'covers %s in the Lichess override',
     (fragment) => {
       expect(cssFor('lichess')).toContain(fragment)
-    }
+    },
   )
 
   it('hides both Chess.com ratings without anonymizing either player', () => {
@@ -349,7 +349,7 @@ describe('Chess.com self detection', () => {
 
   it('leaves both anonymized when the visitor is logged out', () => {
     expect(
-      selfMarker(render(chesscomPage('TestRival', 'TestStranger', null), 'chesscom'))
+      selfMarker(render(chesscomPage('TestRival', 'TestStranger', null), 'chesscom')),
     ).toBeNull()
   })
 
@@ -536,8 +536,8 @@ describe('Chess.com chat authorship', () => {
     const dom = render(chesscomPage('TestRival', 'TestSelf', 'TestSelf', chatters), 'chesscom')
     const authors = [
       ...dom.window.document.querySelectorAll(
-        '.user-tagline-chat-component:not([data-chess-desktop-them]) .user-username-component'
-      )
+        '.user-tagline-chat-component:not([data-chess-desktop-them]) .user-username-component',
+      ),
     ].map((node) => (node.textContent ?? '').trim())
 
     expect(authors).toEqual(['TestSelf:', 'TestWatcher:'])
@@ -601,8 +601,8 @@ describe('Chess.com game messages', () => {
     const over = document.querySelector('.game-over-message-component')
     const tagged = [
       ...document.querySelectorAll(
-        '.game-start-message-component a[data-chess-desktop-them], .game-over-message-component a[data-chess-desktop-them], .game-rate-sport-message-component a[data-chess-desktop-them]'
-      )
+        '.game-start-message-component a[data-chess-desktop-them], .game-over-message-component a[data-chess-desktop-them], .game-rate-sport-message-component a[data-chess-desktop-them]',
+      ),
     ].map((node) => node.textContent)
 
     expect(tagged).toEqual(['TestRival', 'TestRival'])
@@ -617,7 +617,7 @@ describe('Chess.com game messages', () => {
 
     expect(css).toContain('.game-start-message-component a.user-username[data-chess-desktop-them]')
     expect(css).toContain(
-      '.game-rate-sport-message-component a.user-username[data-chess-desktop-them]::after'
+      '.game-rate-sport-message-component a.user-username[data-chess-desktop-them]::after',
     )
     expect(css).toContain("content: 'Opponent';")
   })
@@ -638,13 +638,13 @@ describe('Chess.com game messages', () => {
     dom.window.eval(scriptFor('chesscom', false, false))
 
     expect(document.querySelector('.game-start-message-component')?.textContent).toContain(
-      'TestRival (1927)'
+      'TestRival (1927)',
     )
     expect(document.querySelector('.game-start-message-component')?.textContent).toContain(
-      'win +8 / draw +0 / lose -8'
+      'win +8 / draw +0 / lose -8',
     )
     expect(document.querySelector('.game-over-message-component')?.textContent).toContain(
-      'Your new Rapid rating is 1952 (+8).'
+      'Your new Rapid rating is 1952 (+8).',
     )
     expect(document.querySelectorAll('[data-chess-desktop-them]')).toHaveLength(0)
   })
@@ -655,7 +655,7 @@ describe('Chess.com game messages', () => {
 
     await vi.waitFor(() => {
       const messages = dom.window.document.querySelectorAll(
-        '.game-start-message-component, .game-over-message-component'
+        '.game-start-message-component, .game-over-message-component',
       )
       expect([...messages].map((node) => node.textContent).join(' ')).not.toMatch(/1927|1944|1952/)
     })
@@ -692,7 +692,7 @@ describe('Lichess chat authorship', () => {
   it('tags nobody in the chat while spectating', () => {
     const dom = render(
       lichessPage('TestRival', 'TestStranger', 'TestSelf', ['TestRival', 'TestStranger']),
-      'lichess'
+      'lichess',
     )
 
     expect(opponentLinks(dom, '.mchat')).toEqual([])

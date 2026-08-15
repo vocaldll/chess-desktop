@@ -2,7 +2,7 @@ import {
   OPPONENT_LINK_MARKER,
   type OpponentRule,
   SELF_LINK_MARKER,
-  type SiteAdapter
+  type SiteAdapter,
 } from './types'
 
 const READ_SELF = `
@@ -39,24 +39,24 @@ const OPPONENT_LINK = `a.user-link[${OPPONENT_LINK_MARKER}]`
 const LINK_SCOPES = [
   { scope: '.game__meta', link: NOT_SELF_LINK, fontSize: '0.9rem' },
   { scope: '.crosstable', link: NOT_SELF_LINK, fontSize: '1rem' },
-  { scope: '.mchat', link: OPPONENT_LINK, fontSize: '0.9rem' }
+  { scope: '.mchat', link: OPPONENT_LINK, fontSize: '0.9rem' },
 ]
 
 const LINK_RULES: readonly OpponentRule[] = [
   {
     selectors: LINK_SCOPES.flatMap(({ scope, link }) =>
-      ['.utitle', '.uflair', '.rating'].map((part) => `${scope} ${link} ${part}`)
+      ['.utitle', '.uflair', '.rating'].map((part) => `${scope} ${link} ${part}`),
     ),
-    body: 'display: none !important;'
+    body: 'display: none !important;',
   },
   {
     selectors: LINK_SCOPES.map(({ scope, link }) => `${scope} ${link}`),
-    body: 'font-size: 0 !important;'
+    body: 'font-size: 0 !important;',
   },
   ...LINK_SCOPES.map(({ scope, link, fontSize }) => ({
     selectors: [`${scope} ${link}::after`],
-    body: `content: 'Opponent'; font-size: ${fontSize};`
-  }))
+    body: `content: 'Opponent'; font-size: ${fontSize};`,
+  })),
 ]
 
 export const lichessAdapter: SiteAdapter = {
@@ -65,7 +65,7 @@ export const lichessAdapter: SiteAdapter = {
     chatVisibility: true,
     playerAnonymity: true,
     numberedArrows: true,
-    reviewOnLichess: false
+    reviewOnLichess: false,
   },
   chatHiddenCss: '.mchat { display: none !important; }',
   gameRole: {
@@ -73,28 +73,28 @@ export const lichessAdapter: SiteAdapter = {
     player:
       '[class*="resign"], [class*="takeback"], [class*="draw-yes"], [title*="resign" i], [title*="abort" i], [title*="takeback" i], [title*="offer draw" i], [aria-label*="resign" i], [aria-label*="abort" i], [aria-label*="takeback" i]',
     finished: '[class*="copy-me"], [class*="rematch"]',
-    result: '.result-wrap .result, .status .result'
+    result: '.result-wrap .result, .status .result',
   },
   anonymity: {
     seatPrefix: '.ruser-',
     ratingSelectors: ['rating'],
     additionalRatingSelectors: [
       '.game__meta a.user-link .rating',
-      '.crosstable a.user-link .rating'
+      '.crosstable a.user-link .rating',
     ],
     rules: [
       {
         selectors: ['.utitle', '.uflair', 'icon.line'],
-        body: 'display: none !important;'
+        body: 'display: none !important;',
       },
       { selectors: ['a.user-link'], body: 'font-size: 0 !important;' },
-      { selectors: ['a.user-link::after'], body: "content: 'Opponent'; font-size: 1.2rem;" }
+      { selectors: ['a.user-link::after'], body: "content: 'Opponent'; font-size: 1.2rem;" },
     ],
     linkRules: LINK_RULES,
     readSelf: READ_SELF,
     readSeat: READ_SEAT,
     markLinks: MARK_LINKS,
     watchSelector: 'a.user-link',
-    watchClasses: ['ruser-top', 'ruser-bottom']
-  }
+    watchClasses: ['ruser-top', 'ruser-bottom'],
+  },
 }

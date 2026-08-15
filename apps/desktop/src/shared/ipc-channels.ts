@@ -5,34 +5,34 @@ export const IPC = {
     close: 'window:close',
     isMaximized: 'window:is-maximized',
     maximizeChanged: 'window:maximize-changed',
-    fullscreenChanged: 'window:fullscreen-changed'
+    fullscreenChanged: 'window:fullscreen-changed',
   },
   shortcuts: {
     triggered: 'shortcuts:triggered',
-    recording: 'shortcuts:recording'
+    recording: 'shortcuts:recording',
   },
   settings: {
     getAll: 'settings:get-all',
-    set: 'settings:set'
+    set: 'settings:set',
   },
   audio: {
-    setVolume: 'audio:set-volume'
+    setVolume: 'audio:set-volume',
   },
   links: {
-    openRepository: 'links:open-repository'
+    openRepository: 'links:open-repository',
   },
   webview: {
     getLastSiteUrls: 'webview:get-last-site-urls',
     loadStart: 'webview:load-start',
     loadStop: 'webview:load-stop',
-    loadError: 'webview:load-error'
+    loadError: 'webview:load-error',
   },
   activeGame: {
     isPlaying: 'active-game:is-playing',
-    playingChanged: 'active-game:playing-changed'
+    playingChanged: 'active-game:playing-changed',
   },
   reviewOnLichess: {
-    start: 'review-on-lichess:start'
+    start: 'review-on-lichess:start',
   },
   updates: {
     info: 'updates:info',
@@ -41,8 +41,8 @@ export const IPC = {
     failed: 'updates:failed',
     downloaded: 'updates:downloaded',
     install: 'updates:install',
-    installFailed: 'updates:install-failed'
-  }
+    installFailed: 'updates:install-failed',
+  },
 } as const
 
 export interface WebviewLoadError {

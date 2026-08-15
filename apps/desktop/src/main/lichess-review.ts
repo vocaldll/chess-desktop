@@ -109,8 +109,8 @@ export function installReviewButtons(): void {
         (mutation) =>
           [...mutation.addedNodes].some(containsReviewLink) ||
           [...mutation.removedNodes].some(
-            (node) => containsReviewLink(node) || containsReviewButton(node)
-          )
+            (node) => containsReviewLink(node) || containsReviewButton(node),
+          ),
       )
     ) {
       schedule()
@@ -126,7 +126,7 @@ export function installReviewButtons(): void {
         button.remove()
       })
       delete stateWindow.__chessDesktopLichessReview
-    }
+    },
   }
 
   addButtons()
@@ -147,7 +147,7 @@ export function applyReviewOnLichess(
   contents: WebContents | null,
   siteId: SiteId,
   enabled: boolean,
-  refresh = false
+  refresh = false,
 ): void {
   if (!contents || contents.isDestroyed()) {
     return

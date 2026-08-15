@@ -2,7 +2,7 @@ import { defaultSettings, type SettingKey, type Settings } from '$shared/setting
 import type { SiteId } from '$shared/sites'
 import {
   initializeRendererErrorReporting,
-  setRendererErrorReportingEnabled
+  setRendererErrorReportingEnabled,
 } from './error-reporting'
 
 class SettingsStore {

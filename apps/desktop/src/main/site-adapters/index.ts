@@ -5,7 +5,7 @@ import type { SiteAdapter } from './types'
 
 export const SITE_ADAPTERS = {
   chesscom: chessComAdapter,
-  lichess: lichessAdapter
+  lichess: lichessAdapter,
 } satisfies Record<SiteId, SiteAdapter>
 
 export function getSiteAdapter(siteId: SiteId): SiteAdapter {

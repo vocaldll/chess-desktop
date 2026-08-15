@@ -21,7 +21,7 @@ describe('SiteSwitcher', () => {
 
     expect(screen.getByRole('button', { name: 'Chess.com' })).toHaveAttribute(
       'aria-pressed',
-      'true'
+      'true',
     )
     expect(screen.getByRole('button', { name: 'Lichess' })).toHaveAttribute('aria-pressed', 'false')
 

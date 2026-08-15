@@ -13,5 +13,5 @@ hydrateRoot(
   container,
   <StrictMode>
     <App />
-  </StrictMode>
+  </StrictMode>,
 )

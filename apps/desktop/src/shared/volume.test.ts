@@ -10,6 +10,6 @@ describe('volume validation', () => {
     'rejects %j',
     (value) => {
       expect(isVolumePercent(value)).toBe(false)
-    }
+    },
   )
 })

@@ -181,6 +181,6 @@ export function connect(clientId: string, handlers: TransportHandlers): DiscordT
 
       closed = true
       detach()?.end()
-    }
+    },
   }
 }

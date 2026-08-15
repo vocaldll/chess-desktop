@@ -5,7 +5,7 @@ import {
   clipboard,
   Menu,
   type MenuItemConstructorOptions,
-  type WebContents
+  type WebContents,
 } from 'electron'
 import { isOpenableExternally } from '../shared/sites'
 import { openExternalUrl } from './external-links'
@@ -14,14 +14,14 @@ import { getSiteWebContents } from './webview'
 function buildTemplate(
   contents: WebContents,
   params: ContextMenuParams,
-  currentPageURL?: string
+  currentPageURL?: string,
 ): MenuItemConstructorOptions[] {
   const items: MenuItemConstructorOptions[] = []
 
   if (currentPageURL && isOpenableExternally(currentPageURL)) {
     items.push(
       { label: 'Open in browser', click: () => openExternalUrl(currentPageURL) },
-      { type: 'separator' }
+      { type: 'separator' },
     )
   }
 
@@ -34,8 +34,8 @@ function buildTemplate(
       {
         label: 'Select all',
         enabled: params.editFlags.canSelectAll,
-        click: () => contents.selectAll()
-      }
+        click: () => contents.selectAll(),
+      },
     )
   } else if (params.selectionText.trim()) {
     items.push({ label: 'Copy', click: () => contents.copy() })
@@ -49,13 +49,13 @@ function buildTemplate(
     if (isOpenableExternally(params.linkURL)) {
       items.push({
         label: 'Open in browser',
-        click: () => openExternalUrl(params.linkURL)
+        click: () => openExternalUrl(params.linkURL),
       })
     }
 
     items.push({
       label: 'Copy link address',
-      click: () => clipboard.writeText(params.linkURL)
+      click: () => clipboard.writeText(params.linkURL),
     })
   }
 

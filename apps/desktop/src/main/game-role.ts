@@ -42,7 +42,7 @@ function buildProbe(siteId: SiteId): string {
 
 const PROBES: Record<SiteId, string> = {
   chesscom: buildProbe('chesscom'),
-  lichess: buildProbe('lichess')
+  lichess: buildProbe('lichess'),
 }
 
 function toRole(result: ProbeResult): GameRole {

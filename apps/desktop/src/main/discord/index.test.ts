@@ -3,7 +3,7 @@ import { defaultSettings } from '../../shared/settings'
 
 const mocks = vi.hoisted(() => ({
   connect: vi.fn(),
-  randomUUID: vi.fn()
+  randomUUID: vi.fn(),
 }))
 
 vi.mock('node:crypto', () => ({ randomUUID: mocks.randomUUID }))
@@ -64,10 +64,10 @@ describe('Discord Rich Presence lifecycle', () => {
         nonce: 'nonce-123',
         args: expect.objectContaining({
           activity: expect.objectContaining({
-            buttons: [{ label: 'Chess Desktop', url: 'https://chessdesktop.app' }]
-          })
-        })
-      })
+            buttons: [{ label: 'Chess Desktop', url: 'https://chessdesktop.app' }],
+          }),
+        }),
+      }),
     )
 
     presence.shutdownPresence()
@@ -86,7 +86,7 @@ describe('Discord Rich Presence lifecycle', () => {
     await vi.advanceTimersByTimeAsync(4_000)
     expect(connections[0].send).toHaveBeenCalledOnce()
     expect(connections[0].send.mock.calls[0][0]).toMatchObject({
-      args: { activity: { details: 'Playing a game' } }
+      args: { activity: { details: 'Playing a game' } },
     })
 
     presence.updatePresenceLocation('chesscom', 'https://www.chess.com/game/123', 'playing')
@@ -105,12 +105,12 @@ describe('Discord Rich Presence lifecycle', () => {
     presence.updatePresenceLocation('lichess', 'https://lichess.org/Ab12Cd34', 'reviewing')
     presence.applyPresenceSettings({
       ...enabledSettings(),
-      activeSite: 'lichess'
+      activeSite: 'lichess',
     })
 
     await vi.advanceTimersByTimeAsync(4_000)
     expect(connections[0].send.mock.calls[0][0]).toMatchObject({
-      args: { activity: { details: 'Reviewing a game' } }
+      args: { activity: { details: 'Reviewing a game' } },
     })
 
     presence.shutdownPresence()
@@ -139,7 +139,7 @@ describe('Discord Rich Presence lifecycle', () => {
     presence.applyPresenceSettings(defaultSettings)
 
     expect(connections[0].send).toHaveBeenCalledWith(
-      expect.objectContaining({ args: expect.objectContaining({ activity: undefined }) })
+      expect.objectContaining({ args: expect.objectContaining({ activity: undefined }) }),
     )
     expect(connections[0].close).toHaveBeenCalledOnce()
   })

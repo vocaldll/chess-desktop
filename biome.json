@@ -33,7 +33,7 @@
     "formatter": {
       "quoteStyle": "single",
       "semicolons": "asNeeded",
-      "trailingCommas": "none"
+      "trailingCommas": "all"
     }
   },
   "css": {

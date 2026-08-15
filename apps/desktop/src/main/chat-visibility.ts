@@ -10,7 +10,7 @@ export function applyChatVisibility(
   contents: WebContents | null,
   siteId: SiteId,
   hidden: boolean,
-  refresh = false
+  refresh = false,
 ): void {
   if (!contents || contents.isDestroyed()) {
     return
@@ -26,6 +26,6 @@ export function applyChatVisibility(
   const adapter = getSiteAdapter(siteId)
   styles.replace(
     contents,
-    hidden && adapter.capabilities.chatVisibility ? adapter.chatHiddenCss : null
+    hidden && adapter.capabilities.chatVisibility ? adapter.chatHiddenCss : null,
   )
 }

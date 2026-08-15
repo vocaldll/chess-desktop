@@ -16,7 +16,7 @@ function webview(url = 'https://www.chess.com/game/123') {
     goBack: vi.fn(),
     goForward: vi.fn(),
     reload: vi.fn(),
-    loadURL: vi.fn().mockResolvedValue(undefined)
+    loadURL: vi.fn().mockResolvedValue(undefined),
   }
 }
 
@@ -25,7 +25,7 @@ describe('browser store', () => {
     vi.clearAllMocks()
     getLastSiteUrls.mockResolvedValue({
       chesscom: 'https://www.chess.com/home',
-      lichess: 'https://lichess.org/training'
+      lichess: 'https://lichess.org/training',
     })
   })
 

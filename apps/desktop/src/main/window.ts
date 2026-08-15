@@ -17,7 +17,7 @@ function resolveBounds(): Rectangle {
         x: saved.x as number,
         y: saved.y as number,
         width: saved.width,
-        height: saved.height
+        height: saved.height,
       }).workArea
     : screen.getPrimaryDisplay().workArea
 
@@ -33,7 +33,7 @@ function resolveBounds(): Rectangle {
     width,
     height,
     x: fitsHorizontally ? (saved.x as number) : area.x + Math.floor((area.width - width) / 2),
-    y: fitsVertically ? (saved.y as number) : area.y + Math.floor((area.height - height) / 2)
+    y: fitsVertically ? (saved.y as number) : area.y + Math.floor((area.height - height) / 2),
   }
 }
 
@@ -55,8 +55,8 @@ export function createMainWindow(): BrowserWindow {
       webviewTag: true,
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: true
-    }
+      sandbox: true,
+    },
   })
 
   if (wasMaximized) {
@@ -95,7 +95,7 @@ export function createMainWindow(): BrowserWindow {
       height: current.height,
       x: current.x,
       y: current.y,
-      isMaximized
+      isMaximized,
     })
   })
 

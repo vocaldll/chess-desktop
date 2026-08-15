@@ -5,13 +5,13 @@ const shots = [
   {
     src: '/showcase-chesscom.webp',
     label: 'Chess.com',
-    alt: 'Chess Desktop running Chess.com'
+    alt: 'Chess Desktop running Chess.com',
   },
   {
     src: '/showcase-lichess.webp',
     label: 'Lichess',
-    alt: 'Chess Desktop running Lichess'
-  }
+    alt: 'Chess Desktop running Lichess',
+  },
 ]
 
 export default function Showcase() {

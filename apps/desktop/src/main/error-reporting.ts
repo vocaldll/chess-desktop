@@ -14,7 +14,7 @@ const ALLOWED_INTEGRATIONS = new Set([
   'LinkedErrors',
   'NormalizePaths',
   'OnUncaughtException',
-  'OnUnhandledRejection'
+  'OnUnhandledRejection',
 ])
 
 let reportingEnabled = false
@@ -51,8 +51,8 @@ export function initializeErrorReporting(enabled: boolean): void {
     beforeBreadcrumb: () => null,
     beforeSend: (event) => (reportingEnabled ? sanitizeErrorEvent(event) : null),
     initialScope: {
-      tags: { 'app.distribution': 'desktop' }
-    }
+      tags: { 'app.distribution': 'desktop' },
+    },
   })
 
   if (reportingEnabled && process.env.SENTRY_TEST_EVENT === '1') {

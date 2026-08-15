@@ -13,7 +13,7 @@ function updateInfo(): AppUpdateInfo {
   return {
     version: app.getVersion(),
     canCheck: canCheckForUpdates(),
-    downloadedVersion
+    downloadedVersion,
   }
 }
 

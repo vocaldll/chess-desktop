@@ -4,7 +4,7 @@ import {
   resolveShortcutChords,
   SHORTCUTS,
   type ShortcutAction,
-  shortcutChordMatchesBinding
+  shortcutChordMatchesBinding,
 } from '../shared/shortcuts'
 import { getSettings } from './store'
 
@@ -20,14 +20,14 @@ function matchCommand(input: Input): ShortcutAction | null {
     key,
     control: input.control,
     alt: input.alt,
-    shift: input.shift
+    shift: input.shift,
   }
   const { shortcutOverrides } = getSettings()
 
   const shortcut = SHORTCUTS.find((candidate) =>
     resolveShortcutChords(candidate, shortcutOverrides).some((chord) =>
-      shortcutChordMatchesBinding(chord, binding)
-    )
+      shortcutChordMatchesBinding(chord, binding),
+    ),
   )
 
   return shortcut?.command ?? null

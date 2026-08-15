@@ -5,25 +5,25 @@ const mocks = vi.hoisted(() => ({
   app: {
     isPackaged: false,
     getVersion: vi.fn(),
-    on: vi.fn()
+    on: vi.fn(),
   },
   ipcHandle: vi.fn(),
   ipcOn: vi.fn(),
   updaterOn: vi.fn(),
   checkForUpdates: vi.fn(),
-  quitAndInstall: vi.fn()
+  quitAndInstall: vi.fn(),
 }))
 
 vi.mock('electron', () => ({
   app: mocks.app,
-  ipcMain: { handle: mocks.ipcHandle, on: mocks.ipcOn }
+  ipcMain: { handle: mocks.ipcHandle, on: mocks.ipcOn },
 }))
 vi.mock('electron-updater', () => ({
   autoUpdater: {
     on: mocks.updaterOn,
     checkForUpdates: mocks.checkForUpdates,
-    quitAndInstall: mocks.quitAndInstall
-  }
+    quitAndInstall: mocks.quitAndInstall,
+  },
 }))
 
 type Handler = (...args: unknown[]) => unknown
@@ -66,10 +66,10 @@ describe('automatic updates', () => {
     expect(registration(mocks.ipcHandle, IPC.updates.info)()).toEqual({
       version: '1.2.3',
       canCheck: false,
-      downloadedVersion: null
+      downloadedVersion: null,
     })
     await expect(registration(mocks.ipcHandle, IPC.updates.check)()).resolves.toEqual({
-      status: 'unsupported'
+      status: 'unsupported',
     })
     expect(mocks.updaterOn).not.toHaveBeenCalled()
   })
@@ -83,7 +83,7 @@ describe('automatic updates', () => {
 
     mocks.checkForUpdates.mockResolvedValue({
       isUpdateAvailable: true,
-      updateInfo: { version: '2.0.0' }
+      updateInfo: { version: '2.0.0' },
     })
     await expect(check()).resolves.toEqual({ status: 'available', version: '2.0.0' })
 
@@ -102,10 +102,10 @@ describe('automatic updates', () => {
     downloaded({ version: '2.0.0' })
     expect(send.mock.calls).toEqual([
       [IPC.updates.available, '1.5.0'],
-      [IPC.updates.downloaded, '2.0.0']
+      [IPC.updates.downloaded, '2.0.0'],
     ])
     expect(registration(mocks.ipcHandle, IPC.updates.info)()).toMatchObject({
-      downloadedVersion: '2.0.0'
+      downloadedVersion: '2.0.0',
     })
 
     install()

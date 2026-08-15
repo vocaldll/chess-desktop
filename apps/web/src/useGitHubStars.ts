@@ -6,7 +6,7 @@ let pending: Promise<number | null> | null = null
 export async function fetchGitHubStars(fetcher: typeof fetch = fetch): Promise<number | null> {
   try {
     const response = await fetcher(`https://api.github.com/repos/${site.owner}/${site.repo}`, {
-      headers: { accept: 'application/vnd.github+json' }
+      headers: { accept: 'application/vnd.github+json' },
     })
     const data = response.ok ? await response.json() : null
 

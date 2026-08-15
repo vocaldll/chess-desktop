@@ -26,7 +26,7 @@ describe('external links', () => {
     expect(mocks.openExternal).not.toHaveBeenCalled()
     expect(warning).toHaveBeenCalledWith(
       'Blocked external URL with unsupported protocol:',
-      'javascript:alert(1)'
+      'javascript:alert(1)',
     )
     warning.mockRestore()
   })

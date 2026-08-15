@@ -8,7 +8,7 @@ const PLACEHOLDER_AVATAR_BODY = [
   `background-image: url("${PLACEHOLDER_AVATAR}");`,
   'background-size: cover;',
   'background-position: center;',
-  'background-repeat: no-repeat;'
+  'background-repeat: no-repeat;',
 ].join('\n  ')
 
 const SELF_SOURCES = [
@@ -16,7 +16,7 @@ const SELF_SOURCES = [
   '.nav-user-username',
   'nav.sidebar-container a[href*="/member/"]',
   'nav a[href*="/member/"]',
-  'header a[href*="/member/"]'
+  'header a[href*="/member/"]',
 ] as const
 
 const READ_SELF = `
@@ -63,10 +63,10 @@ const CHAT_TAGLINE = `.user-tagline-chat-component[${OPPONENT_LINK_MARKER}]`
 const GAME_MESSAGES = [
   '.game-start-message-component',
   '.game-over-message-component',
-  '.game-rate-sport-message-component'
+  '.game-rate-sport-message-component',
 ] as const
 const MESSAGE_OPPONENT = GAME_MESSAGES.map(
-  (selector) => `${selector} a.user-username[${OPPONENT_LINK_MARKER}]`
+  (selector) => `${selector} a.user-username[${OPPONENT_LINK_MARKER}]`,
 )
 
 const MARK_LINKS = `
@@ -83,7 +83,7 @@ const MARK_LINKS = `
 
         const messageSelector = ${JSON.stringify(GAME_MESSAGES.join(', '))}
         const messageUserSelector = ${JSON.stringify(
-          GAME_MESSAGES.map((selector) => `${selector} a.user-username`).join(', ')
+          GAME_MESSAGES.map((selector) => `${selector} a.user-username`).join(', '),
         )}
 
         for (const node of document.querySelectorAll(messageUserSelector)) {
@@ -162,24 +162,24 @@ const MARK_LINKS = `
 const LINK_RULES: readonly OpponentRule[] = [
   {
     selectors: [`${CHAT_TAGLINE} .user-tagline-chat-flair`, `${CHAT_TAGLINE} .flair-rpc-component`],
-    body: 'display: none !important;'
+    body: 'display: none !important;',
   },
   {
     selectors: [`${CHAT_TAGLINE} ${CHAT_AUTHOR}`],
-    body: 'font-size: 0 !important;'
+    body: 'font-size: 0 !important;',
   },
   {
     selectors: [`${CHAT_TAGLINE} ${CHAT_AUTHOR}::after`],
-    body: "content: 'Opponent:'; font-size: 14px;"
+    body: "content: 'Opponent:'; font-size: 14px;",
   },
   {
     selectors: MESSAGE_OPPONENT,
-    body: 'font-size: 0 !important;'
+    body: 'font-size: 0 !important;',
   },
   {
     selectors: MESSAGE_OPPONENT.map((selector) => `${selector}::after`),
-    body: "content: 'Opponent'; font-size: 14px;"
-  }
+    body: "content: 'Opponent'; font-size: 14px;",
+  },
 ]
 
 export const chessComAdapter: SiteAdapter = {
@@ -188,7 +188,7 @@ export const chessComAdapter: SiteAdapter = {
     chatVisibility: true,
     playerAnonymity: true,
     numberedArrows: true,
-    reviewOnLichess: true
+    reviewOnLichess: true,
   },
   chatHiddenCss:
     '.resizable-chat-area-component, [data-tab="GameViewTab.Chat"] { display: none !important; }',
@@ -198,7 +198,7 @@ export const chessComAdapter: SiteAdapter = {
     player:
       '[aria-label="Resign" i], [aria-label="Abort" i], [aria-label="Draw" i], [aria-label="Undo" i], [aria-label="Takeback" i], [class*="resign-button"], [class*="draw-button"], [class*="abort-button"]',
     finished: null,
-    result: null
+    result: null,
   },
   anonymity: {
     seatPrefix: '.player-',
@@ -211,17 +211,17 @@ export const chessComAdapter: SiteAdapter = {
           '.cc-user-title-component',
           '.cc-country-flag-component',
           '.flair-rpc-component',
-          '.cc-user-badge-component'
+          '.cc-user-badge-component',
         ],
-        body: 'display: none !important;'
+        body: 'display: none !important;',
       },
       { selectors: ['.cc-avatar-img'], body: 'visibility: hidden !important;' },
       { selectors: ['.cc-avatar-component'], body: PLACEHOLDER_AVATAR_BODY },
       { selectors: [USERNAME], body: 'font-size: 0 !important;' },
       {
         selectors: [`${USERNAME}::after`],
-        body: "content: 'Opponent'; font-size: 14px;"
-      }
+        body: "content: 'Opponent'; font-size: 14px;",
+      },
     ],
     linkRules: LINK_RULES,
     readSelf: READ_SELF,
@@ -231,8 +231,8 @@ export const chessComAdapter: SiteAdapter = {
       ...SELF_SOURCES,
       USERNAME,
       `.chat-message-component ${CHAT_AUTHOR}`,
-      ...GAME_MESSAGES
+      ...GAME_MESSAGES,
     ].join(', '),
-    watchClasses: ['player-top', 'player-bottom']
-  }
+    watchClasses: ['player-top', 'player-bottom'],
+  },
 }

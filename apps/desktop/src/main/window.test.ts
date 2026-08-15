@@ -6,13 +6,13 @@ import { defaultSettings } from '../shared/settings'
 const mocks = vi.hoisted(() => ({
   constructWindow: vi.fn(),
   app: {
-    isPackaged: false
+    isPackaged: false,
   },
   getDisplayMatching: vi.fn(),
   getPrimaryDisplay: vi.fn(),
   getSettings: vi.fn(),
   getWindowBounds: vi.fn(),
-  setWindowBounds: vi.fn()
+  setWindowBounds: vi.fn(),
 }))
 
 vi.mock('electron', () => ({
@@ -30,10 +30,10 @@ vi.mock('electron', () => ({
     readonly loadURL = vi.fn()
     readonly loadFile = vi.fn()
     readonly once = vi.fn((event: string, handler: (...args: unknown[]) => void) =>
-      this.handlers.set(event, handler)
+      this.handlers.set(event, handler),
     )
     readonly on = vi.fn((event: string, handler: (...args: unknown[]) => void) =>
-      this.handlers.set(event, handler)
+      this.handlers.set(event, handler),
     )
 
     constructor(options: unknown) {
@@ -42,13 +42,13 @@ vi.mock('electron', () => ({
   },
   screen: {
     getDisplayMatching: mocks.getDisplayMatching,
-    getPrimaryDisplay: mocks.getPrimaryDisplay
-  }
+    getPrimaryDisplay: mocks.getPrimaryDisplay,
+  },
 }))
 vi.mock('./store', () => ({
   getSettings: mocks.getSettings,
   getWindowBounds: mocks.getWindowBounds,
-  setWindowBounds: mocks.setWindowBounds
+  setWindowBounds: mocks.setWindowBounds,
 }))
 
 import { createMainWindow } from './window'
@@ -70,7 +70,7 @@ function fakeWindow() {
     loadURL: vi.fn(),
     loadFile: vi.fn(),
     once: vi.fn((event: string, handler: Handler) => handlers.set(event, handler)),
-    on: vi.fn((event: string, handler: Handler) => handlers.set(event, handler))
+    on: vi.fn((event: string, handler: Handler) => handlers.set(event, handler)),
   }
 }
 
@@ -85,10 +85,10 @@ describe('main window', () => {
       height: 900,
       x: undefined,
       y: undefined,
-      isMaximized: false
+      isMaximized: false,
     })
     mocks.getPrimaryDisplay.mockReturnValue({
-      workArea: { width: 1000, height: 700, x: 0, y: 0 }
+      workArea: { width: 1000, height: 700, x: 0, y: 0 },
     })
   })
 
@@ -111,9 +111,9 @@ describe('main window', () => {
           webviewTag: true,
           contextIsolation: true,
           nodeIntegration: false,
-          sandbox: true
-        })
-      })
+          sandbox: true,
+        }),
+      }),
     )
     expect(window.setAlwaysOnTop).toHaveBeenCalledWith(false)
     expect(window.loadFile).toHaveBeenCalledOnce()
@@ -125,16 +125,16 @@ describe('main window', () => {
       height: 600,
       x: 100,
       y: 50,
-      isMaximized: true
+      isMaximized: true,
     })
     mocks.getDisplayMatching.mockReturnValue({
-      workArea: { width: 1600, height: 900, x: 0, y: 0 }
+      workArea: { width: 1600, height: 900, x: 0, y: 0 },
     })
 
     const window = createMainWindow() as unknown as ReturnType<typeof fakeWindow>
 
     expect(mocks.constructWindow).toHaveBeenCalledWith(
-      expect.objectContaining({ width: 900, height: 600, x: 100, y: 50 })
+      expect.objectContaining({ width: 900, height: 600, x: 100, y: 50 }),
     )
     expect(window.maximize).toHaveBeenCalledOnce()
   })
@@ -152,7 +152,7 @@ describe('main window', () => {
       [IPC.window.maximizeChanged, true],
       [IPC.window.maximizeChanged, false],
       [IPC.window.fullscreenChanged, true],
-      [IPC.window.fullscreenChanged, false]
+      [IPC.window.fullscreenChanged, false],
     ])
 
     window.isMaximized.mockReturnValue(true)
@@ -162,7 +162,7 @@ describe('main window', () => {
       height: 700,
       x: 10,
       y: 20,
-      isMaximized: true
+      isMaximized: true,
     })
   })
 

@@ -15,7 +15,7 @@ describe('Showcase', () => {
 
     expect(screen.getByRole('button', { name: 'Chess.com' })).toHaveAttribute(
       'aria-pressed',
-      'false'
+      'false',
     )
     expect(screen.getByRole('button', { name: 'Lichess' })).toHaveAttribute('aria-pressed', 'true')
   })
@@ -41,7 +41,7 @@ describe('Showcase', () => {
     render(<Showcase />)
 
     expect(screen.getByRole('img', { name: 'Chess Desktop running Chess.com' })).toHaveClass(
-      'motion-reduce:transition-none'
+      'motion-reduce:transition-none',
     )
 
     act(() => vi.advanceTimersByTime(5000))

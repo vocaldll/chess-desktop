@@ -5,12 +5,12 @@ import { defaultSettings } from '../shared/settings'
 const mocks = vi.hoisted(() => ({
   appOn: vi.fn(),
   ipcOn: vi.fn(),
-  getSettings: vi.fn()
+  getSettings: vi.fn(),
 }))
 
 vi.mock('electron', () => ({
   app: { on: mocks.appOn },
-  ipcMain: { on: mocks.ipcOn }
+  ipcMain: { on: mocks.ipcOn },
 }))
 vi.mock('./store', () => ({ getSettings: mocks.getSettings }))
 
@@ -23,7 +23,7 @@ class FakeContents {
 
   constructor(
     readonly id: number,
-    private readonly type = 'window'
+    private readonly type = 'window',
   ) {}
 
   getType(): string {
@@ -49,7 +49,7 @@ function input(overrides: Record<string, unknown> = {}) {
     shift: false,
     meta: false,
     isAutoRepeat: false,
-    ...overrides
+    ...overrides,
   }
 }
 
@@ -59,13 +59,13 @@ function setup() {
   const window = {
     webContents: { id: renderer.id, send },
     isFullScreen: vi.fn().mockReturnValue(false),
-    setFullScreen: vi.fn()
+    setFullScreen: vi.fn(),
   }
   registerShortcuts(() => window as never)
 
   const created = mocks.appOn.mock.calls.find(([event]) => event === 'web-contents-created')?.[1]
   const recording = mocks.ipcOn.mock.calls.find(
-    ([channel]) => channel === IPC.shortcuts.recording
+    ([channel]) => channel === IPC.shortcuts.recording,
   )?.[1]
   if (!created || !recording) {
     throw new Error('Shortcut handlers were not registered')
@@ -101,7 +101,7 @@ describe('shortcut interception', () => {
 
       expect(event.preventDefault).not.toHaveBeenCalled()
       expect(send).not.toHaveBeenCalled()
-    }
+    },
   )
 
   it('toggles fullscreen locally and only exits when fullscreen', () => {

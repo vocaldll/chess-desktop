@@ -4,7 +4,7 @@ const links = [
   { label: 'Source', href: repository },
   { label: 'Releases', href: releases },
   { label: 'Issues', href: issues },
-  { label: contact, href: `mailto:${contact}` }
+  { label: contact, href: `mailto:${contact}` },
 ]
 
 export default function Footer() {

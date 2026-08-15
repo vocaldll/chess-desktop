@@ -10,7 +10,7 @@ interface DesktopPackage {
 
 const desktopRoot = resolve(import.meta.dirname, 'apps/desktop')
 const desktopPackage = JSON.parse(
-  readFileSync(resolve(desktopRoot, 'package.json'), 'utf8')
+  readFileSync(resolve(desktopRoot, 'package.json'), 'utf8'),
 ) as DesktopPackage
 const userDataDirectory = mkdtempSync(join(tmpdir(), 'chess-desktop-e2e-'))
 const appArgs = [`--user-data-dir=${userDataDirectory}`]
@@ -31,20 +31,20 @@ export const config: WebdriverIO.Config = {
       ...(chromedriverBinary
         ? {
             'wdio:chromedriverOptions': {
-              binary: chromedriverBinary
-            }
+              binary: chromedriverBinary,
+            },
           }
-        : {})
-    }
+        : {}),
+    },
   ],
   services: [
     [
       'electron',
       {
         appEntryPoint: resolve(desktopRoot, 'out/main/index.js'),
-        appArgs
-      }
-    ]
+        appArgs,
+      },
+    ],
   ],
   framework: 'mocha',
   reporters: ['spec'],
@@ -55,9 +55,9 @@ export const config: WebdriverIO.Config = {
   connectionRetryCount: 1,
   mochaOpts: {
     ui: 'bdd',
-    timeout: 30_000
+    timeout: 30_000,
   },
   afterSession: () => {
     rmSync(userDataDirectory, { recursive: true, force: true })
-  }
+  },
 }

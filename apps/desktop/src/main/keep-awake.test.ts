@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const blocker = vi.hoisted(() => ({
   start: vi.fn(),
-  stop: vi.fn()
+  stop: vi.fn(),
 }))
 
 vi.mock('electron', () => ({ powerSaveBlocker: blocker }))

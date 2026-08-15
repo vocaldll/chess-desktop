@@ -5,7 +5,7 @@ import {
   isOpenableExternally,
   isSiteId,
   isSiteURL,
-  normalizeSiteInput
+  normalizeSiteInput,
 } from './sites'
 
 describe('site identifiers', () => {
@@ -24,7 +24,7 @@ describe('site URL validation', () => {
     ['chesscom', 'https://www.chess.com/play/online'],
     ['chesscom', 'http://support.chess.com/article'],
     ['lichess', 'https://lichess.org/'],
-    ['lichess', 'https://api.lichess.org/api']
+    ['lichess', 'https://api.lichess.org/api'],
   ] as const)('accepts %s URL %s', (siteId, url) => {
     expect(isSiteURL(siteId, url)).toBe(true)
   })
@@ -36,7 +36,7 @@ describe('site URL validation', () => {
     ['chesscom', 'ftp://chess.com/game'],
     ['chesscom', 'javascript:alert(1)'],
     ['lichess', 'https://notlichess.org/'],
-    ['lichess', 'not a URL']
+    ['lichess', 'not a URL'],
   ] as const)('rejects %s URL %s', (siteId, url) => {
     expect(isSiteURL(siteId, url)).toBe(false)
   })
@@ -47,11 +47,11 @@ describe('last site URL coercion', () => {
     expect(
       coerceLastSiteUrls({
         chesscom: 'https://www.chess.com/game/live/123',
-        lichess: 'https://lichess.org/abcdefgh'
-      })
+        lichess: 'https://lichess.org/abcdefgh',
+      }),
     ).toEqual({
       chesscom: 'https://www.chess.com/game/live/123',
-      lichess: 'https://lichess.org/abcdefgh'
+      lichess: 'https://lichess.org/abcdefgh',
     })
   })
 
@@ -63,11 +63,11 @@ describe('last site URL coercion', () => {
     expect(
       coerceLastSiteUrls({
         chesscom: 'https://example.com/',
-        lichess: 'https://lichess.org/training'
-      })
+        lichess: 'https://lichess.org/training',
+      }),
     ).toEqual({
       chesscom: DEFAULT_LAST_SITE_URLS.chesscom,
-      lichess: 'https://lichess.org/training'
+      lichess: 'https://lichess.org/training',
     })
   })
 })
@@ -77,7 +77,7 @@ describe('site input normalization', () => {
     ['/play/online', 'https://www.chess.com/play/online'],
     [' chess.com/puzzles ', 'https://chess.com/puzzles'],
     ['https://support.chess.com/article', 'https://support.chess.com/article'],
-    ['HTTP://CHESS.COM/game', 'HTTP://CHESS.COM/game']
+    ['HTTP://CHESS.COM/game', 'HTTP://CHESS.COM/game'],
   ])('normalizes %j', (input, expected) => {
     expect(normalizeSiteInput('chesscom', input)).toBe(expected)
   })
@@ -86,7 +86,7 @@ describe('site input normalization', () => {
     'rejects %j for Chess.com',
     (input) => {
       expect(normalizeSiteInput('chesscom', input)).toBeNull()
-    }
+    },
   )
 })
 
@@ -95,13 +95,13 @@ describe('external URL validation', () => {
     'allows %s',
     (url) => {
       expect(isOpenableExternally(url)).toBe(true)
-    }
+    },
   )
 
   it.each(['file:///tmp/test', 'javascript:alert(1)', 'data:text/plain,test', 'invalid'])(
     'rejects %s',
     (url) => {
       expect(isOpenableExternally(url)).toBe(false)
-    }
+    },
   )
 })

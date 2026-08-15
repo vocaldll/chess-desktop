@@ -12,13 +12,13 @@ describe('SiteWebview', () => {
     activeGame.retainedSites = []
     window.api = {
       shortcuts: {
-        onCommand: () => () => undefined
+        onCommand: () => () => undefined,
       },
       webview: {
         onLoadStart: () => () => undefined,
         onLoadStop: () => () => undefined,
-        onLoadError: () => () => undefined
-      }
+        onLoadError: () => () => undefined,
+      },
     } as unknown as typeof window.api
   })
 

@@ -8,7 +8,7 @@ const setRendererErrorReportingEnabled = vi.fn()
 
 vi.mock('./error-reporting', () => ({
   initializeRendererErrorReporting,
-  setRendererErrorReportingEnabled
+  setRendererErrorReportingEnabled,
 }))
 
 async function freshSettings() {

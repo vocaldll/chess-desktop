@@ -26,7 +26,7 @@ export function applySettings(window: BrowserWindow | null, settings: Settings):
 export function applySetting(
   window: BrowserWindow | null,
   settings: Settings,
-  key: SettingKey
+  key: SettingKey,
 ): void {
   const contents = getSiteWebContents()
 
@@ -52,7 +52,7 @@ export function applySetting(
         contents,
         settings.activeSite,
         settings.hideOpponent,
-        settings.hideRatings
+        settings.hideRatings,
       )
       return
     case 'numberedArrows':

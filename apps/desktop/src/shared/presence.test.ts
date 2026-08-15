@@ -8,7 +8,7 @@ describe('game-role requirements', () => {
     ['chesscom', 'https://www.chess.com/game/daily/456'],
     ['chesscom', 'https://www.chess.com/play/computer'],
     ['lichess', 'https://lichess.org/Ab12Cd34'],
-    ['lichess', 'https://lichess.org/Ab12Cd34Ef56']
+    ['lichess', 'https://lichess.org/Ab12Cd34Ef56'],
   ] as const)('requires a role probe for %s URL %s', (siteId, url) => {
     expect(needsGameRole(siteId, url)).toBe(true)
   })
@@ -16,7 +16,7 @@ describe('game-role requirements', () => {
   it.each([
     ['chesscom', 'https://www.chess.com/play/online'],
     ['chesscom', 'https://www.chess.com/puzzles'],
-    ['lichess', 'https://lichess.org/training']
+    ['lichess', 'https://lichess.org/training'],
   ] as const)('does not require a role probe for %s URL %s', (siteId, url) => {
     expect(needsGameRole(siteId, url)).toBe(false)
   })
@@ -61,7 +61,7 @@ describe('presence descriptions', () => {
       'chesscom',
       'https://www.chess.com/lessons/learn-the-openings',
       'unknown',
-      'Studying openings'
+      'Studying openings',
     ],
     ['chesscom', 'https://www.chess.com/analysis', 'unknown', 'Analyzing a position'],
     ['chesscom', 'https://www.chess.com/game/live/123', 'playing', 'Playing a game'],
@@ -78,7 +78,7 @@ describe('presence descriptions', () => {
     ['lichess', 'https://lichess.org/Ab12Cd34', 'aborted', 'Browsing'],
     ['lichess', 'https://lichess.org/Ab12Cd34', 'spectating', 'Watching a game'],
     ['lichess', 'https://lichess.org/Ab12Cd34', 'finished', 'Reviewing a game'],
-    ['lichess', 'https://lichess.org/paste', 'reviewing', 'Reviewing a game']
+    ['lichess', 'https://lichess.org/paste', 'reviewing', 'Reviewing a game'],
   ] as const)(
     'describes %s URL %s as %s',
     (siteId: SiteId, url: string, role: GameRole, expected: string) => {
@@ -86,7 +86,7 @@ describe('presence descriptions', () => {
       expect(presence.details).toBe(expected)
       expect(presence.state).toBe(siteId === 'chesscom' ? 'Chess.com' : 'Lichess')
       expect(presence.assetKey).toBe(siteId)
-    }
+    },
   )
 
   it('falls back to browsing for malformed and unknown routes', () => {

@@ -10,7 +10,7 @@ import {
   latestRelease,
   releases,
   repository,
-  site
+  site,
 } from './site'
 
 describe('public site links', () => {
@@ -26,12 +26,12 @@ describe('public site links', () => {
     const extensionPlaceholder = '$' + '{ext}'
     const builderConfig = readFileSync(
       resolve(import.meta.dirname, '../../desktop/electron-builder.yml'),
-      'utf8'
+      'utf8',
     )
 
     expect(builderConfig).toContain(`artifactName: Chess-Desktop-Setup.${extensionPlaceholder}`)
     expect(builderConfig).toContain(
-      `artifactName: Chess-Desktop-${'$'}{arch}.${extensionPlaceholder}`
+      `artifactName: Chess-Desktop-${'$'}{arch}.${extensionPlaceholder}`,
     )
     expect(builderConfig).toMatch(/arch:\s+- x64\s+- arm64/g)
     expect(downloadWindows).toBe(`${latestRelease}/download/Chess-Desktop-Setup.exe`)

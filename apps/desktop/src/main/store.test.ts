@@ -8,7 +8,7 @@ import { DEFAULT_LAST_SITE_URLS } from '../shared/sites'
 const paths = vi.hoisted(() => ({ userData: '' }))
 
 vi.mock('electron', () => ({
-  app: { getPath: () => paths.userData }
+  app: { getPath: () => paths.userData },
 }))
 
 async function freshStore() {
@@ -58,28 +58,28 @@ describe('state store', () => {
         window: { width: 100, height: 200, x: 'invalid', y: 20, isMaximized: true },
         lastSiteUrls: {
           chesscom: 'https://example.com/',
-          lichess: 'https://lichess.org/training'
-        }
+          lichess: 'https://lichess.org/training',
+        },
       }),
-      'utf8'
+      'utf8',
     )
     const store = await freshStore()
 
     expect(store.getSettings()).toEqual({
       ...defaultSettings,
       activeSite: 'lichess',
-      soundMuted: true
+      soundMuted: true,
     })
     expect(store.getWindowBounds()).toEqual({
       width: 800,
       height: 600,
       x: undefined,
       y: 20,
-      isMaximized: true
+      isMaximized: true,
     })
     expect(store.getLastSiteUrls()).toEqual({
       chesscom: DEFAULT_LAST_SITE_URLS.chesscom,
-      lichess: 'https://lichess.org/training'
+      lichess: 'https://lichess.org/training',
     })
   })
 
@@ -111,7 +111,7 @@ describe('state store', () => {
     expect(await readState()).toMatchObject({
       settings: { alwaysOnTop: true },
       lastSiteUrls: { lichess: 'https://lichess.org/training' },
-      window: { width: 1440, height: 900, x: 10, y: 20, isMaximized: false }
+      window: { width: 1440, height: 900, x: 10, y: 20, isMaximized: false },
     })
   })
 

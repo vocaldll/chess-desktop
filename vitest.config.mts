@@ -5,7 +5,7 @@ export default defineConfig({
     projects: [
       'apps/desktop/vitest.node.config.mts',
       'apps/desktop/vitest.renderer.config.mts',
-      'apps/web/vitest.config.ts'
+      'apps/web/vitest.config.ts',
     ],
     coverage: {
       provider: 'v8',
@@ -17,8 +17,8 @@ export default defineConfig({
         statements: 55,
         branches: 55,
         functions: 55,
-        lines: 55
-      }
-    }
-  }
+        lines: 55,
+      },
+    },
+  },
 })

@@ -5,7 +5,7 @@ import { applyNumberedArrows } from './numbered-arrows'
 function contents(destroyed = false) {
   return {
     isDestroyed: vi.fn().mockReturnValue(destroyed),
-    send: vi.fn()
+    send: vi.fn(),
   }
 }
 
@@ -17,7 +17,7 @@ describe('numbered arrows', () => {
 
     expect(webContents.send).toHaveBeenCalledWith(NUMBERED_ARROWS_UPDATE_CHANNEL, {
       enabled: true,
-      siteId: 'lichess'
+      siteId: 'lichess',
     })
   })
 

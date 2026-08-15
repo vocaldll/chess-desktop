@@ -4,7 +4,7 @@ const installMasterGain = vi.hoisted(() => vi.fn())
 const installNumberedArrows = vi.hoisted(() => vi.fn())
 const electron = vi.hoisted(() => ({
   on: vi.fn(),
-  sendToHost: vi.fn()
+  sendToHost: vi.fn(),
 }))
 
 vi.mock('./audio', () => ({ installMasterGain }))
@@ -12,8 +12,8 @@ vi.mock('./numbered-arrows', () => ({ installNumberedArrows }))
 vi.mock('electron', () => ({
   ipcRenderer: {
     on: electron.on,
-    sendToHost: electron.sendToHost
-  }
+    sendToHost: electron.sendToHost,
+  },
 }))
 
 await import('./webview')
@@ -36,7 +36,7 @@ describe('guest webview preload', () => {
 
   it.each([
     [3, 'back'],
-    [4, 'forward']
+    [4, 'forward'],
   ])('routes mouse button %i to history.%s', (button, direction) => {
     const navigate = vi.spyOn(history, direction as 'back' | 'forward').mockImplementation(() => {})
     const event = new MouseEvent('mouseup', { button, cancelable: true })
@@ -93,7 +93,7 @@ describe('guest webview preload', () => {
 
     expect(electron.sendToHost).toHaveBeenCalledWith(
       'review-on-lichess-navigate',
-      'https://www.chess.com/game/live/456'
+      'https://www.chess.com/game/live/456',
     )
   })
 
@@ -115,13 +115,13 @@ describe('guest webview preload', () => {
       })
 
     const button = document.querySelector<HTMLButtonElement>(
-      '[data-chess-desktop-review-on-lichess]'
+      '[data-chess-desktop-review-on-lichess]',
     ) as HTMLButtonElement
     button.click()
 
     await vi.waitFor(() => expect(button.disabled).toBe(true))
     const failureHandler = electron.on.mock.calls.find(
-      ([channel]) => channel === 'review-on-lichess-failed'
+      ([channel]) => channel === 'review-on-lichess-failed',
     )?.[1]
     expect(failureHandler).toBeTypeOf('function')
     failureHandler()

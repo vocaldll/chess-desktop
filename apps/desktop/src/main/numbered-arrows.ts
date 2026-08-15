@@ -1,7 +1,7 @@
 import type { WebContents } from 'electron'
 import {
   NUMBERED_ARROWS_UPDATE_CHANNEL,
-  type NumberedArrowsUpdate
+  type NumberedArrowsUpdate,
 } from '../shared/numbered-arrows'
 import type { SiteId } from '../shared/sites'
 import { getSiteAdapter } from './site-adapters'
@@ -9,7 +9,7 @@ import { getSiteAdapter } from './site-adapters'
 export function applyNumberedArrows(
   contents: WebContents | null,
   siteId: SiteId,
-  enabled: boolean
+  enabled: boolean,
 ): void {
   if (!contents || contents.isDestroyed()) {
     return
@@ -18,7 +18,7 @@ export function applyNumberedArrows(
   const adapter = getSiteAdapter(siteId)
   const update: NumberedArrowsUpdate = {
     enabled: enabled && adapter.capabilities.numberedArrows,
-    siteId
+    siteId,
   }
   contents.send(NUMBERED_ARROWS_UPDATE_CHANNEL, update)
 }

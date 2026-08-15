@@ -16,18 +16,18 @@ function buildCSS({
   seatPrefix,
   ratingSelectors,
   rules,
-  linkRules = []
+  linkRules = [],
 }: AnonymityAdapter): string {
   const seated = [...rules, { selectors: ratingSelectors, body: 'display: none !important;' }].map(
     ({ selectors, body }) =>
       declare(
         SIDES.flatMap((side) =>
           selectors.map(
-            (selector) => `html:not([${SELF_MARKER}="${side}"]) ${seatPrefix}${side} ${selector}`
-          )
+            (selector) => `html:not([${SELF_MARKER}="${side}"]) ${seatPrefix}${side} ${selector}`,
+          ),
         ),
-        body
-      )
+        body,
+      ),
   )
 
   const linked = linkRules.map(({ selectors, body }) => declare(selectors, body))
@@ -38,16 +38,16 @@ function buildCSS({
 function buildRatingCSS({
   seatPrefix,
   ratingSelectors,
-  additionalRatingSelectors
+  additionalRatingSelectors,
 }: AnonymityAdapter): string {
   return declare(
     [
       ...SIDES.flatMap((side) =>
-        ratingSelectors.map((selector) => `${seatPrefix}${side} ${selector}`)
+        ratingSelectors.map((selector) => `${seatPrefix}${side} ${selector}`),
       ),
-      ...additionalRatingSelectors
+      ...additionalRatingSelectors,
     ],
-    'display: none !important;'
+    'display: none !important;',
   )
 }
 
@@ -56,7 +56,7 @@ function buildScript({
   readSeat,
   markLinks = '',
   watchSelector,
-  watchClasses
+  watchClasses,
 }: AnonymityAdapter): string {
   return `
 (() => {
@@ -269,7 +269,7 @@ export function applyPlayerAnonymity(
   siteId: SiteId,
   opponentHidden: boolean,
   ratingsHidden: boolean,
-  refresh = false
+  refresh = false,
 ): void {
   if (!contents || contents.isDestroyed()) {
     return
@@ -297,13 +297,13 @@ export function applyPlayerAnonymity(
       buildScript(anonymity)
         .replace(OPPONENT_HIDDEN_TOKEN, String(enabled && opponentHidden))
         .replace(RATINGS_HIDDEN_TOKEN, String(enabled && ratingsHidden)),
-      true
+      true,
     )
     .catch(() => null)
 
   const css = [
     enabled && opponentHidden ? buildCSS(anonymity) : '',
-    enabled && ratingsHidden ? buildRatingCSS(anonymity) : ''
+    enabled && ratingsHidden ? buildRatingCSS(anonymity) : '',
   ]
     .filter(Boolean)
     .join('\n\n')

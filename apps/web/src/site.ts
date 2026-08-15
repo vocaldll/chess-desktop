@@ -4,7 +4,7 @@ export const site = {
   repo: 'chess-desktop',
   domain: 'chessdesktop.app',
   tagline: 'Play Chess.com and Lichess natively on your desktop.',
-  description: 'Free, open source, and works on Windows and Linux.'
+  description: 'Free, open source, and works on Windows and Linux.',
 }
 
 export const contact = `contact@${site.domain}`

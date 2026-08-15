@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
   applyReviewOnLichess: vi.fn(),
   applyPresenceSettings: vi.fn(),
   activateSite: vi.fn(),
-  getSiteWebContents: vi.fn()
+  getSiteWebContents: vi.fn(),
 }))
 
 vi.mock('./audio', () => ({ applyVolume: mocks.applyVolume }))
@@ -20,7 +20,7 @@ vi.mock('./numbered-arrows', () => ({ applyNumberedArrows: mocks.applyNumberedAr
 vi.mock('./lichess-review', () => ({ applyReviewOnLichess: mocks.applyReviewOnLichess }))
 vi.mock('./webview', () => ({
   activateSite: mocks.activateSite,
-  getSiteWebContents: mocks.getSiteWebContents
+  getSiteWebContents: mocks.getSiteWebContents,
 }))
 
 import { applySetting, applySettings } from './settings-effects'
@@ -44,7 +44,7 @@ describe('applySettings', () => {
       numberedArrows: true,
       reviewOnLichess: false,
       volume: 35,
-      zoom: { chesscom: 80, lichess: 125 }
+      zoom: { chesscom: 80, lichess: 125 },
     }
     mocks.getSiteWebContents.mockReturnValue(contents)
 
@@ -70,23 +70,23 @@ describe('applySettings', () => {
     expect(mocks.applyChatVisibility).toHaveBeenCalledWith(
       null,
       defaultSettings.activeSite,
-      defaultSettings.hideChat
+      defaultSettings.hideChat,
     )
     expect(mocks.applyPlayerAnonymity).toHaveBeenCalledWith(
       null,
       defaultSettings.activeSite,
       defaultSettings.hideOpponent,
-      defaultSettings.hideRatings
+      defaultSettings.hideRatings,
     )
     expect(mocks.applyNumberedArrows).toHaveBeenCalledWith(
       null,
       defaultSettings.activeSite,
-      defaultSettings.numberedArrows
+      defaultSettings.numberedArrows,
     )
     expect(mocks.applyReviewOnLichess).toHaveBeenCalledWith(
       null,
       defaultSettings.activeSite,
-      defaultSettings.reviewOnLichess
+      defaultSettings.reviewOnLichess,
     )
     expect(mocks.applyPresenceSettings).toHaveBeenCalledWith(defaultSettings)
   })

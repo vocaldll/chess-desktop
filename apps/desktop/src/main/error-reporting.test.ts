@@ -6,15 +6,15 @@ const mocks = vi.hoisted(() => ({
   flush: vi.fn(),
   app: {
     isPackaged: true,
-    getVersion: vi.fn(() => '1.2.3')
-  }
+    getVersion: vi.fn(() => '1.2.3'),
+  },
 }))
 
 vi.mock('@sentry/electron/main', () => ({
   init: mocks.init,
   captureException: mocks.captureException,
   flush: mocks.flush,
-  IPCMode: { Classic: 'classic' }
+  IPCMode: { Classic: 'classic' },
 }))
 vi.mock('electron', () => ({ app: mocks.app }))
 
@@ -46,7 +46,7 @@ describe('main error reporting', () => {
       tracesSampleRate: 0,
       maxBreadcrumbs: 0,
       attachScreenshot: false,
-      ipcMode: 'classic'
+      ipcMode: 'classic',
     })
     expect(options.beforeBreadcrumb({ category: 'ui.click' })).toBeNull()
 
@@ -61,14 +61,14 @@ describe('main error reporting', () => {
       { name: 'Context' },
       { name: 'OnUncaughtException' },
       { name: 'EventFilters' },
-      { name: 'NormalizePaths' }
+      { name: 'NormalizePaths' },
     ])
     expect(integrations.map(({ name }: { name: string }) => name)).toEqual([
       'ElectronContext',
       'ChildProcess',
       'OnUncaughtException',
       'EventFilters',
-      'NormalizePaths'
+      'NormalizePaths',
     ])
   })
 
@@ -107,7 +107,7 @@ describe('main error reporting', () => {
     expect(mocks.captureException).toHaveBeenCalledOnce()
     expect(mocks.flush).toHaveBeenCalledWith(5_000)
     expect(mocks.captureException.mock.calls[0][0]).toMatchObject({
-      message: 'Chess Desktop Sentry integration verification'
+      message: 'Chess Desktop Sentry integration verification',
     })
   })
 })

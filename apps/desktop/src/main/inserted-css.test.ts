@@ -10,7 +10,7 @@ describe('inserted CSS controller', () => {
     const contents = {
       isDestroyed: vi.fn().mockReturnValue(false),
       insertCSS: vi.fn().mockReturnValueOnce(first).mockResolvedValueOnce('second-key'),
-      removeInsertedCSS: vi.fn().mockResolvedValue(undefined)
+      removeInsertedCSS: vi.fn().mockResolvedValue(undefined),
     }
     const styles = new InsertedCss()
 

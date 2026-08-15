@@ -6,14 +6,14 @@ import {
   REVIEW_ON_LICHESS_CONTINUE_CHANNEL,
   REVIEW_ON_LICHESS_FAILED_CHANNEL,
   REVIEW_ON_LICHESS_MARKER,
-  REVIEW_ON_LICHESS_NAVIGATE_CHANNEL
+  REVIEW_ON_LICHESS_NAVIGATE_CHANNEL,
 } from '../shared/lichess-review'
 
 const ELEMENT_TIMEOUT = 8_000
 
 function restorePendingReviewButton(): void {
   const button = document.querySelector<HTMLButtonElement>(
-    `[${REVIEW_ON_LICHESS_MARKER}][aria-busy="true"]`
+    `[${REVIEW_ON_LICHESS_MARKER}][aria-busy="true"]`,
   )
   if (!button) {
     return

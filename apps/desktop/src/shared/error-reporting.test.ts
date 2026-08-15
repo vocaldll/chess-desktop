@@ -5,7 +5,7 @@ describe('error event privacy', () => {
   it.each([
     'https://www.chess.com/game/live/123',
     'https://chess.com/member/example',
-    'https://lichess.org/abcdefgh'
+    'https://lichess.org/abcdefgh',
   ])('recognizes guest page %s', (url) => {
     expect(isGuestPage(url)).toBe(true)
   })
@@ -14,15 +14,15 @@ describe('error event privacy', () => {
     'does not classify %s as a guest page',
     (url) => {
       expect(isGuestPage(url)).toBe(false)
-    }
+    },
   )
 
   it('drops native crashes from embedded chess pages', () => {
     expect(
       sanitizeErrorEvent({
         platform: 'native',
-        contexts: { electron: { crashed_url: 'https://lichess.org/abcdefgh' } }
-      })
+        contexts: { electron: { crashed_url: 'https://lichess.org/abcdefgh' } },
+      }),
     ).toBeNull()
   })
 
@@ -37,7 +37,7 @@ describe('error event privacy', () => {
       extra: { pgn: 'private game' },
       tags: { source: 'https://lichess.org/abcdefgh' },
       exception: {
-        values: [{ type: 'Error', value: 'Loaded file:///C:/Users/Example/state.json' }]
+        values: [{ type: 'Error', value: 'Loaded file:///C:/Users/Example/state.json' }],
       },
       contexts: {
         electron: {
@@ -45,10 +45,10 @@ describe('error event privacy', () => {
           process_type: 'renderer',
           diagnostics: {
             source_url: 'https://lichess.org/abcdefgh',
-            note: 'Opened https://www.chess.com/game/live/123'
-          }
-        }
-      }
+            note: 'Opened https://www.chess.com/game/live/123',
+          },
+        },
+      },
     })
 
     expect(event).toMatchObject({
@@ -58,9 +58,9 @@ describe('error event privacy', () => {
       contexts: {
         electron: {
           process_type: 'renderer',
-          diagnostics: { note: 'Opened https://www.chess.com/[redacted]' }
-        }
-      }
+          diagnostics: { note: 'Opened https://www.chess.com/[redacted]' },
+        },
+      },
     })
     expect(event).not.toHaveProperty('user')
     expect(event).not.toHaveProperty('request')

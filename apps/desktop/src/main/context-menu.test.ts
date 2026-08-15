@@ -6,14 +6,14 @@ const mocks = vi.hoisted(() => ({
   popup: vi.fn(),
   openExternal: vi.fn(),
   writeText: vi.fn(),
-  getSiteWebContents: vi.fn()
+  getSiteWebContents: vi.fn(),
 }))
 
 vi.mock('electron', () => ({
   app: { on: mocks.appOn },
   clipboard: { writeText: mocks.writeText },
   Menu: { buildFromTemplate: mocks.buildFromTemplate },
-  shell: { openExternal: mocks.openExternal }
+  shell: { openExternal: mocks.openExternal },
 }))
 vi.mock('./webview', () => ({ getSiteWebContents: mocks.getSiteWebContents }))
 
@@ -49,7 +49,7 @@ class FakeContents {
 
 function create(
   contents: FakeContents,
-  getWindow: () => { id: string } | null = () => ({ id: 'window' })
+  getWindow: () => { id: string } | null = () => ({ id: 'window' }),
 ) {
   registerContextMenus(getWindow as never)
   const created = mocks.appOn.mock.calls.find(([event]) => event === 'web-contents-created')?.[1]
@@ -67,11 +67,11 @@ function params(overrides: Record<string, unknown> = {}) {
       canCut: false,
       canCopy: false,
       canPaste: false,
-      canSelectAll: false
+      canSelectAll: false,
     },
     selectionText: '',
     linkURL: '',
-    ...overrides
+    ...overrides,
   }
 }
 
@@ -89,7 +89,7 @@ describe('context menus', () => {
   it('builds editable commands and opens the current site page externally', () => {
     const contents = new FakeContents('window')
     mocks.getSiteWebContents.mockReturnValue({
-      getURL: () => 'https://www.chess.com/game/123'
+      getURL: () => 'https://www.chess.com/game/123',
     })
     const onContextMenu = create(contents)
 
@@ -97,8 +97,8 @@ describe('context menus', () => {
       {},
       params({
         isEditable: true,
-        editFlags: { canCut: true, canCopy: true, canPaste: false, canSelectAll: true }
-      })
+        editFlags: { canCut: true, canCopy: true, canPaste: false, canSelectAll: true },
+      }),
     )
 
     const items = template()
@@ -107,7 +107,7 @@ describe('context menus', () => {
       'Cut',
       'Copy',
       'Paste',
-      'Select all'
+      'Select all',
     ])
     items.find((item) => item.label === 'Open in browser')?.click?.()
     items.find((item) => item.label === 'Cut')?.click?.()
@@ -132,7 +132,7 @@ describe('context menus', () => {
 
     const items = template()
     expect(items.filter((item) => item.label).map((item) => item.label)).toEqual([
-      'Copy link address'
+      'Copy link address',
     ])
     items[0].click?.()
     expect(mocks.openExternal).not.toHaveBeenCalled()

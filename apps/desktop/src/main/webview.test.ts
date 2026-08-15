@@ -14,17 +14,17 @@ const mocks = vi.hoisted(() => ({
   rejectCookieBanners: vi.fn(),
   updatePresenceLocation: vi.fn(),
   probeGameRole: vi.fn(),
-  updatePlayingState: vi.fn()
+  updatePlayingState: vi.fn(),
 }))
 
 vi.mock('electron', () => ({
   app: { on: mocks.appOn },
-  shell: { openExternal: mocks.openExternal }
+  shell: { openExternal: mocks.openExternal },
 }))
 
 vi.mock('./store', () => ({
   getSettings: mocks.getSettings,
-  setLastSiteUrl: mocks.setLastSiteUrl
+  setLastSiteUrl: mocks.setLastSiteUrl,
 }))
 
 vi.mock('./audio', () => ({ applyVolume: mocks.applyVolume }))
@@ -50,7 +50,7 @@ class FakeContents {
     canGoBack: vi.fn(),
     canGoForward: vi.fn(),
     goBack: vi.fn(),
-    goForward: vi.fn()
+    goForward: vi.fn(),
   }
   destroyed = false
   url = 'https://www.chess.com/home'
@@ -109,7 +109,7 @@ describe('webview event scoping', () => {
       numberedArrows: true,
       reviewOnLichess: true,
       volume: 100,
-      zoom: { chesscom: 100, lichess: 100 }
+      zoom: { chesscom: 100, lichess: 100 },
     })
     mocks.probeGameRole.mockResolvedValue('unknown')
   })
@@ -126,7 +126,7 @@ describe('webview event scoping', () => {
     expect(send).toHaveBeenCalledWith('webview:load-error', {
       errorCode: -105,
       errorDescription: 'ERR_NAME_NOT_RESOLVED',
-      validatedURL: contents.url
+      validatedURL: contents.url,
     })
   })
 
@@ -180,7 +180,7 @@ describe('webview event scoping', () => {
       numberedArrows: true,
       reviewOnLichess: true,
       volume: 100,
-      zoom: { chesscom: 100, lichess: 100 }
+      zoom: { chesscom: 100, lichess: 100 },
     }
     mocks.getSettings.mockReturnValue(settings)
     const chesscom = new FakeContents()
@@ -220,7 +220,7 @@ describe('webview event scoping', () => {
 
     expect(preferences).toMatchObject({
       nodeIntegration: false,
-      contextIsolation: true
+      contextIsolation: true,
     })
     expect(String(preferences.preload)).toMatch(/preload[\\/]webview\.js$/)
     expect(params.src).toBe('https://www.chess.com/')
@@ -313,7 +313,7 @@ describe('webview event scoping', () => {
     contents.url = 'https://lichess.org/Ab12Cd34'
     mocks.getSettings.mockReturnValue({
       ...mocks.getSettings(),
-      activeSite: 'lichess'
+      activeSite: 'lichess',
     })
     await configure(contents)
     const { rememberLichessReview } = await import('./lichess-review-state')
@@ -324,7 +324,7 @@ describe('webview event scoping', () => {
     expect(mocks.updatePresenceLocation).toHaveBeenLastCalledWith(
       'lichess',
       contents.url,
-      'reviewing'
+      'reviewing',
     )
     expect(mocks.probeGameRole).not.toHaveBeenCalled()
   })

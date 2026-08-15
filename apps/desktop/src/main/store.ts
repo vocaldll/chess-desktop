@@ -8,7 +8,7 @@ import {
   DEFAULT_LAST_SITE_URLS,
   isSiteURL,
   type LastSiteUrls,
-  type SiteId
+  type SiteId,
 } from '../shared/sites'
 
 export interface WindowBounds {
@@ -28,7 +28,7 @@ interface PersistedState {
 const defaultWindowBounds: WindowBounds = {
   width: 1280,
   height: 820,
-  isMaximized: false
+  isMaximized: false,
 }
 
 const WRITE_DELAY = 500
@@ -56,7 +56,7 @@ function coerceWindowBounds(raw: unknown): WindowBounds {
     height: Math.max(600, numberOr(source.height, defaultWindowBounds.height)),
     x: typeof source.x === 'number' && Number.isFinite(source.x) ? source.x : undefined,
     y: typeof source.y === 'number' && Number.isFinite(source.y) ? source.y : undefined,
-    isMaximized: source.isMaximized === true
+    isMaximized: source.isMaximized === true,
   }
 }
 
@@ -70,13 +70,13 @@ function read(): PersistedState {
     cached = {
       settings: coerceSettings(raw.settings),
       window: coerceWindowBounds(raw.window),
-      lastSiteUrls: coerceLastSiteUrls(raw.lastSiteUrls)
+      lastSiteUrls: coerceLastSiteUrls(raw.lastSiteUrls),
     }
   } catch {
     cached = {
       settings: { ...defaultSettings },
       window: { ...defaultWindowBounds },
-      lastSiteUrls: { ...DEFAULT_LAST_SITE_URLS }
+      lastSiteUrls: { ...DEFAULT_LAST_SITE_URLS },
     }
   }
 

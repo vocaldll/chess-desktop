@@ -36,7 +36,7 @@ export const defaultSettings: Settings = {
   anonymousErrorReporting: true,
   onboardingCompleted: false,
   shortcutOverrides: {},
-  zoom: coerceSiteZoom(null)
+  zoom: coerceSiteZoom(null),
 }
 
 export type SettingKey = keyof Settings
@@ -47,7 +47,7 @@ export function isSettingKey(key: unknown): key is SettingKey {
 
 export function isValidSettingValue<K extends SettingKey>(
   key: K,
-  value: unknown
+  value: unknown,
 ): value is Settings[K] {
   if (key === 'activeSite') {
     return isSiteId(value)

@@ -16,7 +16,7 @@ const mocks = vi.hoisted(() => {
     registerContextMenus: vi.fn(),
     registerIpc: vi.fn(),
     registerShortcuts: vi.fn(),
-    registerWebviewHandling: vi.fn()
+    registerWebviewHandling: vi.fn(),
   }
 })
 
@@ -29,10 +29,10 @@ vi.mock('electron', () => ({
     setAppUserModelId: vi.fn(),
     setName: vi.fn(),
     whenReady: vi.fn(() => new Promise(() => undefined)),
-    userAgentFallback: ''
+    userAgentFallback: '',
   },
   BrowserWindow: { getAllWindows: vi.fn().mockReturnValue([]) },
-  Menu: { setApplicationMenu: vi.fn() }
+  Menu: { setApplicationMenu: vi.fn() },
 }))
 vi.mock('./context-menu', () => ({ registerContextMenus: mocks.registerContextMenus }))
 vi.mock('./discord', () => ({ shutdownPresence: vi.fn() }))
@@ -44,14 +44,14 @@ vi.mock('./settings-effects', () => ({ applySettings: vi.fn() }))
 vi.mock('./shortcuts', () => ({ registerShortcuts: mocks.registerShortcuts }))
 vi.mock('./store', () => ({
   flushState: mocks.flushState,
-  getSettings: vi.fn(() => ({ anonymousErrorReporting: true }))
+  getSettings: vi.fn(() => ({ anonymousErrorReporting: true })),
 }))
 vi.mock('./updates', () => ({ startAutoUpdates: vi.fn() }))
 vi.mock('./webview', () => ({
   browserUserAgent: vi.fn().mockReturnValue('test-agent'),
   hardenWebviewAttachment: vi.fn(),
   registerAppCommands: vi.fn(),
-  registerWebviewHandling: mocks.registerWebviewHandling
+  registerWebviewHandling: mocks.registerWebviewHandling,
 }))
 vi.mock('./window', () => ({ createMainWindow: vi.fn() }))
 

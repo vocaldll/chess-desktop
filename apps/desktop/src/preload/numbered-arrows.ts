@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron'
 import {
   NUMBERED_ARROWS_UPDATE_CHANNEL,
-  type NumberedArrowsUpdate
+  type NumberedArrowsUpdate,
 } from '../shared/numbered-arrows'
 
 const SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
@@ -46,7 +46,7 @@ function parsePoints(value: string): Point[] {
 function triangleCentroid(first: Point, second: Point, third: Point): Point {
   return {
     x: (first.x + second.x + third.x) / 3,
-    y: (first.y + second.y + third.y) / 3
+    y: (first.y + second.y + third.y) / 3,
   }
 }
 
@@ -77,7 +77,7 @@ function readChesscomArrows(layer: Element): NativeArrow[] {
       return {
         element: polygon,
         anchor,
-        key
+        key,
       }
     })
     .filter((arrow): arrow is NativeArrow => arrow !== null)
@@ -88,7 +88,7 @@ const LICHESS_SQUARE = /^[a-h][1-8]$/
 function lichessShapeKey(hash: string | null | undefined): string | null {
   const parts = hash?.split(',') ?? []
   const origIndex = parts.findIndex(
-    (part, index) => LICHESS_SQUARE.test(part) && LICHESS_SQUARE.test(parts[index + 1] ?? '')
+    (part, index) => LICHESS_SQUARE.test(part) && LICHESS_SQUARE.test(parts[index + 1] ?? ''),
   )
 
   return origIndex === -1 ? null : parts.slice(origIndex, origIndex + 3).join(',')
@@ -99,7 +99,7 @@ function readLichessArrows(layer: Element): NativeArrow[] {
     .filter((line) => /#arrowhead-(?:g|r|b|y)\)$/.test(line.getAttribute('marker-end') ?? ''))
     .map((line): NativeArrow | null => {
       const key = lichessShapeKey(
-        line.parentElement?.getAttribute('cgHash') ?? line.parentElement?.getAttribute('cghash')
+        line.parentElement?.getAttribute('cgHash') ?? line.parentElement?.getAttribute('cghash'),
       )
       const x1 = Number(line.getAttribute('x1'))
       const y1 = Number(line.getAttribute('y1'))
@@ -118,8 +118,8 @@ function readLichessArrows(layer: Element): NativeArrow[] {
         key,
         anchor: {
           x: x2 - ((x2 - x1) / length) * markerCentroidOffset,
-          y: y2 - ((y2 - y1) / length) * markerCentroidOffset
-        }
+          y: y2 - ((y2 - y1) / length) * markerCentroidOffset,
+        },
       }
     })
     .filter((arrow): arrow is NativeArrow => arrow !== null)
@@ -129,13 +129,13 @@ const SITE_CONFIG: Record<NumberedArrowsUpdate['siteId'], SiteDrawingConfig> = {
   chesscom: {
     boardSelector: 'wc-chess-board.board, wc-chess-board',
     layerSelector: 'svg.arrows',
-    readArrows: readChesscomArrows
+    readArrows: readChesscomArrows,
   },
   lichess: {
     boardSelector: 'cg-board',
     layerSelector: 'svg.cg-shapes',
-    readArrows: readLichessArrows
-  }
+    readArrows: readLichessArrows,
+  },
 }
 
 function isUpdate(value: unknown): value is NumberedArrowsUpdate {
@@ -158,7 +158,7 @@ function toBoardPoint(arrow: NativeArrow, boardBounds: DOMRect): Point | null {
 
   return {
     x: matrix.a * arrow.anchor.x + matrix.c * arrow.anchor.y + matrix.e - boardBounds.left,
-    y: matrix.b * arrow.anchor.x + matrix.d * arrow.anchor.y + matrix.f - boardBounds.top
+    y: matrix.b * arrow.anchor.x + matrix.d * arrow.anchor.y + matrix.f - boardBounds.top,
   }
 }
 
@@ -273,7 +273,7 @@ export class NumberedArrowsController {
   private findLargest(selector: string): Element | null {
     return (
       [...this.document.querySelectorAll(selector)].sort(
-        (left, right) => right.getBoundingClientRect().width - left.getBoundingClientRect().width
+        (left, right) => right.getBoundingClientRect().width - left.getBoundingClientRect().width,
       )[0] ?? null
     )
   }
@@ -336,7 +336,7 @@ export class NumberedArrowsController {
       'height: 100%',
       'overflow: visible',
       'pointer-events: none',
-      'z-index: 5'
+      'z-index: 5',
     ].join(';')
 
     for (const [index, position] of positions.entries()) {

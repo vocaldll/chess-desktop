@@ -4,7 +4,7 @@ import {
   type AppUpdateCheckResult,
   type AppUpdateInfo,
   IPC,
-  type WebviewLoadError
+  type WebviewLoadError,
 } from '../shared/ipc-channels'
 import type { SettingKey, Settings } from '../shared/settings'
 import type { ShortcutCommand } from '../shared/shortcuts'
@@ -31,38 +31,39 @@ const api = {
     onMaximizeChange: (listener: (isMaximized: boolean) => void): Unsubscribe =>
       subscribe(IPC.window.maximizeChanged, listener),
     onFullscreenChange: (listener: (isFullscreen: boolean) => void): Unsubscribe =>
-      subscribe(IPC.window.fullscreenChanged, listener)
+      subscribe(IPC.window.fullscreenChanged, listener),
   },
   activeGame: {
     isPlaying: (): Promise<boolean> => ipcRenderer.invoke(IPC.activeGame.isPlaying),
     onPlayingChange: (listener: (playing: boolean) => void): Unsubscribe =>
-      subscribe(IPC.activeGame.playingChanged, listener)
+      subscribe(IPC.activeGame.playingChanged, listener),
   },
   shortcuts: {
     onCommand: (listener: (command: ShortcutCommand) => void): Unsubscribe =>
       subscribe(IPC.shortcuts.triggered, listener),
-    setRecording: (recording: boolean): void => ipcRenderer.send(IPC.shortcuts.recording, recording)
+    setRecording: (recording: boolean): void =>
+      ipcRenderer.send(IPC.shortcuts.recording, recording),
   },
   settings: {
     getAll: (): Promise<Settings> => ipcRenderer.invoke(IPC.settings.getAll),
     set: <K extends SettingKey>(key: K, value: Settings[K]): Promise<Settings> =>
-      ipcRenderer.invoke(IPC.settings.set, key, value)
+      ipcRenderer.invoke(IPC.settings.set, key, value),
   },
   audio: {
-    setVolume: (percent: number): void => ipcRenderer.send(IPC.audio.setVolume, percent)
+    setVolume: (percent: number): void => ipcRenderer.send(IPC.audio.setVolume, percent),
   },
   links: {
-    openRepository: (): void => ipcRenderer.send(IPC.links.openRepository)
+    openRepository: (): void => ipcRenderer.send(IPC.links.openRepository),
   },
   webview: {
     getLastSiteUrls: (): Promise<LastSiteUrls> => ipcRenderer.invoke(IPC.webview.getLastSiteUrls),
     onLoadStart: (listener: () => void): Unsubscribe => subscribe(IPC.webview.loadStart, listener),
     onLoadStop: (listener: () => void): Unsubscribe => subscribe(IPC.webview.loadStop, listener),
     onLoadError: (listener: (error: WebviewLoadError) => void): Unsubscribe =>
-      subscribe(IPC.webview.loadError, listener)
+      subscribe(IPC.webview.loadError, listener),
   },
   reviewOnLichess: {
-    start: (pgn: string): Promise<string> => ipcRenderer.invoke(IPC.reviewOnLichess.start, pgn)
+    start: (pgn: string): Promise<string> => ipcRenderer.invoke(IPC.reviewOnLichess.start, pgn),
   },
   updates: {
     getInfo: (): Promise<AppUpdateInfo> => ipcRenderer.invoke(IPC.updates.info),
@@ -74,8 +75,8 @@ const api = {
     onDownloaded: (listener: (version: string) => void): Unsubscribe =>
       subscribe(IPC.updates.downloaded, listener),
     onInstallFailed: (listener: () => void): Unsubscribe =>
-      subscribe(IPC.updates.installFailed, listener)
-  }
+      subscribe(IPC.updates.installFailed, listener),
+  },
 }
 
 export type DesktopApi = typeof api

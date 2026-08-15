@@ -4,7 +4,7 @@ import type { SiteId } from '../shared/sites'
 import { probeGameRole } from './game-role'
 
 const contents = (result: unknown) => ({
-  executeJavaScript: vi.fn().mockResolvedValue(result)
+  executeJavaScript: vi.fn().mockResolvedValue(result),
 })
 
 async function probeScript(siteId: SiteId): Promise<string> {
@@ -15,7 +15,7 @@ async function probeScript(siteId: SiteId): Promise<string> {
 
 function runProbe(script: string, html: string): { aborted: boolean } {
   const dom = new JSDOM(`<!doctype html><html><body>${html}</body></html>`, {
-    runScripts: 'outside-only'
+    runScripts: 'outside-only',
   })
 
   return dom.window.eval(script) as { aborted: boolean }
@@ -29,7 +29,7 @@ describe('game role probing', () => {
     [{ ready: false, player: false, finished: false, aborted: false }, 'unknown'],
     [{ ready: true, player: false, finished: true, aborted: true }, 'aborted'],
     [{ ready: true, player: false, finished: false, aborted: true }, 'aborted'],
-    [{ ready: true, player: true, finished: true, aborted: true }, 'playing']
+    [{ ready: true, player: true, finished: true, aborted: true }, 'playing'],
   ] as const)('maps probe result %j to %s', async (result, expected) => {
     expect(await probeGameRole(contents(result) as never, 'lichess')).toBe(expected)
   })
@@ -38,10 +38,10 @@ describe('game role probing', () => {
     const probe = await probeScript('lichess')
 
     expect(runProbe(probe, '<div class="result-wrap"><p class="result"></p></div>').aborted).toBe(
-      true
+      true,
     )
     expect(
-      runProbe(probe, '<div class="result-wrap"><p class="result">1-0</p></div>').aborted
+      runProbe(probe, '<div class="result-wrap"><p class="result">1-0</p></div>').aborted,
     ).toBe(false)
     expect(runProbe(probe, '<div class="result-wrap"></div>').aborted).toBe(false)
   })

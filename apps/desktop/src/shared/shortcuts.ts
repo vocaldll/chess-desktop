@@ -63,7 +63,7 @@ export function formatShortcutBinding(binding: ShortcutBinding): string {
     ArrowLeft: '←',
     ArrowRight: '→',
     ArrowUp: '↑',
-    Escape: 'Esc'
+    Escape: 'Esc',
   }
   const key =
     keyLabels[binding.key] ?? (binding.key.length === 1 ? binding.key.toUpperCase() : binding.key)
@@ -95,7 +95,7 @@ export function isShortcutOverrides(value: unknown): value is ShortcutOverrides 
 
   return Object.entries(value).every(([command, slotOverrides]) => {
     const shortcut = SHORTCUTS.find(
-      (candidate) => candidate.command === command && candidate.customizable !== false
+      (candidate) => candidate.command === command && candidate.customizable !== false,
     )
     return shortcut !== undefined && isShortcutSlotOverrides(slotOverrides, shortcut)
   })
@@ -109,7 +109,7 @@ export function coerceShortcutOverrides(value: unknown): ShortcutOverrides {
   const result: ShortcutOverrides = {}
   for (const [command, rawOverride] of Object.entries(value)) {
     const shortcut = SHORTCUTS.find(
-      (candidate) => candidate.command === command && candidate.customizable !== false
+      (candidate) => candidate.command === command && candidate.customizable !== false,
     )
     if (!shortcut) {
       continue
@@ -119,8 +119,8 @@ export function coerceShortcutOverrides(value: unknown): ShortcutOverrides {
       result[shortcut.command] = Object.fromEntries(
         shortcut.chords.map((_, index) => [
           index,
-          index === 0 && rawOverride ? normalizeShortcutBinding(rawOverride) : null
-        ])
+          index === 0 && rawOverride ? normalizeShortcutBinding(rawOverride) : null,
+        ]),
       )
       continue
     }
@@ -154,7 +154,7 @@ function normalizeShortcutBinding(binding: ShortcutBinding): ShortcutBinding {
     key: normalizeShortcutKey(binding.key),
     control: binding.control,
     alt: binding.alt,
-    shift: binding.shift
+    shift: binding.shift,
   }
 }
 
@@ -182,14 +182,14 @@ function isShortcutSlotOverrides(value: unknown, shortcut: Shortcut): boolean {
 
 export function isShortcutCustomized(
   command: ShortcutAction,
-  overrides: ShortcutOverrides
+  overrides: ShortcutOverrides,
 ): boolean {
   return Object.hasOwn(overrides, command)
 }
 
 export function resolveShortcutChords(
   shortcut: Shortcut,
-  overrides: ShortcutOverrides
+  overrides: ShortcutOverrides,
 ): readonly ShortcutChord[] {
   if (!isShortcutCustomized(shortcut.command, overrides)) {
     return shortcut.chords
@@ -203,7 +203,7 @@ export function resolveShortcutChords(
 export function resolveShortcutChord(
   shortcut: Shortcut,
   index: number,
-  overrides: ShortcutOverrides
+  overrides: ShortcutOverrides,
 ): ShortcutChord | null {
   const defaultChord = shortcut.chords[index]
   if (!defaultChord) {
@@ -225,13 +225,13 @@ export function resolveShortcutChord(
     control: binding.control,
     alt: binding.alt,
     shift: binding.shift,
-    label: formatShortcutBinding(binding)
+    label: formatShortcutBinding(binding),
   }
 }
 
 export function shortcutChordMatchesBinding(
   chord: ShortcutChord,
-  binding: ShortcutBinding
+  binding: ShortcutBinding,
 ): boolean {
   return (
     chord.keys.includes(normalizeShortcutKey(binding.key)) &&
@@ -245,65 +245,65 @@ export const SHORTCUTS: readonly Shortcut[] = [
   {
     command: 'focus-address',
     description: 'Focus the address bar',
-    chords: [{ keys: ['l'], control: true, alt: false, shift: false, label: 'Ctrl+L' }]
+    chords: [{ keys: ['l'], control: true, alt: false, shift: false, label: 'Ctrl+L' }],
   },
   {
     command: 'find',
     description: 'Find on the page',
-    chords: [{ keys: ['f'], control: true, alt: false, shift: false, label: 'Ctrl+F' }]
+    chords: [{ keys: ['f'], control: true, alt: false, shift: false, label: 'Ctrl+F' }],
   },
   {
     command: 'reload',
     description: 'Reload the page',
     chords: [
       { keys: ['r'], control: true, alt: false, shift: false, label: 'Ctrl+R' },
-      { keys: ['F5'], control: false, alt: false, shift: false, label: 'F5' }
-    ]
+      { keys: ['F5'], control: false, alt: false, shift: false, label: 'F5' },
+    ],
   },
   {
     command: 'back',
     description: 'Go back',
-    chords: [{ keys: ['ArrowLeft'], control: false, alt: true, shift: false, label: 'Alt+←' }]
+    chords: [{ keys: ['ArrowLeft'], control: false, alt: true, shift: false, label: 'Alt+←' }],
   },
   {
     command: 'forward',
     description: 'Go forward',
-    chords: [{ keys: ['ArrowRight'], control: false, alt: true, shift: false, label: 'Alt+→' }]
+    chords: [{ keys: ['ArrowRight'], control: false, alt: true, shift: false, label: 'Alt+→' }],
   },
   {
     command: 'toggle-always-on-top',
     description: 'Toggle always on top',
-    chords: [{ keys: ['p'], control: true, alt: true, shift: false, label: 'Ctrl+Alt+P' }]
+    chords: [{ keys: ['p'], control: true, alt: true, shift: false, label: 'Ctrl+Alt+P' }],
   },
   {
     command: 'toggle-mute',
     description: 'Toggle sound',
-    chords: [{ keys: ['m'], control: true, alt: false, shift: false, label: 'Ctrl+M' }]
+    chords: [{ keys: ['m'], control: true, alt: false, shift: false, label: 'Ctrl+M' }],
   },
   {
     command: 'zoom-in',
     description: 'Zoom in',
-    chords: [{ keys: ['+', '='], control: true, alt: false, label: 'Ctrl++' }]
+    chords: [{ keys: ['+', '='], control: true, alt: false, label: 'Ctrl++' }],
   },
   {
     command: 'zoom-out',
     description: 'Zoom out',
-    chords: [{ keys: ['-', '_'], control: true, alt: false, label: 'Ctrl+-' }]
+    chords: [{ keys: ['-', '_'], control: true, alt: false, label: 'Ctrl+-' }],
   },
   {
     command: 'zoom-reset',
     description: 'Reset zoom',
-    chords: [{ keys: ['0'], control: true, alt: false, shift: false, label: 'Ctrl+0' }]
+    chords: [{ keys: ['0'], control: true, alt: false, shift: false, label: 'Ctrl+0' }],
   },
   {
     command: 'fullscreen',
     description: 'Toggle full screen',
-    chords: [{ keys: ['F11'], control: false, alt: false, shift: false, label: 'F11' }]
+    chords: [{ keys: ['F11'], control: false, alt: false, shift: false, label: 'F11' }],
   },
   {
     command: 'exit-fullscreen',
     description: 'Exit full screen',
     chords: [{ keys: ['Escape'], control: false, alt: false, shift: false, label: 'Esc' }],
-    customizable: false
-  }
+    customizable: false,
+  },
 ]

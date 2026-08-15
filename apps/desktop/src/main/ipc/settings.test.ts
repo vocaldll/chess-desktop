@@ -6,17 +6,17 @@ const mocks = vi.hoisted(() => ({
   applySetting: vi.fn(),
   setErrorReportingEnabled: vi.fn(),
   getSettings: vi.fn(),
-  setSetting: vi.fn()
+  setSetting: vi.fn(),
 }))
 
 vi.mock('electron', () => ({ ipcMain: { handle: mocks.handle } }))
 vi.mock('../settings-effects', () => ({ applySetting: mocks.applySetting }))
 vi.mock('../error-reporting', () => ({
-  setErrorReportingEnabled: mocks.setErrorReportingEnabled
+  setErrorReportingEnabled: mocks.setErrorReportingEnabled,
 }))
 vi.mock('../store', () => ({
   getSettings: mocks.getSettings,
-  setSetting: mocks.setSetting
+  setSetting: mocks.setSetting,
 }))
 
 import { IPC } from '../../shared/ipc-channels'
@@ -45,14 +45,14 @@ describe('settings IPC', () => {
 
   it('rejects unknown setting keys', () => {
     expect(() => handler(IPC.settings.set)({}, 'not-a-setting', true)).toThrow(
-      'Unknown setting: not-a-setting'
+      'Unknown setting: not-a-setting',
     )
     expect(mocks.setSetting).not.toHaveBeenCalled()
   })
 
   it('rejects invalid values for known settings', () => {
     expect(() => handler(IPC.settings.set)({}, 'volume', 101)).toThrow(
-      'Invalid value for setting: volume'
+      'Invalid value for setting: volume',
     )
     expect(mocks.setSetting).not.toHaveBeenCalled()
   })

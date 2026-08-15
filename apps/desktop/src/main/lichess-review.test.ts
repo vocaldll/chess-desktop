@@ -22,16 +22,16 @@ describe('Chess.com Lichess review buttons', () => {
     installReviewButtons()
 
     const buttons = document.querySelectorAll<HTMLButtonElement>(
-      '[data-chess-desktop-review-on-lichess]'
+      '[data-chess-desktop-review-on-lichess]',
     )
     expect(buttons).toHaveLength(2)
     expect(buttons[0].textContent).toBe('Review on Lichess')
     expect(buttons[0].getAttribute('data-chess-desktop-game-url')).toBe(
-      'http://localhost:3000/game/live/123'
+      'http://localhost:3000/game/live/123',
     )
     expect(buttons[1].textContent).toBe('Lichess')
     expect(buttons[1].getAttribute('data-chess-desktop-game-url')).toBe(
-      'http://localhost:3000/game/daily/456'
+      'http://localhost:3000/game/daily/456',
     )
   })
 
@@ -41,7 +41,7 @@ describe('Chess.com Lichess review buttons', () => {
 
     document.body.insertAdjacentHTML(
       'beforeend',
-      '<a class="cc-button-component" aria-label="Game Review" href="/analysis/game/live/123">Review</a>'
+      '<a class="cc-button-component" aria-label="Game Review" href="/analysis/game/live/123">Review</a>',
     )
 
     await vi.waitFor(() => {

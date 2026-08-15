@@ -8,7 +8,7 @@ describe('formatStars', () => {
     [999, '999'],
     [1000, '1.0k'],
     [1499, '1.5k'],
-    [12_450, '12.4k']
+    [12_450, '12.4k'],
   ])('formats %i as %s', (stars, expected) => {
     expect(formatStars(stars)).toBe(expected)
   })
@@ -18,18 +18,18 @@ describe('fetchGitHubStars', () => {
   it('returns the repository star count', async () => {
     const fetcher = vi.fn().mockResolvedValue({
       ok: true,
-      json: vi.fn().mockResolvedValue({ stargazers_count: 1234 })
+      json: vi.fn().mockResolvedValue({ stargazers_count: 1234 }),
     })
 
     await expect(fetchGitHubStars(fetcher)).resolves.toBe(1234)
     expect(fetcher).toHaveBeenCalledWith('https://api.github.com/repos/vocaldll/chess-desktop', {
-      headers: { accept: 'application/vnd.github+json' }
+      headers: { accept: 'application/vnd.github+json' },
     })
   })
 
   it.each([
     ['an unsuccessful response', { ok: false }],
-    ['a malformed response', { ok: true, json: vi.fn().mockResolvedValue({ stars: 1234 }) }]
+    ['a malformed response', { ok: true, json: vi.fn().mockResolvedValue({ stars: 1234 }) }],
   ])('returns null for %s', async (_label, response) => {
     const fetcher = vi.fn().mockResolvedValue(response)
 
@@ -53,8 +53,8 @@ describe('useGitHubStars', () => {
       'fetch',
       vi.fn().mockResolvedValue({
         ok: true,
-        json: vi.fn().mockResolvedValue({ stargazers_count: 2468 })
-      })
+        json: vi.fn().mockResolvedValue({ stargazers_count: 2468 }),
+      }),
     )
 
     const { result } = renderHook(() => useGitHubStars())

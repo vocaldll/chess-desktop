@@ -5,14 +5,14 @@ function contents(key = 'style-key') {
   return {
     isDestroyed: vi.fn().mockReturnValue(false),
     insertCSS: vi.fn().mockResolvedValue(key),
-    removeInsertedCSS: vi.fn().mockResolvedValue(undefined)
+    removeInsertedCSS: vi.fn().mockResolvedValue(undefined),
   }
 }
 
 describe('chat visibility', () => {
   it.each([
     ['chesscom', '.resizable-chat-area-component'],
-    ['lichess', '.mchat']
+    ['lichess', '.mchat'],
   ] as const)('inserts the %s chat override', async (siteId, selector) => {
     const webContents = contents()
 

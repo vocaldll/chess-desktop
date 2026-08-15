@@ -22,8 +22,8 @@ describe('UrlBar', () => {
         onCommand: vi.fn((listener) => {
           shortcutListener = listener
           return vi.fn()
-        })
-      }
+        }),
+      },
     } as unknown as typeof window.api
   })
 

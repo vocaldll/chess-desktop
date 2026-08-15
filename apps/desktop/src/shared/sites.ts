@@ -16,15 +16,15 @@ export const SITES: Record<SiteId, Site> = {
     name: 'Chess.com',
     host: 'chess.com',
     startUrl: 'https://www.chess.com/',
-    partition: 'persist:chess'
+    partition: 'persist:chess',
   },
   lichess: {
     id: 'lichess',
     name: 'Lichess',
     host: 'lichess.org',
     startUrl: 'https://lichess.org/',
-    partition: 'persist:lichess'
-  }
+    partition: 'persist:lichess',
+  },
 }
 
 export const SITE_ORDER: readonly SiteId[] = ['chesscom', 'lichess']
@@ -33,7 +33,7 @@ export const DEFAULT_SITE: SiteId = 'chesscom'
 
 export const DEFAULT_LAST_SITE_URLS: LastSiteUrls = {
   chesscom: SITES.chesscom.startUrl,
-  lichess: SITES.lichess.startUrl
+  lichess: SITES.lichess.startUrl,
 }
 
 const EXTERNAL_PROTOCOLS = new Set(['https:', 'http:', 'mailto:'])

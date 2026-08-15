@@ -21,7 +21,7 @@ describe('Toggle', () => {
       checked: true,
       label: 'Enable notifications',
       disabled: true,
-      onchange
+      onchange,
     })
 
     await user.click(screen.getByRole('checkbox', { name: 'Enable notifications' }))

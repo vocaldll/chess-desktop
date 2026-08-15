@@ -11,7 +11,7 @@ const packageVersion = (
 ).version
 const sentryRelease = `chess-desktop@${packageVersion}`
 const uploadSourceMaps = Boolean(
-  process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT
+  process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT,
 )
 
 function sourceMapPlugins(outputDirectory: 'main' | 'renderer') {
@@ -26,25 +26,25 @@ function sourceMapPlugins(outputDirectory: 'main' | 'renderer') {
     telemetry: false,
     release: {
       name: sentryRelease,
-      setCommits: { auto: true, ignoreMissing: true }
+      setCommits: { auto: true, ignoreMissing: true },
     },
     sourcemaps: {
       assets: `./out/${outputDirectory}/**/*.{js,map}`,
-      filesToDeleteAfterUpload: `./out/${outputDirectory}/**/*.map`
-    }
+      filesToDeleteAfterUpload: `./out/${outputDirectory}/**/*.map`,
+    },
   })
 }
 
 const nodeExternals = [
   'electron',
   ...builtinModules,
-  ...builtinModules.map((name) => `node:${name}`)
+  ...builtinModules.map((name) => `node:${name}`),
 ]
 
 export default defineConfig({
   main: {
     resolve: {
-      alias: { '@chess-desktop/tokens': tokens }
+      alias: { '@chess-desktop/tokens': tokens },
     },
     plugins: sourceMapPlugins('main'),
     build: {
@@ -52,21 +52,21 @@ export default defineConfig({
       rollupOptions: {
         input: resolve(__dirname, 'src/main/index.ts'),
         external: nodeExternals,
-        output: { format: 'cjs', entryFileNames: '[name].js' }
-      }
-    }
+        output: { format: 'cjs', entryFileNames: '[name].js' },
+      },
+    },
   },
   preload: {
     build: {
       rollupOptions: {
         input: {
           index: resolve(__dirname, 'src/preload/index.ts'),
-          webview: resolve(__dirname, 'src/preload/webview.ts')
+          webview: resolve(__dirname, 'src/preload/webview.ts'),
         },
         external: nodeExternals,
-        output: { format: 'cjs', entryFileNames: '[name].js' }
-      }
-    }
+        output: { format: 'cjs', entryFileNames: '[name].js' },
+      },
+    },
   },
   renderer: {
     root: resolve(__dirname, 'src/renderer'),
@@ -74,18 +74,18 @@ export default defineConfig({
       alias: {
         '@chess-desktop/tokens': tokens,
         $lib: resolve(__dirname, 'src/renderer/lib'),
-        $shared: resolve(__dirname, 'src/shared')
-      }
+        $shared: resolve(__dirname, 'src/shared'),
+      },
     },
     plugins: [
       svelte({ configFile: resolve(__dirname, 'svelte.config.mjs') }),
-      ...sourceMapPlugins('renderer')
+      ...sourceMapPlugins('renderer'),
     ],
     build: {
       sourcemap: uploadSourceMaps ? 'hidden' : false,
       rollupOptions: {
-        input: resolve(__dirname, 'src/renderer/index.html')
-      }
-    }
-  }
+        input: resolve(__dirname, 'src/renderer/index.html'),
+      },
+    },
+  },
 })

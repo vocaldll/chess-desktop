@@ -6,7 +6,7 @@ const notice = {
   icon: 'sound-off' as const,
   title: 'Sound off',
   keys: ['Ctrl+M'],
-  action: 'unmute'
+  action: 'unmute',
 }
 
 describe('notice store', () => {

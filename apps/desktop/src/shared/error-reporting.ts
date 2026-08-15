@@ -30,7 +30,7 @@ function sanitizeContextValue(value: unknown): unknown {
     return Object.fromEntries(
       Object.entries(value)
         .filter(([key]) => !key.toLowerCase().includes('url'))
-        .map(([key, nestedValue]) => [key, sanitizeContextValue(nestedValue)])
+        .map(([key, nestedValue]) => [key, sanitizeContextValue(nestedValue)]),
     )
   }
 
@@ -71,7 +71,7 @@ export function sanitizeErrorEvent<T extends Event>(event: T): T | null {
   if (event.exception?.values) {
     event.exception.values = event.exception.values.map((exception) => ({
       ...exception,
-      value: exception.value ? redactUrls(exception.value) : exception.value
+      value: exception.value ? redactUrls(exception.value) : exception.value,
     }))
   }
 
@@ -79,8 +79,8 @@ export function sanitizeErrorEvent<T extends Event>(event: T): T | null {
     event.tags = Object.fromEntries(
       Object.entries(event.tags).map(([key, value]) => [
         key,
-        typeof value === 'string' ? redactUrls(value) : value
-      ])
+        typeof value === 'string' ? redactUrls(value) : value,
+      ]),
     )
   }
 

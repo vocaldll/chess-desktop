@@ -34,7 +34,7 @@ const CHESSCOM_ACTIVITIES: Record<string, string> = {
   tv: WATCHING_GAME,
   'computer-chess-championship': WATCHING_GAME,
   variants: LOOKING,
-  votechess: PLAYING
+  votechess: PLAYING,
 }
 
 const LICHESS_ACTIVITIES: Record<string, string> = {
@@ -52,7 +52,7 @@ const LICHESS_ACTIVITIES: Record<string, string> = {
   tv: WATCHING_GAME,
   learn: LESSON,
   practice: LESSON,
-  coordinate: LESSON
+  coordinate: LESSON,
 }
 
 const LICHESS_NON_GAME = new Set([
@@ -88,7 +88,7 @@ const LICHESS_NON_GAME = new Set([
   'team',
   'timeline',
   'tournament',
-  'video'
+  'video',
 ])
 
 const CHESSCOM_GAME_ID = /^\d+$/
@@ -120,7 +120,7 @@ const LIVE_GAME_LABELS: Record<GameRole, string> = {
   finished: REVIEWING,
   aborted: BROWSING,
   reviewing: REVIEWING,
-  unknown: PLAYING
+  unknown: PLAYING,
 }
 
 const ARCHIVED_GAME_LABELS: Record<GameRole, string> = {
@@ -129,7 +129,7 @@ const ARCHIVED_GAME_LABELS: Record<GameRole, string> = {
   finished: REVIEWING,
   aborted: REVIEWING,
   reviewing: REVIEWING,
-  unknown: REVIEWING
+  unknown: REVIEWING,
 }
 
 const LICHESS_GAME_LABELS: Record<GameRole, string> = {
@@ -138,7 +138,7 @@ const LICHESS_GAME_LABELS: Record<GameRole, string> = {
   finished: REVIEWING,
   aborted: BROWSING,
   reviewing: REVIEWING,
-  unknown: WATCHING_GAME
+  unknown: WATCHING_GAME,
 }
 
 const LICHESS_PLAYER_LABELS: Record<GameRole, string> = {
@@ -147,7 +147,7 @@ const LICHESS_PLAYER_LABELS: Record<GameRole, string> = {
   finished: REVIEWING,
   aborted: BROWSING,
   reviewing: REVIEWING,
-  unknown: PLAYING
+  unknown: PLAYING,
 }
 
 const SOLO_PLAY_LABELS: Record<GameRole, string> = {
@@ -156,7 +156,7 @@ const SOLO_PLAY_LABELS: Record<GameRole, string> = {
   finished: REVIEWING,
   aborted: LOOKING,
   reviewing: REVIEWING,
-  unknown: LOOKING
+  unknown: LOOKING,
 }
 
 const CHESSCOM_SOLO_MODES = new Set(['computer', 'coach'])
@@ -174,7 +174,7 @@ function isChesscomSoloPlayURL(segments: string[]): boolean {
 function chesscomPlayActivity(
   second: string | undefined,
   third: string | undefined,
-  role: GameRole
+  role: GameRole,
 ): string {
   if (CHESSCOM_SOLO_MODES.has(second ?? '')) {
     return SOLO_PLAY_LABELS[role]
@@ -302,7 +302,7 @@ export function isPlayingGame(siteId: SiteId, url: string, role: GameRole = 'unk
 export function describePresence(
   siteId: SiteId,
   url: string,
-  role: GameRole = 'unknown'
+  role: GameRole = 'unknown',
 ): Presence {
   const { name } = SITES[siteId]
   const segments = pathSegments(url)
@@ -312,6 +312,6 @@ export function describePresence(
       siteId === 'lichess' ? lichessActivity(segments, role) : chesscomActivity(segments, role),
     state: name,
     assetKey: siteId,
-    assetText: name
+    assetText: name,
   }
 }

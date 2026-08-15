@@ -31,7 +31,7 @@ function frame(op: number, value: unknown): Buffer {
 function decode(value: Buffer) {
   return {
     op: value.readUInt32LE(0),
-    body: value.subarray(8).toString('utf8')
+    body: value.subarray(8).toString('utf8'),
   }
 }
 

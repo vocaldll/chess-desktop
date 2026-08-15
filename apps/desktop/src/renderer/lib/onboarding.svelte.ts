@@ -14,32 +14,32 @@ export const STEPS: readonly OnboardingStep[] = [
   {
     id: 'welcome',
     title: 'Where do you play?',
-    body: 'Pick the site you want to open on launch. You can change this at any time.'
+    body: 'Pick the site you want to open on launch. You can change this at any time.',
   },
   {
     id: 'switcher',
     anchor: 'switcher',
     title: 'Switch sites anytime',
-    body: 'Both sites stay signed in on their own session, and each one remembers the last page you were on.'
+    body: 'Both sites stay signed in on their own session, and each one remembers the last page you were on.',
   },
   {
     id: 'address',
     anchor: 'address',
     title: 'Jump straight to a page',
-    body: 'Type a path like /puzzles and press Enter. Addresses outside the active site are rejected instead of loaded.'
+    body: 'Type a path like /puzzles and press Enter. Addresses outside the active site are rejected instead of loaded.',
   },
   {
     id: 'volume',
     anchor: 'volume',
     title: 'Control the sound',
-    body: 'Adjust the volume or mute the app without changing the sound on the rest of your computer.'
+    body: 'Adjust the volume or mute the app without changing the sound on the rest of your computer.',
   },
   {
     id: 'settings',
     anchor: 'settings',
     title: 'Make it yours',
-    body: 'App preferences and the full keyboard shortcut list live behind the gear.'
-  }
+    body: 'App preferences and the full keyboard shortcut list live behind the gear.',
+  },
 ]
 
 class Onboarding {
@@ -87,6 +87,6 @@ export const anchor: Action<HTMLElement, AnchorId> = (node, id) => {
   return {
     destroy() {
       delete onboarding.anchors[id]
-    }
+    },
   }
 }

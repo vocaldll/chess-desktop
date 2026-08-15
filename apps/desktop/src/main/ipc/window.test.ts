@@ -4,7 +4,7 @@ import { IPC } from '../../shared/ipc-channels'
 const mocks = vi.hoisted(() => ({
   isActiveGame: vi.fn(),
   on: vi.fn(),
-  handle: vi.fn()
+  handle: vi.fn(),
 }))
 
 vi.mock('electron', () => ({ ipcMain: mocks }))
@@ -33,7 +33,7 @@ describe('window IPC', () => {
       maximize: vi.fn(),
       unmaximize: vi.fn(),
       close: vi.fn(),
-      isMaximized: vi.fn().mockReturnValue(false)
+      isMaximized: vi.fn().mockReturnValue(false),
     }
     registerWindowIpc(() => window as never)
 

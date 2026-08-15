@@ -9,7 +9,7 @@ export function isPermissionAllowed(
   permission: string,
   requestingUrl: string,
   isMainFrame: boolean,
-  notificationsEnabled: boolean
+  notificationsEnabled: boolean,
 ): boolean {
   if (!isMainFrame || !isSiteURL(siteId, requestingUrl)) {
     return false
@@ -33,8 +33,8 @@ export function registerPermissions(): void {
           permission,
           details.requestingUrl,
           details.isMainFrame,
-          getSettings().notificationsEnabled
-        )
+          getSettings().notificationsEnabled,
+        ),
       )
     })
 
@@ -44,8 +44,8 @@ export function registerPermissions(): void {
         permission,
         details.requestingUrl ?? requestingOrigin,
         details.isMainFrame,
-        getSettings().notificationsEnabled
-      )
+        getSettings().notificationsEnabled,
+      ),
     )
   }
 }
