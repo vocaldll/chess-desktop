@@ -57,7 +57,7 @@ export default function DownloadButton() {
   }, [open])
 
   return (
-    <div className="relative w-full max-w-[320px]" ref={containerRef}>
+    <div className="relative w-full max-w-[280px]" ref={containerRef}>
       <button
         ref={triggerRef}
         className="grid w-full cursor-pointer grid-cols-[20px_1fr_20px] items-center rounded-full border border-line-strong bg-surface-2 px-5 py-3 font-semibold text-[15px] text-ink transition-colors hover:border-[#4a4a4a] hover:bg-surface-hover"
