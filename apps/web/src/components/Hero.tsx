@@ -36,7 +36,7 @@ export default function Hero() {
         <DownloadButton />
 
         <a
-          className="relative inline-flex items-center gap-2 font-medium text-[14px] text-ink-muted transition-colors hover:text-ink"
+          className="inline-flex items-center gap-2 font-medium text-[14px] text-ink-muted transition-colors hover:text-ink"
           href={repository}
           target="_blank"
           rel="noreferrer"
@@ -44,7 +44,7 @@ export default function Hero() {
           <GitHubMark size={16} />
           View on GitHub
           <span
-            className={`absolute left-full ml-2.5 inline-flex items-center gap-1.5 whitespace-nowrap tabular-nums ${stars === null ? 'invisible' : ''}`}
+            className={`ml-0.5 inline-flex items-center gap-1.5 whitespace-nowrap tabular-nums ${stars === null ? 'invisible' : ''}`}
             aria-hidden={stars === null}
           >
             <StarMark />
