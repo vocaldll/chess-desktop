@@ -11,7 +11,7 @@
   const STROKE = 1.8
   const HALF = 50
 
-  let open = $state(false)
+  let volumeOpen = $state(false)
   let level = $state(settings.current.volume)
 
   const muted = $derived(settings.current.soundMuted)
@@ -22,19 +22,19 @@
   $effect(() => {
     const stored = settings.current.volume
 
-    if (!open) {
+    if (!volumeOpen) {
       level = stored
     }
   })
 
   $effect(() => {
-    if (!open) {
+    if (!volumeOpen) {
       return
     }
 
     const onKeydown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        open = false
+        volumeOpen = false
       }
     }
 
@@ -64,21 +64,28 @@
 
 <div class="volume">
   <button
+    type="button"
     class="btn"
     title="Volume"
     aria-label="Volume"
-    aria-expanded={open}
-    onclick={() => (open = !open)}
+    aria-expanded={volumeOpen}
+    onclick={() => (volumeOpen = !volumeOpen)}
     use:anchor={'volume'}
   >
     <Icon size={ICON} strokeWidth={STROKE} />
   </button>
 
-  {#if open}
-    <button class="dismiss" aria-label="Close volume" onclick={() => (open = false)}></button>
+  {#if volumeOpen}
+    <button
+      type="button"
+      class="dismiss"
+      aria-label="Close volume"
+      onclick={() => (volumeOpen = false)}
+    ></button>
 
     <div class="popover">
       <button
+        type="button"
         class="mute"
         title={muted ? 'Unmute' : 'Mute'}
         aria-label={muted ? 'Unmute' : 'Mute'}

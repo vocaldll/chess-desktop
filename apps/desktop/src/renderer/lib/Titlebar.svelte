@@ -3,17 +3,17 @@
   import ArrowRight from '@lucide/svelte/icons/arrow-right'
   import Copy from '@lucide/svelte/icons/copy'
   import Minus from '@lucide/svelte/icons/minus'
-  import ProgressBar from './ProgressBar.svelte'
   import RotateCw from '@lucide/svelte/icons/rotate-cw'
   import Settings from '@lucide/svelte/icons/settings'
   import Square from '@lucide/svelte/icons/square'
   import X from '@lucide/svelte/icons/x'
-  import UrlBar from './UrlBar.svelte'
-  import VolumeControl from './VolumeControl.svelte'
   import { browser } from './browser.svelte'
   import { fullscreen } from './fullscreen.svelte'
   import { anchor } from './onboarding.svelte'
+  import ProgressBar from './ProgressBar.svelte'
+  import UrlBar from './UrlBar.svelte'
   import { updates } from './updates.svelte'
+  import VolumeControl from './VolumeControl.svelte'
 
   interface Props {
     onOpenSettings: () => void
@@ -75,6 +75,7 @@
   <header class="titlebar" class:interactive={addressFocused}>
     <div class="group leading">
       <button
+        type="button"
         class="btn"
         title="Back"
         aria-label="Back"
@@ -84,6 +85,7 @@
         <ArrowLeft size={ICON} strokeWidth={STROKE} />
       </button>
       <button
+        type="button"
         class="btn"
         title="Forward"
         aria-label="Forward"
@@ -92,8 +94,8 @@
       >
         <ArrowRight size={ICON} strokeWidth={STROKE} />
       </button>
-      <button class="btn" title="Reload" aria-label="Reload" onclick={reload}>
-        <span class="spin" class:spinning onanimationiteration={onRevolution}>
+      <button type="button" class="btn" title="Reload" aria-label="Reload" onclick={reload}>
+        <span class="spin" class:spinning={spinning} onanimationiteration={onRevolution}>
           <RotateCw size={ICON} strokeWidth={STROKE} />
         </span>
       </button>
@@ -106,6 +108,7 @@
     <div class="group trailing">
       {#if updates.downloadedVersion !== null}
         <button
+          type="button"
           class="update"
           class:installing={updates.installing}
           title={`Restart to update to version ${updates.downloadedVersion}`}
@@ -120,6 +123,7 @@
       <VolumeControl />
 
       <button
+        type="button"
         class="btn"
         title="Settings"
         aria-label="Settings"
@@ -132,6 +136,7 @@
       <div class="divider"></div>
 
       <button
+        type="button"
         class="btn control"
         title="Minimize"
         aria-label="Minimize"
@@ -141,6 +146,7 @@
         <Minus size={CONTROL_ICON} strokeWidth={CONTROL_STROKE} />
       </button>
       <button
+        type="button"
         class="btn control"
         title={isMaximized ? 'Restore' : 'Maximize'}
         aria-label={isMaximized ? 'Restore' : 'Maximize'}
@@ -153,6 +159,7 @@
         {/if}
       </button>
       <button
+        type="button"
         class="btn control close"
         title="Close"
         aria-label="Close"

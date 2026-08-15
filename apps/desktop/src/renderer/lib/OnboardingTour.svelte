@@ -2,7 +2,7 @@
   import { SITE_ORDER, SITES, type SiteId } from '$shared/sites'
   import ChessComMark from './marks/ChessComMark.svelte'
   import LichessMark from './marks/LichessMark.svelte'
-  import { STEPS, onboarding } from './onboarding.svelte'
+  import { onboarding, STEPS } from './onboarding.svelte'
   import { settings } from './settings.svelte'
 
   const marks = {
@@ -125,7 +125,7 @@
         <div class="choices">
           {#each SITE_ORDER as id (id)}
             {@const Mark = marks[id]}
-            <button class="choice" onclick={() => pick(id)}>
+            <button type="button" class="choice" onclick={() => pick(id)}>
               <Mark size={40} />
               <span>{SITES[id].name}</span>
             </button>
@@ -147,7 +147,9 @@
           </span>
         </label>
 
-        <button class="skip" onclick={() => onboarding.finish()}>Skip the introduction</button>
+        <button type="button" class="skip" onclick={() => onboarding.finish()}>
+          Skip the introduction
+        </button>
       </div>
     {:else if geometry}
       {@const step = onboarding.step}
@@ -194,8 +196,8 @@
             </div>
 
             <div class="actions">
-              <button class="skip" onclick={() => onboarding.finish()}>Skip</button>
-              <button class="next" onclick={() => onboarding.next()}>
+              <button type="button" class="skip" onclick={() => onboarding.finish()}>Skip</button>
+              <button type="button" class="next" onclick={() => onboarding.next()}>
                 {onboarding.isLast ? 'Done' : 'Next'}
               </button>
             </div>

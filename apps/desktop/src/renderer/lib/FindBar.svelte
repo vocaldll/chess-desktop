@@ -124,6 +124,7 @@
     <div class="divider"></div>
 
     <button
+      type="button"
       class="icon"
       title="Previous match"
       aria-label="Previous match"
@@ -133,6 +134,7 @@
       <ChevronUp size={ICON} strokeWidth={STROKE} />
     </button>
     <button
+      type="button"
       class="icon"
       title="Next match"
       aria-label="Next match"
@@ -141,7 +143,7 @@
     >
       <ChevronDown size={ICON} strokeWidth={STROKE} />
     </button>
-    <button class="icon" title="Close find" aria-label="Close find" onclick={close}>
+    <button type="button" class="icon" title="Close find" aria-label="Close find" onclick={close}>
       <X size={ICON} strokeWidth={STROKE} />
     </button>
   </div>

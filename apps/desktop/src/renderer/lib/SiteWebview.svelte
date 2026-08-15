@@ -47,7 +47,7 @@
       <div class="card">
         <h2>Can't reach {site.name}</h2>
         <p>{browser.error.errorDescription}</p>
-        <button onclick={() => browser.reload()}>Try again</button>
+        <button type="button" onclick={() => browser.reload()}>Try again</button>
       </div>
     </div>
   {/if}

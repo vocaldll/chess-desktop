@@ -3,11 +3,11 @@
   import Copy from '@lucide/svelte/icons/copy'
   import ZoomIn from '@lucide/svelte/icons/zoom-in'
   import ZoomOut from '@lucide/svelte/icons/zoom-out'
-  import { SITES, normalizeSiteInput } from '$shared/sites'
+  import { normalizeSiteInput, SITES } from '$shared/sites'
   import { DEFAULT_ZOOM } from '$shared/zoom'
-  import SiteSwitcher from './SiteSwitcher.svelte'
   import { browser } from './browser.svelte'
   import { anchor } from './onboarding.svelte'
+  import SiteSwitcher from './SiteSwitcher.svelte'
   import { settings } from './settings.svelte'
 
   const COPIED_FEEDBACK = 1400
@@ -133,6 +133,7 @@
 
   {#if zoom !== DEFAULT_ZOOM}
     <button
+      type="button"
       class="zoom"
       title={`Zoom is ${zoom}%, click to reset`}
       aria-label={`Zoom is ${zoom} percent, click to reset`}
@@ -148,6 +149,7 @@
   {/if}
 
   <button
+    type="button"
     class="copy"
     class:copied
     title={copied ? 'Copied' : 'Copy address'}
@@ -296,13 +298,21 @@
       transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  .copy .done,
+  .copy .done {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  .copy .idle {
+    opacity: 1;
+    transform: scale(1);
+  }
+
   .copy.copied .idle {
     opacity: 0;
     transform: scale(0.6);
   }
 
-  .copy .idle,
   .copy.copied .done {
     opacity: 1;
     transform: scale(1);

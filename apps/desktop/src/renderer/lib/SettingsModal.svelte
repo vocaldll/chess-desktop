@@ -5,16 +5,16 @@
   import {
     normalizeShortcutKey,
     resolveShortcutChord,
-    shortcutChordMatchesBinding,
     SHORTCUTS,
     type Shortcut,
     type ShortcutAction,
-    type ShortcutBinding
+    type ShortcutBinding,
+    shortcutChordMatchesBinding
   } from '$shared/shortcuts'
   import Key from './Key.svelte'
-  import Toggle from './Toggle.svelte'
   import GitHubMark from './marks/GitHubMark.svelte'
   import { settings } from './settings.svelte'
+  import Toggle from './Toggle.svelte'
   import { updates } from './updates.svelte'
 
   interface Props {
@@ -283,7 +283,7 @@
 
 {#if open}
   <div class="modal" role="dialog" aria-modal="true" aria-label={title}>
-    <button class="backdrop" aria-label="Close settings" onclick={onClose}></button>
+    <button type="button" class="backdrop" aria-label="Close settings" onclick={onClose}></button>
 
     <div class="panel">
       <header>
@@ -298,6 +298,7 @@
           {#if showShortcuts}
             {#if hasShortcutOverrides}
               <button
+                type="button"
                 class="reset-all"
                 title="Reset all shortcuts to their defaults"
                 onclick={() => void resetAllShortcuts()}
@@ -307,6 +308,7 @@
             {/if}
 
             <button
+              type="button"
               class="icon"
               title="Back to settings"
               aria-label="Back to settings"
@@ -316,6 +318,7 @@
             </button>
           {:else}
             <button
+              type="button"
               class="update-check"
               class:error={updates.checkResult?.status === 'error'}
               title={updateButtonTitle}
@@ -327,6 +330,7 @@
             </button>
 
             <button
+              type="button"
               class="icon"
               title="View on GitHub"
               aria-label="View Chess Desktop on GitHub"
@@ -336,6 +340,7 @@
             </button>
 
             <button
+              type="button"
               class="icon"
               title="Keyboard shortcuts"
               aria-label="Keyboard shortcuts"
@@ -345,7 +350,7 @@
             </button>
           {/if}
 
-          <button class="icon" title="Close" aria-label="Close" onclick={onClose}>
+          <button type="button" class="icon" title="Close" aria-label="Close" onclick={onClose}>
             <X size={16} strokeWidth={1.8} />
           </button>
         </div>
@@ -447,6 +452,7 @@
                     Hide opponent
                     <span
                       class="beta"
+                      role="note"
                       title={opponentBetaNotice}
                       aria-label={`Beta: ${opponentBetaNotice}`}
                     >BETA</span>
@@ -521,6 +527,7 @@
                     Discord Rich Presence
                     <span
                       class="beta"
+                      role="note"
                       title={discordBetaNotice}
                       aria-label={`Beta: ${discordBetaNotice}`}
                     >BETA</span>
@@ -732,6 +739,32 @@
     background-clip: content-box;
   }
 
+  section {
+    margin-top: var(--cd-space-4);
+  }
+
+  h3 {
+    margin: 0 0 var(--cd-space-2);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cd-text-subtle);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cd-space-4);
+    padding: var(--cd-space-3) 0;
+    border-bottom: 1px solid var(--cd-border);
+  }
+
+  .row:last-child {
+    border-bottom: 0;
+  }
+
   .settings-body {
     padding-top: var(--cd-space-2);
   }
@@ -762,32 +795,6 @@
   .settings-section-grid .row {
     min-height: 58px;
     padding-block: 10px;
-    border-bottom: 0;
-  }
-
-  section {
-    margin-top: var(--cd-space-4);
-  }
-
-  h3 {
-    margin: 0 0 var(--cd-space-2);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--cd-text-subtle);
-  }
-
-  .row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--cd-space-4);
-    padding: var(--cd-space-3) 0;
-    border-bottom: 1px solid var(--cd-border);
-  }
-
-  .row:last-child {
     border-bottom: 0;
   }
 

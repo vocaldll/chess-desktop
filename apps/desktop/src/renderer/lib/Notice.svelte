@@ -4,8 +4,8 @@
   import PinOff from '@lucide/svelte/icons/pin-off'
   import Volume2 from '@lucide/svelte/icons/volume-2'
   import VolumeOff from '@lucide/svelte/icons/volume-off'
-  import Key from './Key.svelte'
   import { fullscreen } from './fullscreen.svelte'
+  import Key from './Key.svelte'
   import { type Notice, notices } from './notices.svelte'
 
   const DISMISS_AFTER = 4000

@@ -2,17 +2,17 @@
   import { onMount } from 'svelte'
   import { resolveShortcutChords, SHORTCUTS, type ShortcutAction } from '$shared/shortcuts'
   import { DEFAULT_ZOOM, stepZoom } from '$shared/zoom'
-  import Notice from './lib/Notice.svelte'
-  import OnboardingTour from './lib/OnboardingTour.svelte'
-  import SettingsModal from './lib/SettingsModal.svelte'
-  import SiteWebview from './lib/SiteWebview.svelte'
-  import Titlebar from './lib/Titlebar.svelte'
+  import { activeGame } from './lib/active-game.svelte'
   import { browser } from './lib/browser.svelte'
   import { fullscreen } from './lib/fullscreen.svelte'
-  import { activeGame } from './lib/active-game.svelte'
+  import Notice from './lib/Notice.svelte'
   import { notices } from './lib/notices.svelte'
+  import OnboardingTour from './lib/OnboardingTour.svelte'
   import { onboarding } from './lib/onboarding.svelte'
+  import SettingsModal from './lib/SettingsModal.svelte'
+  import SiteWebview from './lib/SiteWebview.svelte'
   import { settings } from './lib/settings.svelte'
+  import Titlebar from './lib/Titlebar.svelte'
 
   let settingsOpen = $state(false)
   let resolved = $state(false)
