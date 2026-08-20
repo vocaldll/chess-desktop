@@ -47,28 +47,31 @@
 {#if shown}
   {@const Icon = icons[shown.icon]}
 
-  <div
-    class="notice"
-    class:visible
-    class:below-titlebar={!fullscreen.active}
-    role="status"
-    aria-hidden={!visible}
-  >
-    <span class="lead">
-      <Icon size={ICON} strokeWidth={STROKE} />
-      <span class="title">{shown.title}</span>
-    </span>
-
-    {#if shown.keys.length > 0}
-      <span class="hint">
-        Press
-        {#each shown.keys as key, index (key)}
-          {#if index > 0}or{/if}
-          <Key label={key} />
-        {/each}
-        to {shown.action}
+  <div role="status" aria-hidden={!visible}>
+    <button
+      type="button"
+      class="notice"
+      class:visible
+      class:below-titlebar={!fullscreen.active}
+      disabled={!visible}
+      onclick={() => (visible = false)}
+    >
+      <span class="lead">
+        <Icon size={ICON} strokeWidth={STROKE} />
+        <span class="title">{shown.title}</span>
       </span>
-    {/if}
+
+      {#if shown.keys.length > 0}
+        <span class="hint">
+          Press
+          {#each shown.keys as key, index (key)}
+            {#if index > 0}or{/if}
+            <Key label={key} />
+          {/each}
+          to {shown.action}
+        </span>
+      {/if}
+    </button>
   </div>
 {/if}
 
@@ -86,6 +89,7 @@
     border-radius: 999px;
     background: var(--cd-surface);
     box-shadow: var(--cd-shadow-modal);
+    font: inherit;
     white-space: nowrap;
     pointer-events: none;
     opacity: 0;
@@ -100,6 +104,7 @@
   }
 
   .notice.visible {
+    pointer-events: auto;
     opacity: 1;
     transform: translate(-50%, 0);
   }
