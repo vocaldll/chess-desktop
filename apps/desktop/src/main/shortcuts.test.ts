@@ -91,6 +91,19 @@ describe('shortcut interception', () => {
     expect(send).toHaveBeenCalledWith(IPC.shortcuts.triggered, 'toggle-mute')
   })
 
+  it.each([
+    ['1', 'switch-chesscom'],
+    ['2', 'switch-lichess'],
+  ] as const)('routes Ctrl+%s to %s', (key, command) => {
+    const { renderer, send } = setup()
+    const event = { preventDefault: vi.fn() }
+
+    renderer.emit('before-input-event', event, input({ key }))
+
+    expect(event.preventDefault).toHaveBeenCalledOnce()
+    expect(send).toHaveBeenCalledWith(IPC.shortcuts.triggered, command)
+  })
+
   it.each([{ type: 'keyUp' }, { isAutoRepeat: true }, { meta: true }, { key: 'x' }])(
     'ignores unsupported input %#',
     (overrides) => {

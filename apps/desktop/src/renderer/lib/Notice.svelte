@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ArrowLeftRight from '@lucide/svelte/icons/arrow-left-right'
   import Maximize from '@lucide/svelte/icons/maximize'
   import Pin from '@lucide/svelte/icons/pin'
   import PinOff from '@lucide/svelte/icons/pin-off'
@@ -17,7 +18,8 @@
     pin: Pin,
     'pin-off': PinOff,
     'sound-on': Volume2,
-    'sound-off': VolumeOff
+    'sound-off': VolumeOff,
+    'site-switch': ArrowLeftRight
   }
 
   let visible = $state(false)
@@ -57,14 +59,16 @@
       <span class="title">{shown.title}</span>
     </span>
 
-    <span class="hint">
-      Press
-      {#each shown.keys as key, index (key)}
-        {#if index > 0}or{/if}
-        <Key label={key} />
-      {/each}
-      to {shown.action}
-    </span>
+    {#if shown.keys.length > 0}
+      <span class="hint">
+        Press
+        {#each shown.keys as key, index (key)}
+          {#if index > 0}or{/if}
+          <Key label={key} />
+        {/each}
+        to {shown.action}
+      </span>
+    {/if}
   </div>
 {/if}
 

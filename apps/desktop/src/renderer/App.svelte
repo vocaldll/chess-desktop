@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { resolveShortcutChords, SHORTCUTS, type ShortcutAction } from '$shared/shortcuts'
+  import { SITES, type SiteId } from '$shared/sites'
   import { DEFAULT_ZOOM, stepZoom } from '$shared/zoom'
   import { activeGame } from './lib/active-game.svelte'
   import { browser } from './lib/browser.svelte'
@@ -47,6 +48,10 @@
         changeZoom(-1)
       } else if (command === 'zoom-reset') {
         resetZoom()
+      } else if (command === 'switch-chesscom') {
+        void switchSite('chesscom')
+      } else if (command === 'switch-lichess') {
+        void switchSite('lichess')
       }
     })
   )
@@ -76,6 +81,23 @@
     if (settings.current.zoom[site] !== DEFAULT_ZOOM) {
       settings.setZoom(site, DEFAULT_ZOOM)
     }
+  }
+
+  async function switchSite(siteId: SiteId): Promise<void> {
+    const previousSite = settings.current.activeSite
+    if (previousSite === siteId) {
+      return
+    }
+
+    await activeGame.switchTo(siteId)
+
+    notices.show({
+      source: 'site-switch',
+      icon: 'site-switch',
+      title: `Switched to ${SITES[siteId].name}`,
+      keys: shortcutKeys(previousSite === 'chesscom' ? 'switch-chesscom' : 'switch-lichess'),
+      action: `go back to ${SITES[previousSite].name}`
+    })
   }
 
   function toggleMute(): void {

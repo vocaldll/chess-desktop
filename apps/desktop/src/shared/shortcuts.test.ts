@@ -167,4 +167,16 @@ describe('shortcut resolution', () => {
     expect(shortcutChordMatchesBinding(chord, binding({ key: '-', shift: false }))).toBe(false)
     expect(shortcutChordMatchesBinding(chord, binding({ key: '+', alt: true }))).toBe(false)
   })
+
+  it('defines site-switching shortcuts', () => {
+    expect(
+      SHORTCUTS.filter((shortcut) => shortcut.command.startsWith('switch-')).map((shortcut) => [
+        shortcut.command,
+        shortcut.chords[0]?.label,
+      ]),
+    ).toEqual([
+      ['switch-chesscom', 'Ctrl+1'],
+      ['switch-lichess', 'Ctrl+2'],
+    ])
+  })
 })

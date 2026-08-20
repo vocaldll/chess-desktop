@@ -4,6 +4,8 @@ export type ShortcutCommand =
   | 'reload'
   | 'back'
   | 'forward'
+  | 'switch-chesscom'
+  | 'switch-lichess'
   | 'toggle-always-on-top'
   | 'toggle-mute'
   | 'zoom-in'
@@ -269,6 +271,16 @@ export const SHORTCUTS: readonly Shortcut[] = [
     command: 'forward',
     description: 'Go forward',
     chords: [{ keys: ['ArrowRight'], control: false, alt: true, shift: false, label: 'Alt+→' }],
+  },
+  {
+    command: 'switch-chesscom',
+    description: 'Switch to Chess.com',
+    chords: [{ keys: ['1'], control: true, alt: false, shift: false, label: 'Ctrl+1' }],
+  },
+  {
+    command: 'switch-lichess',
+    description: 'Switch to Lichess',
+    chords: [{ keys: ['2'], control: true, alt: false, shift: false, label: 'Ctrl+2' }],
   },
   {
     command: 'toggle-always-on-top',
