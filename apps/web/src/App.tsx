@@ -136,7 +136,7 @@ export default function App() {
           aria-labelledby="features-title"
         >
           <div className="section-intro">
-            <h2 id="features-title">Desktop features</h2>
+            <h2 id="features-title">Quality-of-life features</h2>
             <div className="settings-image">
               <Showcase
                 loading="lazy"
