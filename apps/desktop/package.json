@@ -8,9 +8,9 @@
   "description": "Desktop client for Chess.com and Lichess",
   "main": "./out/main/index.js",
   "scripts": {
-    "dev": "electron-vite dev",
+    "dev": "install-electron && electron-vite dev",
     "build": "electron-vite build",
-    "preview": "electron-vite preview",
+    "preview": "install-electron && electron-vite preview",
     "package": "electron-vite build && electron-builder",
     "package:win": "electron-vite build && electron-builder --win",
     "package:linux": "electron-vite build && electron-builder --linux",
