@@ -200,7 +200,7 @@ export default function App() {
           </div>
           <div className="question-list">
             {questions.map(({ question, answer }) => (
-              <details key={question}>
+              <details key={question} name="faq">
                 <summary>
                   {question}
                   <ChevronDown size={18} aria-hidden="true" />
