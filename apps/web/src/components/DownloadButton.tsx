@@ -57,10 +57,13 @@ export default function DownloadButton() {
   }, [open])
 
   return (
-    <div className="relative w-full max-w-[280px]" ref={containerRef}>
+    <div
+      className={`download-picker relative w-full max-w-[280px] ${open ? 'is-open' : ''}`}
+      ref={containerRef}
+    >
       <button
         ref={triggerRef}
-        className="download-trigger grid w-full cursor-pointer grid-cols-[20px_1fr_20px] items-center rounded-full border border-line-strong bg-surface-2 px-5 py-3 font-semibold text-[15px] text-ink transition-colors hover:border-[#4a4a4a] hover:bg-surface-hover"
+        className="download-trigger grid w-full cursor-pointer grid-cols-[20px_1fr_20px] items-center border px-5 py-3 font-semibold text-[15px] transition-colors"
         type="button"
         aria-controls={optionsId}
         aria-expanded={open}
@@ -81,57 +84,58 @@ export default function DownloadButton() {
 
       {open ? (
         <nav
-          className="absolute top-full right-0 z-20 mt-2 w-full overflow-hidden rounded-2xl border border-line bg-surface-2 p-1.5 text-left shadow-[0_18px_48px_rgba(0,0,0,0.45)]"
+          className="download-menu absolute inset-x-0 top-[calc(100%-1px)] z-20 overflow-hidden p-2 text-left"
           id={optionsId}
           aria-label="Download options"
         >
-          <p className="px-3 pt-1.5 pb-1 font-medium text-[11px] text-ink-faint uppercase tracking-[0.12em]">
-            Choose a version
-          </p>
+          <div className="download-menu-heading" aria-hidden="true">
+            <span>Choose a version</span>
+            <span />
+          </div>
           <a
-            className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-1 leading-tight transition-colors hover:bg-surface-hover"
+            className="download-option"
             href={downloadWindows}
             aria-label="Download for Windows"
             onClick={() => setOpen(false)}
           >
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-[#0078d4] text-white">
+            <span className="download-option-icon">
               <WindowsMark />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block font-semibold text-[14px]">Windows</span>
-              <span className="block text-[11px] text-ink-muted">x64 + ARM64</span>
+              <span className="download-option-detail">x64 + ARM64</span>
             </span>
-            <span className="font-mono text-[11px] text-ink-muted">Installer</span>
+            <span className="download-format">Installer</span>
           </a>
           <a
-            className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-1 leading-tight transition-colors hover:bg-surface-hover"
+            className="download-option"
             href={downloadLinuxX64}
             aria-label="Download for Linux x64"
             onClick={() => setOpen(false)}
           >
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-[#fcc624] text-black">
+            <span className="download-option-icon">
               <LinuxMark size={16} />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block font-semibold text-[14px]">Linux</span>
-              <span className="block text-[11px] text-ink-muted">x64</span>
+              <span className="download-option-detail">x64</span>
             </span>
-            <span className="font-mono text-[11px] text-ink-muted">AppImage</span>
+            <span className="download-format">AppImage</span>
           </a>
           <a
-            className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-1 leading-tight transition-colors hover:bg-surface-hover"
+            className="download-option"
             href={downloadLinuxArm64}
             aria-label="Download for Linux ARM64"
             onClick={() => setOpen(false)}
           >
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-[#fcc624] text-black">
+            <span className="download-option-icon">
               <LinuxMark size={16} />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block font-semibold text-[14px]">Linux</span>
-              <span className="block text-[11px] text-ink-muted">ARM64</span>
+              <span className="download-option-detail">ARM64</span>
             </span>
-            <span className="font-mono text-[11px] text-ink-muted">AppImage</span>
+            <span className="download-format">AppImage</span>
           </a>
         </nav>
       ) : null}
