@@ -1,24 +1,52 @@
 import { Expand, X } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { type ComponentType, useEffect, useRef, useState } from 'react'
+import ChessComMark from './ChessComMark'
+import LichessMark from './LichessMark'
 
-const shots = [
+type Screenshot = {
+  src: string
+  label: string
+  alt: string
+  width: number
+  height: number
+  mark?: ComponentType<{ size?: number }>
+}
+
+type ShowcaseProps = {
+  shots?: readonly [Screenshot, ...Screenshot[]]
+  loading?: 'eager' | 'lazy'
+}
+
+const heroShots: readonly [Screenshot, ...Screenshot[]] = [
   {
-    src: '/showcase-chesscom.webp',
+    src: '/chesscom-home.png',
     label: 'Chess.com',
+    mark: ChessComMark,
     alt: 'Chess Desktop running Chess.com',
+    width: 2560,
+    height: 1400,
   },
   {
-    src: '/showcase-lichess.webp',
+    src: '/lichess-home.png',
     label: 'Lichess',
+    mark: LichessMark,
     alt: 'Chess Desktop running Lichess',
+    width: 2560,
+    height: 1400,
   },
 ]
 
-export default function Showcase() {
+export default function Showcase({ shots = heroShots, loading = 'eager' }: ShowcaseProps) {
   const lightbox = useRef<HTMLDialogElement>(null)
   const [active, setActive] = useState(0)
-  const [paused, setPaused] = useState(false)
   const [expanded, setExpanded] = useState(false)
+
+  useEffect(() => {
+    if (shots.length < 2 || expanded) return
+
+    const timer = window.setTimeout(() => setActive((active + 1) % shots.length), 5000)
+    return () => window.clearTimeout(timer)
+  }, [active, shots.length, expanded])
 
   useEffect(() => {
     const dialog = lightbox.current
@@ -33,55 +61,42 @@ export default function Showcase() {
       }
     }
 
-    const stopExpanded = () => setExpanded(false)
-
     dialog.addEventListener('click', closeOnBackdrop)
-    dialog.addEventListener('close', stopExpanded)
     return () => {
       dialog.removeEventListener('click', closeOnBackdrop)
-      dialog.removeEventListener('close', stopExpanded)
     }
   }, [])
-
-  useEffect(() => {
-    if (paused || expanded) {
-      return
-    }
-
-    const timer = setInterval(() => setActive((active + 1) % shots.length), 5000)
-    return () => clearInterval(timer)
-  }, [paused, expanded, active])
 
   return (
     <>
       <figure
         className="rise m-0 w-full min-w-0"
         style={{ animationDelay: '240ms' }}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onFocus={() => setPaused(true)}
-        onBlur={() => setPaused(false)}
+        data-active-shot={shots[active].label}
       >
         <button
           type="button"
-          className="group relative mx-auto block cursor-zoom-in border-0 bg-none p-0 leading-[0]"
+          className="showcase-trigger group relative mx-auto block cursor-zoom-in border-0 bg-none p-0 leading-[0]"
           onClick={() => {
-            setExpanded(true)
             lightbox.current?.showModal()
+            setExpanded(true)
           }}
         >
-          <span className="grid">
-            {shots.map((shot, index) => (
-              <img
-                key={shot.src}
-                className={`col-start-1 row-start-1 block h-auto max-h-[min(56dvh,560px)] w-auto max-w-full rounded-xl border border-line object-contain transition-opacity duration-500 group-hover:border-line-strong motion-reduce:transition-none ${index === active ? 'opacity-100' : 'opacity-0'}`}
-                src={shot.src}
-                width={1738}
-                height={1087}
-                alt={shot.alt}
-                aria-hidden={index !== active}
-              />
-            ))}
+          <span className="showcase-viewport">
+            <span className="showcase-track" style={{ transform: `translateX(-${active * 100}%)` }}>
+              {shots.map((shot, index) => (
+                <img
+                  key={shot.src}
+                  className="showcase-image row-start-1 block max-w-full border border-line object-contain group-hover:border-line-strong"
+                  src={shot.src}
+                  width={shot.width}
+                  height={shot.height}
+                  loading={loading}
+                  alt={shot.alt}
+                  aria-hidden={index !== active}
+                />
+              ))}
+            </span>
           </span>
 
           <span className="pointer-events-none absolute right-3 bottom-3 inline-flex items-center gap-1.5 rounded-full bg-canvas/85 px-3 py-1.5 font-mono text-[11.5px] leading-snug backdrop-blur-sm transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100">
@@ -90,24 +105,27 @@ export default function Showcase() {
           </span>
         </button>
 
-        <figcaption className="mt-3 flex items-center justify-center gap-5 font-mono text-[12px]">
-          {shots.map((shot, index) => (
-            <button
-              key={shot.label}
-              type="button"
-              aria-pressed={index === active}
-              className={`cursor-pointer border-0 bg-transparent p-1 transition-colors ${index === active ? 'text-ink' : 'text-ink-muted hover:text-ink'}`}
-              onClick={() => setActive(index)}
-            >
-              {shot.label}
-            </button>
-          ))}
-        </figcaption>
+        {shots.length > 1 && (
+          <figcaption className="shot-selector">
+            {shots.map((shot, index) => (
+              <button
+                key={shot.label}
+                type="button"
+                aria-pressed={index === active}
+                onClick={() => setActive(index)}
+              >
+                {shot.mark && <shot.mark />}
+                {shot.label}
+              </button>
+            ))}
+          </figcaption>
+        )}
       </figure>
 
       <dialog
         ref={lightbox}
         aria-label="Screenshot preview"
+        onClose={() => setExpanded(false)}
         className="m-auto max-h-dvh max-w-full overflow-visible border-0 bg-transparent p-0 backdrop:bg-black/85 backdrop:backdrop-blur-sm md:max-h-[92dvh] md:max-w-[92vw]"
         onKeyDown={(event) => {
           if (event.key === 'ArrowLeft') {
@@ -122,27 +140,29 @@ export default function Showcase() {
         <img
           className="block max-h-dvh w-auto max-w-full object-contain md:max-h-[92dvh] md:max-w-[92vw] md:rounded-xl md:border md:border-line"
           src={shots[active].src}
-          width={1738}
-          height={1087}
+          width={shots[active].width}
+          height={shots[active].height}
           alt={shots[active].alt}
         />
 
-        <fieldset
-          className="fixed bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full border border-line bg-canvas/85 p-1 font-mono text-[12px] backdrop-blur-sm"
-          aria-label="Choose screenshot"
-        >
-          {shots.map((shot, index) => (
-            <button
-              key={shot.label}
-              type="button"
-              aria-pressed={index === active}
-              className={`cursor-pointer rounded-full px-3 py-1.5 transition-colors ${index === active ? 'bg-surface-hover text-ink' : 'bg-transparent text-ink-muted hover:text-ink'}`}
-              onClick={() => setActive(index)}
-            >
-              {shot.label}
-            </button>
-          ))}
-        </fieldset>
+        {shots.length > 1 && (
+          <fieldset
+            className="shot-selector fixed bottom-4 left-1/2 -translate-x-1/2"
+            aria-label="Choose screenshot"
+          >
+            {shots.map((shot, index) => (
+              <button
+                key={shot.label}
+                type="button"
+                aria-pressed={index === active}
+                onClick={() => setActive(index)}
+              >
+                {shot.mark && <shot.mark />}
+                {shot.label}
+              </button>
+            ))}
+          </fieldset>
+        )}
 
         <form method="dialog">
           <button

@@ -9,11 +9,11 @@ const links = [
 
 export default function Footer() {
   return (
-    <footer className="mt-auto border-line border-t">
+    <footer className="site-footer mt-auto border-line border-t">
       <div className="shell flex flex-col gap-3 pt-5 pb-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2.5">
           <img
-            className="block shrink-0 rounded-[5px]"
+            className="block shrink-0 rounded-[5px] bg-surface-2 p-0.5"
             src="/logo.png"
             width={20}
             height={20}

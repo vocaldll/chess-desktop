@@ -60,7 +60,7 @@ export default function DownloadButton() {
     <div className="relative w-full max-w-[280px]" ref={containerRef}>
       <button
         ref={triggerRef}
-        className="grid w-full cursor-pointer grid-cols-[20px_1fr_20px] items-center rounded-full border border-line-strong bg-surface-2 px-5 py-3 font-semibold text-[15px] text-ink transition-colors hover:border-[#4a4a4a] hover:bg-surface-hover"
+        className="download-trigger grid w-full cursor-pointer grid-cols-[20px_1fr_20px] items-center rounded-full border border-line-strong bg-surface-2 px-5 py-3 font-semibold text-[15px] text-ink transition-colors hover:border-[#4a4a4a] hover:bg-surface-hover"
         type="button"
         aria-controls={optionsId}
         aria-expanded={open}
@@ -89,12 +89,12 @@ export default function DownloadButton() {
             Choose a version
           </p>
           <a
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-surface-hover"
+            className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-1 leading-tight transition-colors hover:bg-surface-hover"
             href={downloadWindows}
             aria-label="Download for Windows"
             onClick={() => setOpen(false)}
           >
-            <span className="flex size-8 items-center justify-center rounded-lg bg-[#0078d4] text-white">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-[#0078d4] text-white">
               <WindowsMark />
             </span>
             <span className="min-w-0 flex-1">
@@ -104,12 +104,12 @@ export default function DownloadButton() {
             <span className="font-mono text-[11px] text-ink-muted">Installer</span>
           </a>
           <a
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-surface-hover"
+            className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-1 leading-tight transition-colors hover:bg-surface-hover"
             href={downloadLinuxX64}
             aria-label="Download for Linux x64"
             onClick={() => setOpen(false)}
           >
-            <span className="flex size-8 items-center justify-center rounded-lg bg-[#fcc624] text-black">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-[#fcc624] text-black">
               <LinuxMark size={16} />
             </span>
             <span className="min-w-0 flex-1">
@@ -119,12 +119,12 @@ export default function DownloadButton() {
             <span className="font-mono text-[11px] text-ink-muted">AppImage</span>
           </a>
           <a
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-surface-hover"
+            className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-1 leading-tight transition-colors hover:bg-surface-hover"
             href={downloadLinuxArm64}
             aria-label="Download for Linux ARM64"
             onClick={() => setOpen(false)}
           >
-            <span className="flex size-8 items-center justify-center rounded-lg bg-[#fcc624] text-black">
+            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-[#fcc624] text-black">
               <LinuxMark size={16} />
             </span>
             <span className="min-w-0 flex-1">
