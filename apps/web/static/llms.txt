@@ -1,0 +1,17 @@
+# Chess Desktop
+
+> Chess Desktop is a free, open-source desktop client for Chess.com and Lichess, available for Windows and Linux.
+
+Chess Desktop is an independent project and is not affiliated with Chess.com or Lichess.
+
+## Product
+
+- [Website](https://chessdesktop.app/): Product overview, features, frequently asked questions, and downloads.
+- [Latest release](https://github.com/vocaldll/chess-desktop/releases/latest): Current Windows and Linux downloads.
+
+## Project
+
+- [Source and documentation](https://github.com/vocaldll/chess-desktop): Source code, installation instructions, and feature documentation.
+- [Privacy](https://github.com/vocaldll/chess-desktop/blob/master/PRIVACY.md): Crash-reporting and data-handling details.
+- [Issue tracker](https://github.com/vocaldll/chess-desktop/issues): Bug reports, feature requests, and support.
+- [License](https://github.com/vocaldll/chess-desktop/blob/master/LICENSE): MIT License.
