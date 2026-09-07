@@ -4,11 +4,11 @@ import {
   Bell,
   ChevronDown,
   EyeOff,
-  Gamepad2,
   MoveUpRight,
   Pin,
   Volume2,
 } from 'lucide-react'
+import DiscordMark from './components/DiscordMark'
 import DownloadButton from './components/DownloadButton'
 import Footer from './components/Footer'
 import GitHubMark from './components/GitHubMark'
@@ -39,7 +39,7 @@ const details = [
     description: 'Receive notifications from Chess.com and Lichess through your operating system.',
   },
   {
-    icon: Gamepad2,
+    icon: DiscordMark,
     title: 'Discord Rich Presence',
     description: 'Show your current Chess Desktop activity on your Discord profile.',
   },
