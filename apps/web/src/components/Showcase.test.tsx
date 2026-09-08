@@ -49,7 +49,7 @@ describe('Showcase', () => {
     fireEvent.click(screen.getByRole('button', { name: /View full size/ }))
     const dialog = screen.getByRole('dialog')
     act(() => vi.advanceTimersByTime(10000))
-    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/chesscom-home.png')
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/chesscom-home-2560.webp')
     fireEvent.click(dialog)
     act(() => vi.advanceTimersByTime(5000))
     expect(screen.getByRole('button', { name: 'Lichess' })).toHaveAttribute('aria-pressed', 'true')
@@ -61,7 +61,8 @@ describe('Showcase', () => {
         loading="lazy"
         shots={[
           {
-            src: '/app-settings.png',
+            src: '/app-settings-711.webp',
+            srcSet: '/app-settings-360.webp 360w, /app-settings-711.webp 711w',
             label: 'App settings',
             alt: 'App settings screenshot',
             width: 711,
@@ -76,20 +77,30 @@ describe('Showcase', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'Screenshot preview' })
     const screenshot = within(dialog).getByRole('img')
-    expect(screenshot).toHaveAttribute('src', '/app-settings.png')
+    expect(screenshot).toHaveAttribute('src', '/app-settings-711.webp')
     expect(screenshot).toHaveAttribute('width', '711')
+    expect(screenshot).toHaveAttribute('sizes', expect.stringContaining('711px'))
+    expect(screenshot).toHaveStyle({ '--showcase-width': '711px' })
     expect(within(dialog).queryByRole('group')).not.toBeInTheDocument()
 
     fireEvent.click(screenshot)
     expect(dialog).toHaveAttribute('open')
     fireEvent.keyDown(dialog, { key: 'ArrowRight' })
-    expect(screenshot).toHaveAttribute('src', '/app-settings.png')
+    expect(screenshot).toHaveAttribute('src', '/app-settings-711.webp')
     fireEvent.click(dialog)
     expect(dialog).not.toHaveAttribute('open')
   })
 
   it('allows visitors to choose a screenshot', () => {
-    render(<Showcase />)
+    const { container } = render(<Showcase />)
+    const screenshots = container.querySelectorAll<HTMLImageElement>('.showcase-track img')
+
+    expect(screenshots[0]).toHaveAttribute('loading', 'eager')
+    expect(screenshots[0]).toHaveAttribute('fetchpriority', 'high')
+    expect(screenshots[0]).toHaveAttribute('sizes', expect.stringContaining('46vw'))
+    expect(screenshots[0]).toHaveAttribute('srcset', expect.stringContaining('672w'))
+    expect(screenshots[1]).toHaveAttribute('loading', 'lazy')
+    expect(screenshots[1]).toHaveAttribute('fetchpriority', 'low')
 
     fireEvent.click(screen.getByRole('button', { name: 'Lichess' }))
 
@@ -98,6 +109,10 @@ describe('Showcase', () => {
       'false',
     )
     expect(screen.getByRole('button', { name: 'Lichess' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screenshots[0]).toHaveAttribute('loading', 'lazy')
+    expect(screenshots[0]).toHaveAttribute('fetchpriority', 'low')
+    expect(screenshots[1]).toHaveAttribute('loading', 'eager')
+    expect(screenshots[1]).toHaveAttribute('fetchpriority', 'high')
   })
 
   it('opens the selected screenshot and closes on a backdrop click', () => {
@@ -107,7 +122,7 @@ describe('Showcase', () => {
 
     const dialog = screen.getByRole('dialog')
     expect(dialog).toHaveAttribute('open')
-    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/lichess-home.png')
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/lichess-home-2560.webp')
 
     fireEvent.click(dialog)
     expect(dialog).not.toHaveAttribute('open')
@@ -123,12 +138,12 @@ describe('Showcase', () => {
     expect(close).not.toHaveClass('md:absolute')
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Lichess' }))
-    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/lichess-home.png')
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/lichess-home-2560.webp')
 
     fireEvent.keyDown(dialog, { key: 'ArrowLeft' })
-    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/chesscom-home.png')
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/chesscom-home-2560.webp')
 
     fireEvent.keyDown(dialog, { key: 'ArrowRight' })
-    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/lichess-home.png')
+    expect(within(dialog).getByRole('img')).toHaveAttribute('src', '/lichess-home-2560.webp')
   })
 })

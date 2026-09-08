@@ -1,10 +1,11 @@
 import { Expand, X } from 'lucide-react'
-import { type ComponentType, useEffect, useRef, useState } from 'react'
+import { type ComponentType, type CSSProperties, useEffect, useRef, useState } from 'react'
 import ChessComMark from './ChessComMark'
 import LichessMark from './LichessMark'
 
 type Screenshot = {
   src: string
+  srcSet: string
   label: string
   alt: string
   width: number
@@ -17,9 +18,13 @@ type ShowcaseProps = {
   loading?: 'eager' | 'lazy'
 }
 
+const inlineSizes = '(max-width: 760px) calc(100vw - 44px), 46vw'
+
 const heroShots: readonly [Screenshot, ...Screenshot[]] = [
   {
-    src: '/chesscom-home.png',
+    src: '/chesscom-home-2560.webp',
+    srcSet:
+      '/chesscom-home-672.webp 672w, /chesscom-home-960.webp 960w, /chesscom-home-1280.webp 1280w, /chesscom-home-2560.webp 2560w',
     label: 'Chess.com',
     mark: ChessComMark,
     alt: 'Chess Desktop running Chess.com',
@@ -27,7 +32,9 @@ const heroShots: readonly [Screenshot, ...Screenshot[]] = [
     height: 1400,
   },
   {
-    src: '/lichess-home.png',
+    src: '/lichess-home-2560.webp',
+    srcSet:
+      '/lichess-home-672.webp 672w, /lichess-home-960.webp 960w, /lichess-home-1280.webp 1280w, /lichess-home-2560.webp 2560w',
     label: 'Lichess',
     mark: LichessMark,
     alt: 'Chess Desktop running Lichess',
@@ -89,9 +96,12 @@ export default function Showcase({ shots = heroShots, loading = 'eager' }: Showc
                   key={shot.src}
                   className="showcase-image row-start-1 block max-w-full border border-line object-contain group-hover:border-line-strong"
                   src={shot.src}
+                  srcSet={shot.srcSet}
+                  sizes={inlineSizes}
                   width={shot.width}
                   height={shot.height}
-                  loading={loading}
+                  loading={loading === 'eager' && index === active ? 'eager' : 'lazy'}
+                  fetchPriority={loading === 'eager' && index === active ? 'high' : 'low'}
                   alt={shot.alt}
                   aria-hidden={index !== active}
                 />
@@ -138,11 +148,16 @@ export default function Showcase({ shots = heroShots, loading = 'eager' }: Showc
         }}
       >
         <img
-          className="block max-h-dvh w-auto max-w-full object-contain md:max-h-[92dvh] md:max-w-[92vw] md:rounded-xl md:border md:border-line"
+          className="showcase-preview block max-h-dvh w-auto object-contain md:max-h-[92dvh] md:rounded-xl md:border md:border-line"
           src={shots[active].src}
+          srcSet={shots[active].srcSet}
+          sizes={`(max-width: 767px) min(100vw, ${shots[active].width}px), min(92vw, ${shots[active].width}px)`}
           width={shots[active].width}
           height={shots[active].height}
+          loading="lazy"
+          fetchPriority={expanded ? 'high' : 'low'}
           alt={shots[active].alt}
+          style={{ '--showcase-width': `${shots[active].width}px` } as CSSProperties}
         />
 
         {shots.length > 1 && (

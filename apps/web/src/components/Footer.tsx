@@ -14,9 +14,13 @@ export default function Footer() {
         <div className="flex items-center gap-2.5">
           <img
             className="block shrink-0 rounded-[5px] bg-surface-2 p-0.5"
-            src="/logo.png"
+            src="/logo-32.webp"
+            srcSet="/logo-32.webp 32w, /logo-64.webp 64w, /logo-128.webp 128w"
+            sizes="20px"
             width={20}
             height={20}
+            loading="lazy"
+            fetchPriority="low"
             alt=""
           />
           <span className="font-mono text-[13px] text-ink-muted">{site.domain}</span>

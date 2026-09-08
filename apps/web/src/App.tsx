@@ -107,7 +107,14 @@ export default function App() {
             onClick={() => scrollToSection('root')}
             aria-label="Chess Desktop home"
           >
-            <img src="/logo.png" width={32} height={32} alt="" />
+            <img
+              src="/logo-64.webp"
+              srcSet="/logo-32.webp 32w, /logo-64.webp 64w, /logo-128.webp 128w"
+              sizes="32px"
+              width={32}
+              height={32}
+              alt=""
+            />
             {site.name}
           </button>
           <nav aria-label="Main navigation">
@@ -142,7 +149,8 @@ export default function App() {
                 loading="lazy"
                 shots={[
                   {
-                    src: '/app-settings.png',
+                    src: '/app-settings-711.webp',
+                    srcSet: '/app-settings-360.webp 360w, /app-settings-711.webp 711w',
                     label: 'App settings',
                     width: 711,
                     height: 532,
@@ -171,7 +179,9 @@ export default function App() {
                 loading="lazy"
                 shots={[
                   {
-                    src: '/lichess-analysis.png',
+                    src: '/lichess-analysis-2560.webp',
+                    srcSet:
+                      '/lichess-analysis-672.webp 672w, /lichess-analysis-960.webp 960w, /lichess-analysis-1280.webp 1280w, /lichess-analysis-2560.webp 2560w',
                     label: 'Lichess review',
                     width: 2560,
                     height: 1400,

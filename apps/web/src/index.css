@@ -246,6 +246,9 @@
   height: auto;
   border-radius: 9px;
 }
+.showcase-preview {
+  max-width: min(100vw, var(--showcase-width));
+}
 .showcase-viewport {
   display: block;
   overflow: hidden;
@@ -659,5 +662,10 @@
   }
   .download-section {
     padding-bottom: 40px;
+  }
+}
+@media (min-width: 768px) {
+  .showcase-preview {
+    max-width: min(92vw, var(--showcase-width));
   }
 }
