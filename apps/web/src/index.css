@@ -418,10 +418,11 @@
 }
 .project-link {
   display: flex;
+  width: fit-content;
   justify-content: center;
   align-items: center;
   gap: 12px;
-  margin-top: 28px;
+  margin: 28px auto 0;
   font-size: 12px;
   min-height: 44px;
 }
