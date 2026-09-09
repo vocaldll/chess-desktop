@@ -3,6 +3,8 @@ export const IPC = {
     minimize: 'window:minimize',
     toggleMaximize: 'window:toggle-maximize',
     close: 'window:close',
+    closeRequested: 'window:close-requested',
+    respondToClose: 'window:respond-to-close',
     isMaximized: 'window:is-maximized',
     maximizeChanged: 'window:maximize-changed',
     fullscreenChanged: 'window:fullscreen-changed',

@@ -27,6 +27,10 @@ const api = {
     minimize: (): void => ipcRenderer.send(IPC.window.minimize),
     toggleMaximize: (): void => ipcRenderer.send(IPC.window.toggleMaximize),
     close: (): void => ipcRenderer.send(IPC.window.close),
+    onCloseRequested: (listener: () => void): Unsubscribe =>
+      subscribe(IPC.window.closeRequested, listener),
+    respondToClose: (confirmed: boolean): void =>
+      ipcRenderer.send(IPC.window.respondToClose, confirmed),
     isMaximized: (): Promise<boolean> => ipcRenderer.invoke(IPC.window.isMaximized),
     onMaximizeChange: (listener: (isMaximized: boolean) => void): Unsubscribe =>
       subscribe(IPC.window.maximizeChanged, listener),

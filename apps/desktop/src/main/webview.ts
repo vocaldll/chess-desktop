@@ -4,7 +4,7 @@ import { IPC, type WebviewLoadError } from '../shared/ipc-channels'
 import { type GameRole, isPlayingGame, needsGameRole } from '../shared/presence'
 import { isSiteURL, SITE_ORDER, SITES, type SiteId } from '../shared/sites'
 import { toZoomFactor } from '../shared/zoom'
-import { updateActiveGameState } from './active-game'
+import { isActiveGame, updateActiveGameState } from './active-game'
 import { applyVolume } from './audio'
 import { applyChatVisibility } from './chat-visibility'
 import { rejectCookieBanners } from './consent'
@@ -44,6 +44,28 @@ export function getSiteWebContents(): WebContents | null {
   }
 
   return contents
+}
+
+export async function hasOngoingGame(): Promise<boolean> {
+  if (isActiveGame()) {
+    return true
+  }
+
+  const roles = await Promise.all(
+    [...siteContents].map(async ([siteId, contents]) => {
+      if (contents.isDestroyed()) {
+        return false
+      }
+
+      const url = contents.getURL()
+      if (!needsGameRole(siteId, url)) {
+        return isPlayingGame(siteId, url)
+      }
+
+      return isPlayingGame(siteId, url, await probeGameRole(contents, siteId))
+    }),
+  )
+  return roles.some(Boolean)
 }
 
 function isCurrentSiteContents(contents: WebContents): boolean {

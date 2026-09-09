@@ -130,6 +130,30 @@ describe('webview event scoping', () => {
     })
   })
 
+  it('detects a game on the other site when checking whether closing is safe', async () => {
+    const contents = new FakeContents()
+    contents.url = 'https://www.chess.com/game/live/123456'
+    const { webview } = await configure(contents)
+    mocks.getSettings.mockReturnValue({ activeSite: 'lichess' })
+    mocks.probeGameRole.mockResolvedValue('playing')
+
+    expect(await webview.hasOngoingGame()).toBe(true)
+
+    mocks.probeGameRole.mockResolvedValue('finished')
+    expect(await webview.hasOngoingGame()).toBe(false)
+    mocks.probeGameRole.mockResolvedValue('spectating')
+    expect(await webview.hasOngoingGame()).toBe(false)
+  })
+
+  it('does not probe destroyed webviews when checking ongoing games', async () => {
+    const contents = new FakeContents()
+    const { webview } = await configure(contents)
+    contents.destroyed = true
+
+    expect(await webview.hasOngoingGame()).toBe(false)
+    expect(mocks.probeGameRole).not.toHaveBeenCalled()
+  })
+
   it('ignores loading and navigation events from a superseded webview', async () => {
     const first = new FakeContents()
     const second = new FakeContents()

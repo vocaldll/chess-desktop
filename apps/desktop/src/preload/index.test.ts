@@ -57,6 +57,7 @@ describe('preload API', () => {
     api.window.minimize()
     api.window.toggleMaximize()
     api.window.close()
+    api.window.respondToClose(false)
     api.shortcuts.setRecording(true)
     api.audio.setVolume(45)
     api.links.openRepository()
@@ -74,6 +75,7 @@ describe('preload API', () => {
       [IPC.window.minimize],
       [IPC.window.toggleMaximize],
       [IPC.window.close],
+      [IPC.window.respondToClose, false],
       [IPC.shortcuts.recording, true],
       [IPC.audio.setVolume, 45],
       [IPC.links.openRepository],

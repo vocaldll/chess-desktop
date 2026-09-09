@@ -5,6 +5,7 @@
   import { DEFAULT_ZOOM, stepZoom } from '$shared/zoom'
   import { activeGame } from './lib/active-game.svelte'
   import { browser } from './lib/browser.svelte'
+  import CloseGameModal from './lib/CloseGameModal.svelte'
   import { fullscreen } from './lib/fullscreen.svelte'
   import Notice from './lib/Notice.svelte'
   import { notices } from './lib/notices.svelte'
@@ -148,3 +149,4 @@
 <SettingsModal open={settingsOpen} onClose={() => (settingsOpen = false)} />
 <OnboardingTour />
 <Notice />
+<CloseGameModal />

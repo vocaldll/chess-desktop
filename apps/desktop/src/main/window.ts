@@ -1,8 +1,9 @@
 import { join } from 'node:path'
 import { backgroundColor } from '@chess-desktop/tokens'
-import { app, BrowserWindow, type Rectangle, screen } from 'electron'
+import { app, BrowserWindow, type IpcMainEvent, ipcMain, type Rectangle, screen } from 'electron'
 import { IPC } from '../shared/ipc-channels'
 import { getSettings, getWindowBounds, setWindowBounds } from './store'
+import { hasOngoingGame } from './webview'
 
 function developmentIcon(): string | undefined {
   return app.isPackaged ? undefined : join(__dirname, '../../resources/icon.ico')
@@ -85,7 +86,57 @@ export function createMainWindow(): BrowserWindow {
     window.webContents.send(IPC.window.fullscreenChanged, false)
   })
 
-  window.on('close', () => {
+  let confirmingClose = false
+  let awaitingCloseResponse = false
+  let closeConfirmed = false
+
+  const respondToClose = (event: IpcMainEvent, confirmed: unknown): void => {
+    if (
+      event.sender !== window.webContents ||
+      !awaitingCloseResponse ||
+      typeof confirmed !== 'boolean'
+    ) {
+      return
+    }
+
+    awaitingCloseResponse = false
+    if (confirmed) {
+      closeConfirmed = true
+      window.close()
+    }
+  }
+
+  ipcMain.on(IPC.window.respondToClose, respondToClose)
+  window.once('closed', () => ipcMain.removeListener(IPC.window.respondToClose, respondToClose))
+
+  window.on('close', async (event) => {
+    if (!closeConfirmed) {
+      event.preventDefault()
+      if (confirmingClose || awaitingCloseResponse) {
+        return
+      }
+
+      confirmingClose = true
+      try {
+        const playing = await hasOngoingGame()
+        if (window.isDestroyed()) {
+          return
+        }
+        if (playing) {
+          awaitingCloseResponse = true
+          window.webContents.send(IPC.window.closeRequested)
+        } else {
+          closeConfirmed = true
+          window.close()
+        }
+      } catch (error) {
+        console.error('Failed to confirm window close:', error)
+      } finally {
+        confirmingClose = false
+      }
+      return
+    }
+
     const isMaximized = window.isMaximized()
     const isRestorable = isMaximized || window.isFullScreen()
     const current = isRestorable ? window.getNormalBounds() : window.getBounds()
