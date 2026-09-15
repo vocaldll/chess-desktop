@@ -18,6 +18,7 @@ export default defineProject({
   plugins: [svelte({ configFile: resolve(import.meta.dirname, 'svelte.config.mjs') })],
   test: {
     name: 'desktop-renderer',
+    clearMocks: false,
     environment: 'jsdom',
     setupFiles: ['test/setup.ts'],
     include: ['src/renderer/**/*.test.ts', 'src/preload/{numbered-arrows,webview}.test.ts'],
