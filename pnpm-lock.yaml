@@ -19,7 +19,7 @@ importers:
         version: 9.30.1(@types/node@26.1.2)(expect-webdriverio@5.7.0)(puppeteer-core@25.5.0(yauzl@2.10.0))(supports-color@8.1.1)
       '@wdio/electron-service':
         specifier: ^10.2.0
-        version: 10.2.0(electron@43.3.0(supports-color@8.1.1))(expect-webdriverio@5.7.0)(supports-color@8.1.1)(tsx@4.23.11)(webdriverio@9.30.1(puppeteer-core@25.5.0(yauzl@2.10.0))(supports-color@8.1.1))(yauzl@2.10.0)
+        version: 10.2.0(electron@43.5.0(supports-color@8.1.1))(expect-webdriverio@5.7.0)(supports-color@8.1.1)(tsx@4.23.11)(webdriverio@9.30.1(puppeteer-core@25.5.0(yauzl@2.10.0))(supports-color@8.1.1))(yauzl@2.10.0)
       '@wdio/globals':
         specifier: ^9.29.1
         version: 9.29.1(expect-webdriverio@5.7.0)(webdriverio@9.30.1(puppeteer-core@25.5.0(yauzl@2.10.0))(supports-color@8.1.1))
@@ -76,8 +76,8 @@ importers:
         specifier: ^30.0.0
         version: 30.0.0
       electron:
-        specifier: 43.3.0
-        version: 43.3.0(supports-color@8.1.1)
+        specifier: 43.5.0
+        version: 43.5.0(supports-color@8.1.1)
       electron-builder:
         specifier: 26.15.3
         version: 26.15.3(electron-builder-squirrel-windows@26.15.3)(supports-color@8.1.1)
@@ -2401,8 +2401,8 @@ packages:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}
     engines: {node: '>=8.0.0'}
 
-  electron@43.3.0:
-    resolution: {integrity: sha512-nLlvu0WFjftWsSaTkV2B/c4NDuJBspTyXu8vKSQ6vLvFt8uG3NgN49LLKcXddwX0GqVvAQDhciWp+4xOdTdhew==}
+  electron@43.5.0:
+    resolution: {integrity: sha512-nV2aWuKatmUrxrAWP2pNIynNX7dy83TCAz+6KnsbK7hDVLE+6fa2iouOtir41AboZTa+J5w2UgicWHAqUaaUJw==}
     engines: {node: '>= 22.12.0'}
     hasBin: true
 
@@ -6002,7 +6002,7 @@ snapshots:
       '@wdio/types': 9.30.1
       chalk: 5.6.2
 
-  '@wdio/electron-service@10.2.0(electron@43.3.0(supports-color@8.1.1))(expect-webdriverio@5.7.0)(supports-color@8.1.1)(tsx@4.23.11)(webdriverio@9.30.1(puppeteer-core@25.5.0(yauzl@2.10.0))(supports-color@8.1.1))(yauzl@2.10.0)':
+  '@wdio/electron-service@10.2.0(electron@43.5.0(supports-color@8.1.1))(expect-webdriverio@5.7.0)(supports-color@8.1.1)(tsx@4.23.11)(webdriverio@9.30.1(puppeteer-core@25.5.0(yauzl@2.10.0))(supports-color@8.1.1))(yauzl@2.10.0)':
     dependencies:
       '@babel/parser': 8.0.4
       '@electron/fuses': 2.1.3
@@ -6025,7 +6025,7 @@ snapshots:
       webdriverio: 9.30.1(puppeteer-core@25.5.0(yauzl@2.10.0))(supports-color@8.1.1)
       yaml: 2.9.0
     optionalDependencies:
-      electron: 43.3.0(supports-color@8.1.1)
+      electron: 43.5.0(supports-color@8.1.1)
     transitivePeerDependencies:
       - bufferutil
       - expect-webdriverio
@@ -6953,7 +6953,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  electron@43.3.0(supports-color@8.1.1):
+  electron@43.5.0(supports-color@8.1.1):
     dependencies:
       '@electron-internal/extract-zip': 1.0.5
       '@electron/get': 5.1.0(supports-color@8.1.1)
