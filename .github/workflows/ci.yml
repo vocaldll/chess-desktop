@@ -75,19 +75,25 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Install Electron ChromeDriver for Linux ARM64
-        if: runner.os == 'Linux' && runner.arch == 'ARM64'
+      # Chrome for Testing does not publish a ChromeDriver for every Chromium build that Electron ships.
+      - name: Install Electron ChromeDriver
         shell: bash
         run: |
           electron_version="$(node -p "require('./apps/desktop/package.json').devDependencies.electron")"
+          case "$RUNNER_OS" in
+            Linux) driver_platform=linux; driver_executable=chromedriver ;;
+            Windows) driver_platform=win32; driver_executable=chromedriver.exe ;;
+            *) echo "Unsupported runner OS: $RUNNER_OS"; exit 1 ;;
+          esac
+          driver_arch="$(echo "$RUNNER_ARCH" | tr '[:upper:]' '[:lower:]')"
           driver_directory="$RUNNER_TEMP/electron-chromedriver"
           mkdir -p "$driver_directory"
           curl --fail --location --silent --show-error \
-            "https://github.com/electron/electron/releases/download/v${electron_version}/chromedriver-v${electron_version}-linux-arm64.zip" \
+            "https://github.com/electron/electron/releases/download/v${electron_version}/chromedriver-v${electron_version}-${driver_platform}-${driver_arch}.zip" \
             --output "$driver_directory/chromedriver.zip"
           unzip -q "$driver_directory/chromedriver.zip" -d "$driver_directory"
-          chmod +x "$driver_directory/chromedriver"
-          echo "ELECTRON_CHROMEDRIVER_PATH=$driver_directory/chromedriver" >> "$GITHUB_ENV"
+          chmod +x "$driver_directory/$driver_executable"
+          echo "ELECTRON_CHROMEDRIVER_PATH=$driver_directory/$driver_executable" >> "$GITHUB_ENV"
 
       - run: pnpm test:e2e
 
